@@ -5,13 +5,13 @@ import { useProfile } from '@/hooks/useProfile';
 import { useTodayRoutines, useInitializeDailyRoutines, useToggleRoutineCompletion } from '@/hooks/useRoutines';
 import { useUserStreak, useUpdateStreak } from '@/hooks/useStreaks';
 import { useMotivationalMessage } from '@/hooks/useMotivationalMessage';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Skeleton } from '@/components/ui/skeleton';
 import { TIME_BLOCK_STYLES } from '@/lib/constants';
-import { Leaf, LogOut, Flame, Sun, Coffee, CloudSun, Moon, Bell } from 'lucide-react';
+import { Leaf, LogOut, Flame, Sun, Coffee, CloudSun, Moon, Bell, Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const timeBlockIcons = {
@@ -92,9 +92,14 @@ function DashboardContent() {
             </div>
             <span className="font-display font-semibold text-foreground">LEVEA</span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             <Button variant="ghost" size="icon" className="relative">
               <Bell className="h-5 w-5" />
+            </Button>
+            <Button variant="ghost" size="icon" asChild>
+              <Link to="/settings">
+                <Settings className="h-5 w-5" />
+              </Link>
             </Button>
             <Button variant="ghost" size="icon" onClick={handleSignOut}>
               <LogOut className="h-5 w-5" />
