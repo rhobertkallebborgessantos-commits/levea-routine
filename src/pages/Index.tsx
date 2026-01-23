@@ -17,23 +17,23 @@ export default function Index() {
   const features = [
     {
       icon: Calendar,
-      title: 'Guided Daily Routine',
-      description: 'Simple morning-to-evening structure that organizes your day effortlessly.',
+      title: 'Rotina Diária Guiada',
+      description: 'Estrutura simples da manhã à noite que organiza seu dia sem esforço.',
     },
     {
       icon: Bell,
-      title: 'Smart Reminders',
-      description: 'Gentle, personalized nudges for meals, hydration, and mindful breaks.',
+      title: 'Lembretes Inteligentes',
+      description: 'Notificações gentis e personalizadas para refeições, hidratação e pausas.',
     },
     {
       icon: Heart,
-      title: 'No Guilt, Just Progress',
-      description: 'Focus on consistency, not perfection. Every small step counts.',
+      title: 'Sem Culpa, Só Progresso',
+      description: 'Foco em consistência, não em perfeição. Cada pequeno passo conta.',
     },
     {
       icon: Sparkles,
-      title: 'Personalized Experience',
-      description: 'Tailored to your goals, struggles, and available time slots.',
+      title: 'Experiência Personalizada',
+      description: 'Adaptado aos seus objetivos, dificuldades e horários disponíveis.',
     },
   ];
 
@@ -51,15 +51,15 @@ export default function Index() {
           <div className="flex items-center gap-3">
             {user ? (
               <Button asChild>
-                <Link to="/dashboard">Go to Dashboard</Link>
+                <Link to="/dashboard">Ir para o Painel</Link>
               </Button>
             ) : (
               <>
                 <Button variant="ghost" asChild>
-                  <Link to="/auth">Sign In</Link>
+                  <Link to="/auth">Entrar</Link>
                 </Button>
                 <Button asChild>
-                  <Link to="/auth">Get Started</Link>
+                  <Link to="/auth">Começar</Link>
                 </Button>
               </>
             )}
@@ -78,29 +78,29 @@ export default function Index() {
           >
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent text-accent-foreground text-sm font-medium">
               <Sparkles className="h-4 w-4" />
-              Smart routine for effortless weight loss
+              Rotina inteligente para emagrecer sem sofrimento
             </div>
             
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-foreground leading-tight">
-              Consistency made
-              <span className="text-primary"> simple</span>
+              Consistência de forma
+              <span className="text-primary"> simples</span>
             </h1>
             
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-              LEVEA helps you build healthy habits through gentle reminders, 
-              organized routines, and personalized guidance — no strict diets, 
-              no guilt, just progress.
+              LEVEA te ajuda a construir hábitos saudáveis através de lembretes gentis, 
+              rotinas organizadas e orientação personalizada — sem dietas restritivas, 
+              sem culpa, apenas progresso.
             </p>
             
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
               <Button size="lg" className="gap-2 text-base px-8" asChild>
                 <Link to="/auth">
-                  Start Your Journey
+                  Comece Sua Jornada
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
               <p className="text-sm text-muted-foreground">
-                Free to start • No credit card required
+                Grátis para começar • Sem cartão de crédito
               </p>
             </div>
           </motion.div>
@@ -118,10 +118,10 @@ export default function Index() {
             className="text-center mb-12"
           >
             <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground mb-4">
-              Everything you need to stay consistent
+              Tudo que você precisa para manter a consistência
             </h2>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Simple tools that work together to make healthy habits feel effortless.
+              Ferramentas simples que trabalham juntas para tornar hábitos saudáveis algo natural.
             </p>
           </motion.div>
 
@@ -160,15 +160,15 @@ export default function Index() {
             className="text-center mb-12"
           >
             <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground mb-4">
-              How LEVEA works
+              Como a LEVEA funciona
             </h2>
           </motion.div>
 
           <div className="space-y-8">
             {[
-              { step: '1', title: 'Tell us about yourself', description: 'Quick questions about your goals and schedule.' },
-              { step: '2', title: 'Get your personalized routine', description: 'We create a daily structure with gentle reminders.' },
-              { step: '3', title: 'Stay consistent, see results', description: 'Track your streak and celebrate wins.' },
+              { step: '1', title: 'Conte sobre você', description: 'Perguntas rápidas sobre seus objetivos e horários.' },
+              { step: '2', title: 'Receba sua rotina personalizada', description: 'Criamos uma estrutura diária com lembretes gentis.' },
+              { step: '3', title: 'Mantenha a consistência, veja resultados', description: 'Acompanhe sua sequência e celebre suas conquistas.' },
             ].map((item, index) => (
               <motion.div
                 key={item.step}
@@ -201,14 +201,14 @@ export default function Index() {
             className="bg-gradient-to-br from-primary/10 via-accent to-levea-mint rounded-3xl p-8 md:p-12 text-center"
           >
             <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground mb-4">
-              Ready to start your journey?
+              Pronto para começar sua jornada?
             </h2>
             <p className="text-muted-foreground text-lg mb-8">
-              It's free to start and takes just 2 minutes to set up.
+              É grátis para começar e leva apenas 2 minutos para configurar.
             </p>
             <Button size="lg" className="gap-2 text-base px-8" asChild>
               <Link to="/auth">
-                Get Started Free
+                Começar Grátis
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
@@ -225,7 +225,7 @@ export default function Index() {
             </div>
             <span className="font-display font-semibold text-foreground">LEVEA</span>
           </div>
-          <p className="text-sm text-muted-foreground">© 2024 LEVEA. Made with 💚 for healthier habits.</p>
+          <p className="text-sm text-muted-foreground">© 2024 LEVEA. Feito com 💚 para hábitos mais saudáveis.</p>
         </div>
       </footer>
     </div>

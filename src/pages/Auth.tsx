@@ -11,8 +11,8 @@ import { useToast } from '@/hooks/use-toast';
 import { Leaf, Mail, Lock, User, ArrowLeft } from 'lucide-react';
 import { z } from 'zod';
 
-const emailSchema = z.string().email('Please enter a valid email address');
-const passwordSchema = z.string().min(6, 'Password must be at least 6 characters');
+const emailSchema = z.string().email('Por favor, insira um e-mail válido');
+const passwordSchema = z.string().min(6, 'A senha deve ter pelo menos 6 caracteres');
 
 export default function Auth() {
   const [isLoading, setIsLoading] = useState(false);
@@ -65,15 +65,15 @@ export default function Auth() {
     if (error) {
       toast({
         variant: 'destructive',
-        title: 'Sign in failed',
+        title: 'Erro ao entrar',
         description: error.message === 'Invalid login credentials' 
-          ? 'Email or password is incorrect. Please try again.'
+          ? 'E-mail ou senha incorretos. Por favor, tente novamente.'
           : error.message,
       });
     } else {
       toast({
-        title: 'Welcome back! 🌿',
-        description: "Let's continue your wellness journey.",
+        title: 'Bem-vindo de volta! 🌿',
+        description: 'Vamos continuar sua jornada de bem-estar.',
       });
       navigate('/dashboard');
     }
@@ -90,17 +90,17 @@ export default function Auth() {
     if (error) {
       let message = error.message;
       if (error.message.includes('already registered')) {
-        message = 'This email is already registered. Please sign in instead.';
+        message = 'Este e-mail já está cadastrado. Por favor, faça login.';
       }
       toast({
         variant: 'destructive',
-        title: 'Sign up failed',
+        title: 'Erro ao criar conta',
         description: message,
       });
     } else {
       toast({
-        title: 'Welcome to LEVEA! 🌱',
-        description: "Let's set up your personalized routine.",
+        title: 'Bem-vindo à LEVEA! 🌱',
+        description: 'Vamos configurar sua rotina personalizada.',
       });
       navigate('/onboarding');
     }
@@ -114,7 +114,7 @@ export default function Auth() {
         className="absolute top-4 left-4 flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
       >
         <ArrowLeft className="h-4 w-4" />
-        <span>Back</span>
+        <span>Voltar</span>
       </Link>
 
       <motion.div
@@ -131,31 +131,31 @@ export default function Auth() {
             </div>
             <span className="text-2xl font-display font-bold text-foreground">LEVEA</span>
           </div>
-          <p className="text-muted-foreground text-sm">Smart routine for effortless weight loss</p>
+          <p className="text-muted-foreground text-sm">Rotina inteligente para emagrecer sem sofrimento</p>
         </div>
 
         <Card className="border-border/50 shadow-lg">
           <CardHeader className="text-center pb-4">
-            <CardTitle className="text-xl">Welcome</CardTitle>
-            <CardDescription>Sign in to continue your journey</CardDescription>
+            <CardTitle className="text-xl">Bem-vindo</CardTitle>
+            <CardDescription>Entre para continuar sua jornada</CardDescription>
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="signin" className="w-full">
               <TabsList className="grid w-full grid-cols-2 mb-6">
-                <TabsTrigger value="signin">Sign In</TabsTrigger>
-                <TabsTrigger value="signup">Sign Up</TabsTrigger>
+                <TabsTrigger value="signin">Entrar</TabsTrigger>
+                <TabsTrigger value="signup">Criar Conta</TabsTrigger>
               </TabsList>
               
               <TabsContent value="signin">
                 <form onSubmit={handleSignIn} className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="signin-email">Email</Label>
+                    <Label htmlFor="signin-email">E-mail</Label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                       <Input
                         id="signin-email"
                         type="email"
-                        placeholder="you@example.com"
+                        placeholder="voce@exemplo.com"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         className="pl-10"
@@ -168,7 +168,7 @@ export default function Auth() {
                   </div>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="signin-password">Password</Label>
+                    <Label htmlFor="signin-password">Senha</Label>
                     <div className="relative">
                       <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                       <Input
@@ -187,7 +187,7 @@ export default function Auth() {
                   </div>
                   
                   <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? 'Signing in...' : 'Sign In'}
+                    {isLoading ? 'Entrando...' : 'Entrar'}
                   </Button>
                 </form>
               </TabsContent>
@@ -195,13 +195,13 @@ export default function Auth() {
               <TabsContent value="signup">
                 <form onSubmit={handleSignUp} className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="signup-name">Full Name (optional)</Label>
+                    <Label htmlFor="signup-name">Nome completo (opcional)</Label>
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                       <Input
                         id="signup-name"
                         type="text"
-                        placeholder="Your name"
+                        placeholder="Seu nome"
                         value={fullName}
                         onChange={(e) => setFullName(e.target.value)}
                         className="pl-10"
@@ -210,13 +210,13 @@ export default function Auth() {
                   </div>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="signup-email">Email</Label>
+                    <Label htmlFor="signup-email">E-mail</Label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                       <Input
                         id="signup-email"
                         type="email"
-                        placeholder="you@example.com"
+                        placeholder="voce@exemplo.com"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         className="pl-10"
@@ -229,13 +229,13 @@ export default function Auth() {
                   </div>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="signup-password">Password</Label>
+                    <Label htmlFor="signup-password">Senha</Label>
                     <div className="relative">
                       <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                       <Input
                         id="signup-password"
                         type="password"
-                        placeholder="At least 6 characters"
+                        placeholder="Mínimo 6 caracteres"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         className="pl-10"
@@ -248,7 +248,7 @@ export default function Auth() {
                   </div>
                   
                   <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? 'Creating account...' : 'Create Account'}
+                    {isLoading ? 'Criando conta...' : 'Criar Conta'}
                   </Button>
                 </form>
               </TabsContent>
@@ -257,7 +257,7 @@ export default function Auth() {
         </Card>
 
         <p className="text-center text-sm text-muted-foreground mt-6">
-          By continuing, you agree to our Terms of Service and Privacy Policy.
+          Ao continuar, você concorda com nossos Termos de Serviço e Política de Privacidade.
         </p>
       </motion.div>
     </div>

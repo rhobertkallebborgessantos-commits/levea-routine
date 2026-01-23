@@ -1,105 +1,105 @@
 // LEVEA Constants and Configuration
 
 export const APP_NAME = "LEVEA";
-export const APP_TAGLINE = "Smart routine for effortless weight loss";
+export const APP_TAGLINE = "Rotina inteligente para emagrecer sem sofrimento";
 
 // Onboarding options
 export const GOALS = [
-  { value: 'lose_weight', label: 'Lose weight', icon: '🎯', description: 'Sustainable weight loss with healthy habits' },
-  { value: 'maintain_weight', label: 'Maintain weight', icon: '⚖️', description: 'Keep your current weight stable' },
-  { value: 'build_habits', label: 'Build habits', icon: '🌱', description: 'Develop consistent healthy routines' },
+  { value: 'lose_weight', label: 'Perder peso', icon: '🎯', description: 'Emagrecimento sustentável com hábitos saudáveis' },
+  { value: 'maintain_weight', label: 'Manter peso', icon: '⚖️', description: 'Manter seu peso atual estável' },
+  { value: 'build_habits', label: 'Criar hábitos', icon: '🌱', description: 'Desenvolver rotinas saudáveis consistentes' },
 ] as const;
 
 export const ACTIVITY_LEVELS = [
-  { value: 'low', label: 'Low', icon: '🧘', description: 'Mostly sedentary, light daily activities' },
-  { value: 'medium', label: 'Medium', icon: '🚶', description: 'Regular walks, some exercise' },
-  { value: 'high', label: 'High', icon: '🏃', description: 'Regular intense workouts' },
+  { value: 'low', label: 'Baixo', icon: '🧘', description: 'Maioria sedentário, atividades leves do dia a dia' },
+  { value: 'medium', label: 'Médio', icon: '🚶', description: 'Caminhadas regulares, alguns exercícios' },
+  { value: 'high', label: 'Alto', icon: '🏃', description: 'Treinos intensos regulares' },
 ] as const;
 
 export const FOOD_PREFERENCES = [
-  { value: 'balanced', label: 'Balanced', icon: '🥗', description: 'Variety of foods, moderate portions' },
-  { value: 'low_carb', label: 'Low Carb', icon: '🥑', description: 'Focus on proteins and healthy fats' },
+  { value: 'balanced', label: 'Equilibrada', icon: '🥗', description: 'Variedade de alimentos, porções moderadas' },
+  { value: 'low_carb', label: 'Low Carb', icon: '🥑', description: 'Foco em proteínas e gorduras saudáveis' },
 ] as const;
 
 export const STRUGGLES = [
-  { value: 'anxiety', label: 'Anxiety eating', icon: '😰', description: 'Eating when stressed or anxious' },
-  { value: 'snacking', label: 'Snacking', icon: '🍪', description: 'Frequent snacking between meals' },
-  { value: 'lack_of_routine', label: 'Lack of routine', icon: '📅', description: 'Irregular eating schedule' },
-  { value: 'water_retention', label: 'Water retention', icon: '💧', description: 'Feeling bloated often' },
+  { value: 'anxiety', label: 'Ansiedade', icon: '😰', description: 'Comer quando estressado ou ansioso' },
+  { value: 'snacking', label: 'Beliscar', icon: '🍪', description: 'Lanches frequentes entre refeições' },
+  { value: 'lack_of_routine', label: 'Falta de rotina', icon: '📅', description: 'Horários irregulares de alimentação' },
+  { value: 'water_retention', label: 'Retenção de líquidos', icon: '💧', description: 'Sensação de inchaço frequente' },
 ] as const;
 
 export const TIME_SLOTS = [
-  { value: 'morning', label: 'Morning', icon: '🌅', time: '6:00 - 12:00' },
-  { value: 'lunch', label: 'Lunch', icon: '☀️', time: '12:00 - 14:00' },
-  { value: 'afternoon', label: 'Afternoon', icon: '🌤️', time: '14:00 - 18:00' },
-  { value: 'evening', label: 'Evening', icon: '🌙', time: '18:00 - 22:00' },
+  { value: 'morning', label: 'Manhã', icon: '🌅', time: '6:00 - 12:00' },
+  { value: 'lunch', label: 'Almoço', icon: '☀️', time: '12:00 - 14:00' },
+  { value: 'afternoon', label: 'Tarde', icon: '🌤️', time: '14:00 - 18:00' },
+  { value: 'evening', label: 'Noite', icon: '🌙', time: '18:00 - 22:00' },
 ] as const;
 
 // Default routine actions per time block
 export const DEFAULT_ROUTINE_ACTIONS = {
   morning: [
-    { title: 'Drink water', description: 'Start your day with a glass of water to hydrate your body', icon: '💧' },
-    { title: 'Balanced breakfast', description: 'Include protein to stay full longer', icon: '🍳' },
+    { title: 'Beber água', description: 'Comece o dia com um copo de água para hidratar seu corpo', icon: '💧' },
+    { title: 'Café da manhã equilibrado', description: 'Inclua proteína para se manter saciado por mais tempo', icon: '🍳' },
   ],
   lunch: [
-    { title: 'Mindful meal', description: 'Eat slowly and enjoy your food without distractions', icon: '🥗' },
-    { title: 'Hydration check', description: 'Have you had enough water this morning?', icon: '💧' },
+    { title: 'Refeição consciente', description: 'Coma devagar e aproveite sua comida sem distrações', icon: '🥗' },
+    { title: 'Check de hidratação', description: 'Você já bebeu água suficiente esta manhã?', icon: '💧' },
   ],
   afternoon: [
-    { title: 'Healthy snack', description: 'Choose something nutritious if you\'re hungry', icon: '🍎' },
-    { title: 'Calming tea', description: 'A warm tea can help with afternoon cravings', icon: '🍵' },
+    { title: 'Lanche saudável', description: 'Escolha algo nutritivo se estiver com fome', icon: '🍎' },
+    { title: 'Chá relaxante', description: 'Um chá quente pode ajudar com a vontade de comer', icon: '🍵' },
   ],
   evening: [
-    { title: 'Light dinner', description: 'Keep it balanced and avoid heavy foods late', icon: '🥙' },
-    { title: 'Wind down', description: 'Avoid eating 2-3 hours before bed', icon: '🌙' },
+    { title: 'Jantar leve', description: 'Mantenha equilibrado e evite comidas pesadas tarde da noite', icon: '🥙' },
+    { title: 'Relaxar', description: 'Evite comer 2-3 horas antes de dormir', icon: '🌙' },
   ],
 } as const;
 
 // Tea recommendations based on goals/struggles
 export const TEA_RECOMMENDATIONS = {
   anxiety: [
-    { name: 'Chamomile', benefit: 'Calms the mind and reduces stress', timing: 'Afternoon or evening' },
-    { name: 'Lavender', benefit: 'Promotes relaxation and better sleep', timing: 'Evening, before bed' },
-    { name: 'Passionflower', benefit: 'Natural anxiety relief', timing: 'When feeling anxious' },
+    { name: 'Camomila', benefit: 'Acalma a mente e reduz o estresse', timing: 'Tarde ou noite' },
+    { name: 'Lavanda', benefit: 'Promove relaxamento e sono melhor', timing: 'Noite, antes de dormir' },
+    { name: 'Maracujá', benefit: 'Alívio natural da ansiedade', timing: 'Quando sentir ansiedade' },
   ],
   water_retention: [
-    { name: 'Dandelion', benefit: 'Natural diuretic, reduces bloating', timing: 'Morning or afternoon' },
-    { name: 'Green tea', benefit: 'Supports metabolism and reduces water weight', timing: 'Morning' },
-    { name: 'Hibiscus', benefit: 'Helps flush excess fluids', timing: 'Afternoon' },
+    { name: 'Dente-de-leão', benefit: 'Diurético natural, reduz inchaço', timing: 'Manhã ou tarde' },
+    { name: 'Chá verde', benefit: 'Apoia o metabolismo e reduz retenção', timing: 'Manhã' },
+    { name: 'Hibisco', benefit: 'Ajuda a eliminar líquidos em excesso', timing: 'Tarde' },
   ],
   digestion: [
-    { name: 'Peppermint', benefit: 'Soothes digestive discomfort', timing: 'After meals' },
-    { name: 'Ginger', benefit: 'Aids digestion and reduces bloating', timing: 'Before or after meals' },
-    { name: 'Fennel', benefit: 'Relieves gas and bloating', timing: 'After dinner' },
+    { name: 'Hortelã', benefit: 'Alivia desconforto digestivo', timing: 'Após refeições' },
+    { name: 'Gengibre', benefit: 'Auxilia na digestão e reduz inchaço', timing: 'Antes ou após refeições' },
+    { name: 'Funcho', benefit: 'Alivia gases e inchaço', timing: 'Após o jantar' },
   ],
   metabolism: [
-    { name: 'Green tea', benefit: 'Boosts metabolism naturally', timing: 'Morning or early afternoon' },
-    { name: 'Oolong', benefit: 'Supports fat burning', timing: 'Before exercise' },
-    { name: 'Cinnamon', benefit: 'Helps regulate blood sugar', timing: 'After meals' },
+    { name: 'Chá verde', benefit: 'Acelera o metabolismo naturalmente', timing: 'Manhã ou início da tarde' },
+    { name: 'Oolong', benefit: 'Apoia a queima de gordura', timing: 'Antes do exercício' },
+    { name: 'Canela', benefit: 'Ajuda a regular o açúcar no sangue', timing: 'Após refeições' },
   ],
 } as const;
 
 // Reminder message templates
 export const REMINDER_TEMPLATES = {
   meal: [
-    "Time for your {meal}! Remember to include some protein. 🍽️",
-    "It's {meal} time! Eat slowly and enjoy every bite.",
-    "Gentle reminder: {meal} is calling! Make it balanced.",
+    "Hora do seu {meal}! Lembre-se de incluir proteína. 🍽️",
+    "É hora do {meal}! Coma devagar e aproveite cada mordida.",
+    "Lembrete gentil: {meal} está chamando! Faça uma refeição equilibrada.",
   ],
   tea: [
-    "Time for your calming tea 🍵",
-    "A warm cup awaits you. Take a mindful break.",
-    "Tea time! Let's pause and reset.",
+    "Hora do seu chá relaxante 🍵",
+    "Uma xícara quente te espera. Faça uma pausa consciente.",
+    "Hora do chá! Vamos pausar e resetar.",
   ],
   hydration: [
-    "💧 Stay hydrated! Have you had water recently?",
-    "Water break! Your body will thank you.",
-    "Hydration check-in. How's your water intake today?",
+    "💧 Mantenha-se hidratado! Você bebeu água recentemente?",
+    "Pausa para água! Seu corpo vai agradecer.",
+    "Check de hidratação. Como está sua ingestão de água hoje?",
   ],
   snacking: [
-    "Late snacking urge? A warm tea can help.",
-    "Feeling hungry? Try water first, then decide.",
-    "Kitchen closed! Tomorrow is a fresh start. 🌙",
+    "Vontade de beliscar tarde da noite? Um chá quente pode ajudar.",
+    "Com fome? Tente água primeiro, depois decida.",
+    "Cozinha fechada! Amanhã é um novo começo. 🌙",
   ],
 } as const;
 
@@ -109,25 +109,25 @@ export const TIME_BLOCK_STYLES = {
     bg: 'bg-morning',
     text: 'text-morning-foreground',
     icon: '🌅',
-    label: 'Morning',
+    label: 'Manhã',
   },
   lunch: {
     bg: 'bg-lunch',
     text: 'text-lunch-foreground',
     icon: '☀️',
-    label: 'Lunch',
+    label: 'Almoço',
   },
   afternoon: {
     bg: 'bg-afternoon',
     text: 'text-afternoon-foreground',
     icon: '🌤️',
-    label: 'Afternoon',
+    label: 'Tarde',
   },
   evening: {
     bg: 'bg-evening',
     text: 'text-evening-foreground',
     icon: '🌙',
-    label: 'Evening',
+    label: 'Noite',
   },
 } as const;
 
