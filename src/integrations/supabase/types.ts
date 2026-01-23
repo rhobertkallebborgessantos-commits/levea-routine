@@ -54,18 +54,21 @@ export type Database = {
         Row: {
           category: string | null
           created_at: string
+          goal: Database["public"]["Enums"]["user_goal"] | null
           id: string
           message: string
         }
         Insert: {
           category?: string | null
           created_at?: string
+          goal?: Database["public"]["Enums"]["user_goal"] | null
           id?: string
           message: string
         }
         Update: {
           category?: string | null
           created_at?: string
+          goal?: Database["public"]["Enums"]["user_goal"] | null
           id?: string
           message?: string
         }
