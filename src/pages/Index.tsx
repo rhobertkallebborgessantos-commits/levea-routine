@@ -95,12 +95,12 @@ export default function Index() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
               <Button size="lg" className="gap-2 text-base px-8" asChild>
                 <Link to="/auth">
-                  Comece Sua Jornada
+                  Acessar Levea
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
               <p className="text-sm text-muted-foreground">
-                Grátis para começar • Sem cartão de crédito
+                Configuração em 2 minutos
               </p>
             </div>
           </motion.div>
@@ -201,14 +201,14 @@ export default function Index() {
             className="bg-gradient-to-br from-primary/10 via-accent to-levea-mint rounded-3xl p-8 md:p-12 text-center"
           >
             <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground mb-4">
-              Pronto para começar sua jornada?
+              Pronto para transformar sua rotina?
             </h2>
             <p className="text-muted-foreground text-lg mb-8">
-              É grátis para começar e leva apenas 2 minutos para configurar.
+              Leva apenas 2 minutos para configurar sua rotina personalizada.
             </p>
             <Button size="lg" className="gap-2 text-base px-8" asChild>
               <Link to="/auth">
-                Começar Grátis
+                Entrar na Levea
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
