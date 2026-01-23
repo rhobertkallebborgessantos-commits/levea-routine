@@ -76,9 +76,9 @@ function DashboardContent() {
 
   const greeting = () => {
     const hour = new Date().getHours();
-    if (hour < 12) return 'Good morning';
-    if (hour < 18) return 'Good afternoon';
-    return 'Good evening';
+    if (hour < 12) return 'Bom dia';
+    if (hour < 18) return 'Boa tarde';
+    return 'Boa noite';
   };
 
   return (
@@ -111,7 +111,7 @@ function DashboardContent() {
           className="space-y-2"
         >
           <h1 className="text-2xl font-display font-bold text-foreground">
-            {greeting()}, {profile?.full_name?.split(' ')[0] || 'there'}! 👋
+            {greeting()}, {profile?.full_name?.split(' ')[0] || 'você'}! 👋
           </h1>
           {motivationalMessage && (
             <p className="text-muted-foreground">{motivationalMessage}</p>
@@ -129,13 +129,13 @@ function DashboardContent() {
           <Card className="bg-gradient-to-br from-levea-warm to-levea-rose border-0">
             <CardContent className="p-4 flex items-center gap-3">
               <div className="w-12 h-12 rounded-xl bg-background/50 flex items-center justify-center">
-                <Flame className="h-6 w-6 text-orange-500" />
+                <Flame className="h-6 w-6 text-destructive" />
               </div>
               <div>
                 <p className="text-2xl font-bold text-foreground">
                   {streak?.current_streak || 0}
                 </p>
-                <p className="text-sm text-muted-foreground">Day streak</p>
+                <p className="text-sm text-muted-foreground">Dias seguidos</p>
               </div>
             </CardContent>
           </Card>
@@ -172,7 +172,7 @@ function DashboardContent() {
                 <p className="text-2xl font-bold text-foreground">
                   {completedCount}/{totalCount}
                 </p>
-                <p className="text-sm text-muted-foreground">Today's tasks</p>
+                <p className="text-sm text-muted-foreground">Tarefas de hoje</p>
               </div>
             </CardContent>
           </Card>
@@ -186,7 +186,7 @@ function DashboardContent() {
           className="space-y-4"
         >
           <h2 className="text-lg font-display font-semibold text-foreground">
-            Today's Routine
+            Rotina de Hoje
           </h2>
 
           {routinesLoading ? (

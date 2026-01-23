@@ -82,16 +82,16 @@ function OnboardingContent() {
       });
 
       toast({
-        title: 'Welcome to LEVEA! 🌿',
-        description: 'Your personalized routine is ready.',
+        title: 'Bem-vindo à LEVEA! 🌿',
+        description: 'Sua rotina personalizada está pronta.',
       });
 
       navigate('/dashboard');
     } catch (error) {
       toast({
         variant: 'destructive',
-        title: 'Something went wrong',
-        description: 'Please try again.',
+        title: 'Algo deu errado',
+        description: 'Por favor, tente novamente.',
       });
     }
   };
@@ -136,7 +136,7 @@ function OnboardingContent() {
           </div>
           <span className="font-display font-semibold text-foreground">LEVEA</span>
         </div>
-        <span className="text-sm text-muted-foreground">Step {step} of {TOTAL_STEPS}</span>
+        <span className="text-sm text-muted-foreground">Passo {step} de {TOTAL_STEPS}</span>
       </header>
 
       {/* Progress */}
@@ -160,10 +160,10 @@ function OnboardingContent() {
               <>
                 <div className="text-center space-y-2">
                   <h1 className="text-2xl font-display font-bold text-foreground">
-                    What's your main goal?
+                    Qual é seu objetivo principal?
                   </h1>
                   <p className="text-muted-foreground">
-                    We'll personalize your experience based on this
+                    Vamos personalizar sua experiência com base nisso
                   </p>
                 </div>
                 <div className="space-y-3">
@@ -199,30 +199,30 @@ function OnboardingContent() {
               <>
                 <div className="text-center space-y-2">
                   <h1 className="text-2xl font-display font-bold text-foreground">
-                    Your measurements
+                    Suas medidas
                   </h1>
                   <p className="text-muted-foreground">
-                    Optional — helps us personalize tips
+                    Opcional — nos ajuda a personalizar dicas
                   </p>
                 </div>
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="weight">Current weight (kg)</Label>
+                    <Label htmlFor="weight">Peso atual (kg)</Label>
                     <Input
                       id="weight"
                       type="number"
-                      placeholder="e.g., 70"
+                      placeholder="ex: 70"
                       value={data.currentWeight}
                       onChange={(e) => setData({ ...data, currentWeight: e.target.value })}
                       className="text-lg"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="height">Height (cm)</Label>
+                    <Label htmlFor="height">Altura (cm)</Label>
                     <Input
                       id="height"
                       type="number"
-                      placeholder="e.g., 170"
+                      placeholder="ex: 170"
                       value={data.height}
                       onChange={(e) => setData({ ...data, height: e.target.value })}
                       className="text-lg"
@@ -230,7 +230,7 @@ function OnboardingContent() {
                   </div>
                 </div>
                 <p className="text-center text-sm text-muted-foreground">
-                  You can skip this and add it later
+                  Você pode pular isso e adicionar depois
                 </p>
               </>
             )}
@@ -240,10 +240,10 @@ function OnboardingContent() {
               <>
                 <div className="text-center space-y-2">
                   <h1 className="text-2xl font-display font-bold text-foreground">
-                    How active are you?
+                    Qual seu nível de atividade?
                   </h1>
                   <p className="text-muted-foreground">
-                    This helps us tailor your routine
+                    Isso nos ajuda a adaptar sua rotina
                   </p>
                 </div>
                 <div className="space-y-3">
@@ -279,10 +279,10 @@ function OnboardingContent() {
               <>
                 <div className="text-center space-y-2">
                   <h1 className="text-2xl font-display font-bold text-foreground">
-                    Food preference
+                    Preferência alimentar
                   </h1>
                   <p className="text-muted-foreground">
-                    We'll suggest meals that match your style
+                    Vamos sugerir refeições que combinam com seu estilo
                   </p>
                 </div>
                 <div className="space-y-3">
@@ -318,10 +318,10 @@ function OnboardingContent() {
               <>
                 <div className="text-center space-y-2">
                   <h1 className="text-2xl font-display font-bold text-foreground">
-                    What do you struggle with?
+                    Com o que você tem dificuldade?
                   </h1>
                   <p className="text-muted-foreground">
-                    Select all that apply — we'll help you overcome them
+                    Selecione todos que se aplicam — vamos te ajudar a superar
                   </p>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
@@ -342,7 +342,7 @@ function OnboardingContent() {
                   ))}
                 </div>
                 <p className="text-center text-sm text-muted-foreground">
-                  You can skip this if none apply
+                  Você pode pular se nenhum se aplica
                 </p>
               </>
             )}
@@ -352,10 +352,10 @@ function OnboardingContent() {
               <>
                 <div className="text-center space-y-2">
                   <h1 className="text-2xl font-display font-bold text-foreground">
-                    When are you available?
+                    Quando você está disponível?
                   </h1>
                   <p className="text-muted-foreground">
-                    We'll schedule reminders around these times
+                    Vamos agendar lembretes nesses horários
                   </p>
                 </div>
                 <div className="space-y-3">
@@ -398,7 +398,7 @@ function OnboardingContent() {
           className="gap-2"
         >
           <ChevronLeft className="h-4 w-4" />
-          Back
+          Voltar
         </Button>
         
         {step < TOTAL_STEPS ? (
@@ -407,7 +407,7 @@ function OnboardingContent() {
             disabled={!canContinue()}
             className="gap-2"
           >
-            Continue
+            Continuar
             <ChevronRight className="h-4 w-4" />
           </Button>
         ) : (
@@ -416,7 +416,7 @@ function OnboardingContent() {
             disabled={!canContinue() || updatePreferences.isPending}
             className="gap-2"
           >
-            {updatePreferences.isPending ? 'Setting up...' : 'Complete Setup'}
+            {updatePreferences.isPending ? 'Configurando...' : 'Concluir'}
             <Check className="h-4 w-4" />
           </Button>
         )}
