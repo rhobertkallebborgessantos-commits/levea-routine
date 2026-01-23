@@ -7,6 +7,7 @@ import { useUserStreak, useUpdateStreak } from '@/hooks/useStreaks';
 import { useMotivationalMessage } from '@/hooks/useMotivationalMessage';
 import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { WeeklyProgressSummary } from '@/components/WeeklyProgressSummary';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -182,6 +183,9 @@ function DashboardContent() {
             </CardContent>
           </Card>
         </motion.section>
+
+        {/* Weekly Progress Summary */}
+        <WeeklyProgressSummary />
 
         {/* Today's Routine */}
         <motion.section
