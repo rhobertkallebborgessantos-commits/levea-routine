@@ -1,7 +1,9 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
+import { SplashScreen } from '@/components/SplashScreen';
 import { 
   Leaf, 
   ArrowRight, 
@@ -11,8 +13,22 @@ import {
   Sparkles
 } from 'lucide-react';
 
+const SPLASH_SHOWN_KEY = 'levea_splash_shown';
+
 export default function Index() {
   const { user } = useAuth();
+  const [showSplash, setShowSplash] = useState(false);
+  const [isReady, setIsReady] = useState(false);
+
+  useEffect(() => {
+    // Only show splash once per session
+    const splashShown = sessionStorage.getItem(SPLASH_SHOWN_KEY);
+    if (!splashShown) {
+      setShowSplash(true);
+      sessionStorage.setItem(SPLASH_SHOWN_KEY, 'true');
+    }
+    setIsReady(true);
+  }, []);
 
   const features = [
     {
@@ -37,8 +53,12 @@ export default function Index() {
     },
   ];
 
+  if (!isReady) return null;
+
   return (
-    <div className="min-h-screen bg-background">
+    <>
+      {showSplash && <SplashScreen onComplete={() => setShowSplash(false)} />}
+      <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50">
         <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
@@ -228,6 +248,7 @@ export default function Index() {
           <p className="text-sm text-muted-foreground">© 2024 LEVEA. Feito com 💚 para hábitos mais saudáveis.</p>
         </div>
       </footer>
-    </div>
+      </div>
+    </>
   );
 }
