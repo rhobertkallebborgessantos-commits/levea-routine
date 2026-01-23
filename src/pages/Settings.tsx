@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { RequireAuth, useAuth } from '@/hooks/useAuth';
 import { useProfile, useUserPreferences, useUpdateProfile, useUpdateUserPreferences } from '@/hooks/useProfile';
+import { usePushNotifications } from '@/hooks/usePushNotifications';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -18,7 +19,7 @@ import {
   STRUGGLES, 
   TIME_SLOTS 
 } from '@/lib/constants';
-import { Leaf, ArrowLeft, User, Settings2, Bell, Check, Save } from 'lucide-react';
+import { Leaf, ArrowLeft, User, Settings2, Bell, Check, Save, BellRing, BellOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Database } from '@/integrations/supabase/types';
 
@@ -32,6 +33,14 @@ function SettingsContent() {
   const { data: preferences, isLoading: preferencesLoading } = useUserPreferences();
   const updateProfile = useUpdateProfile();
   const updatePreferences = useUpdateUserPreferences();
+  const { 
+    isSupported: pushSupported, 
+    permission: pushPermission, 
+    isSubscribed: pushSubscribed, 
+    isLoading: pushLoading, 
+    subscribe: subscribePush, 
+    unsubscribe: unsubscribePush 
+  } = usePushNotifications();
 
   // Profile form state
   const [fullName, setFullName] = useState('');
@@ -452,82 +461,166 @@ function SettingsContent() {
                 animate={{ opacity: 1, y: 0 }}
                 className="space-y-6"
               >
+                {/* Push Notifications Card */}
+                <Card className={pushSubscribed ? "border-primary/50 bg-primary/5" : ""}>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      {pushSubscribed ? (
+                        <BellRing className="h-5 w-5 text-primary" />
+                      ) : (
+                        <BellOff className="h-5 w-5 text-muted-foreground" />
+                      )}
+                      Notificações Push
+                    </CardTitle>
+                    <CardDescription>
+                      {pushSupported 
+                        ? "Receba lembretes mesmo quando o app estiver fechado"
+                        : "Seu navegador não suporta notificações push"}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {pushSupported ? (
+                      <>
+                        {pushPermission === ('denied' as typeof pushPermission) ? (
+                          <div className="p-4 rounded-lg bg-destructive/10 border border-destructive/20">
+                            <p className="text-sm text-destructive font-medium">
+                              Notificações bloqueadas
+                            </p>
+                            <p className="text-sm text-muted-foreground mt-1">
+                              Você bloqueou as notificações. Para ativá-las, acesse as configurações do seu navegador.
+                            </p>
+                          </div>
+                        ) : pushSubscribed ? (
+                          <div className="space-y-4">
+                            <div className="flex items-center gap-3 p-4 rounded-lg bg-primary/10 border border-primary/20">
+                              <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                                <Check className="h-5 w-5 text-primary" />
+                              </div>
+                              <div>
+                                <p className="font-medium text-foreground">Notificações ativadas!</p>
+                                <p className="text-sm text-muted-foreground">
+                                  Você receberá lembretes ao longo do dia.
+                                </p>
+                              </div>
+                            </div>
+                            <Button 
+                              variant="outline" 
+                              onClick={async () => {
+                                const success = await unsubscribePush();
+                                if (success) {
+                                  toast({
+                                    title: 'Notificações desativadas',
+                                    description: 'Você não receberá mais lembretes push.',
+                                  });
+                                }
+                              }}
+                              disabled={pushLoading}
+                              className="w-full"
+                            >
+                              {pushLoading ? 'Processando...' : 'Desativar Notificações Push'}
+                            </Button>
+                          </div>
+                        ) : (
+                          <div className="space-y-4">
+                            <p className="text-sm text-muted-foreground">
+                              Ative as notificações push para receber lembretes gentis sobre suas tarefas diárias, 
+                              mesmo quando não estiver usando o app.
+                            </p>
+                            <Button 
+                              onClick={async () => {
+                                const success = await subscribePush();
+                                if (success) {
+                                  toast({
+                                    title: 'Notificações ativadas! 🔔',
+                                    description: 'Você receberá lembretes ao longo do dia.',
+                                  });
+                                } else if (pushPermission === ('denied' as typeof pushPermission)) {
+                                  toast({
+                                    variant: 'destructive',
+                                    title: 'Permissão negada',
+                                    description: 'Você precisa permitir notificações nas configurações do navegador.',
+                                  });
+                                }
+                              }}
+                              disabled={pushLoading}
+                              className="w-full gap-2"
+                            >
+                              <BellRing className="h-4 w-4" />
+                              {pushLoading ? 'Ativando...' : 'Ativar Notificações Push'}
+                            </Button>
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <p className="text-sm text-muted-foreground">
+                        Use um navegador moderno como Chrome, Firefox ou Safari para receber notificações push.
+                      </p>
+                    )}
+                  </CardContent>
+                </Card>
+
+                {/* Time-based reminders */}
                 <Card>
                   <CardHeader>
-                    <CardTitle>Lembretes</CardTitle>
-                    <CardDescription>Configure quando deseja receber notificações</CardDescription>
+                    <CardTitle>Horários dos Lembretes</CardTitle>
+                    <CardDescription>Escolha quando deseja receber lembretes</CardDescription>
                   </CardHeader>
-                  <CardContent className="space-y-6">
+                  <CardContent className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-medium text-foreground">Ativar Notificações</p>
-                        <p className="text-sm text-muted-foreground">Receber lembretes do app</p>
+                      <div className="flex items-center gap-3">
+                        <span className="text-lg">🌅</span>
+                        <div>
+                          <p className="font-medium text-foreground text-sm">Manhã</p>
+                          <p className="text-xs text-muted-foreground">6h - 12h</p>
+                        </div>
                       </div>
                       <Switch
-                        checked={notificationsEnabled}
-                        onCheckedChange={setNotificationsEnabled}
+                        checked={morningReminder}
+                        onCheckedChange={setMorningReminder}
                       />
                     </div>
 
-                    {notificationsEnabled && (
-                      <div className="space-y-4 pt-4 border-t border-border">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <span className="text-lg">🌅</span>
-                            <div>
-                              <p className="font-medium text-foreground text-sm">Manhã</p>
-                              <p className="text-xs text-muted-foreground">6h - 12h</p>
-                            </div>
-                          </div>
-                          <Switch
-                            checked={morningReminder}
-                            onCheckedChange={setMorningReminder}
-                          />
-                        </div>
-
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <span className="text-lg">🍽️</span>
-                            <div>
-                              <p className="font-medium text-foreground text-sm">Almoço</p>
-                              <p className="text-xs text-muted-foreground">12h - 14h</p>
-                            </div>
-                          </div>
-                          <Switch
-                            checked={lunchReminder}
-                            onCheckedChange={setLunchReminder}
-                          />
-                        </div>
-
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <span className="text-lg">☀️</span>
-                            <div>
-                              <p className="font-medium text-foreground text-sm">Tarde</p>
-                              <p className="text-xs text-muted-foreground">14h - 18h</p>
-                            </div>
-                          </div>
-                          <Switch
-                            checked={afternoonReminder}
-                            onCheckedChange={setAfternoonReminder}
-                          />
-                        </div>
-
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <span className="text-lg">🌙</span>
-                            <div>
-                              <p className="font-medium text-foreground text-sm">Noite</p>
-                              <p className="text-xs text-muted-foreground">18h - 22h</p>
-                            </div>
-                          </div>
-                          <Switch
-                            checked={eveningReminder}
-                            onCheckedChange={setEveningReminder}
-                          />
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <span className="text-lg">🍽️</span>
+                        <div>
+                          <p className="font-medium text-foreground text-sm">Almoço</p>
+                          <p className="text-xs text-muted-foreground">12h - 14h</p>
                         </div>
                       </div>
-                    )}
+                      <Switch
+                        checked={lunchReminder}
+                        onCheckedChange={setLunchReminder}
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <span className="text-lg">☀️</span>
+                        <div>
+                          <p className="font-medium text-foreground text-sm">Tarde</p>
+                          <p className="text-xs text-muted-foreground">14h - 18h</p>
+                        </div>
+                      </div>
+                      <Switch
+                        checked={afternoonReminder}
+                        onCheckedChange={setAfternoonReminder}
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <span className="text-lg">🌙</span>
+                        <div>
+                          <p className="font-medium text-foreground text-sm">Noite</p>
+                          <p className="text-xs text-muted-foreground">18h - 22h</p>
+                        </div>
+                      </div>
+                      <Switch
+                        checked={eveningReminder}
+                        onCheckedChange={setEveningReminder}
+                      />
+                    </div>
                   </CardContent>
                 </Card>
 
@@ -537,12 +630,8 @@ function SettingsContent() {
                   size="lg"
                 >
                   <Save className="h-4 w-4" />
-                  Salvar Notificações
+                  Salvar Preferências de Lembretes
                 </Button>
-
-                <p className="text-center text-sm text-muted-foreground">
-                  As notificações push serão ativadas em breve. Por enquanto, os lembretes aparecem no app.
-                </p>
               </motion.div>
             </TabsContent>
           </Tabs>
