@@ -1,0 +1,136 @@
+import { useState, useEffect } from 'react';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Search, X, Leaf } from 'lucide-react';
+import { useFoods, Food } from '@/hooks/useMeals';
+import { FOOD_CATEGORIES } from '@/lib/constants';
+import { cn } from '@/lib/utils';
+
+interface FoodSearchProps {
+  onSelect: (food: Food) => void;
+  selectedFood: Food | null;
+  onClear: () => void;
+}
+
+export function FoodSearch({ onSelect, selectedFood, onClear }: FoodSearchProps) {
+  const { foods, isLoading, searchTerm, setSearchTerm, category, setCategory } = useFoods();
+  const [showResults, setShowResults] = useState(false);
+
+  useEffect(() => {
+    if (searchTerm.length >= 2) {
+      setShowResults(true);
+    } else {
+      setShowResults(false);
+    }
+  }, [searchTerm]);
+
+  if (selectedFood) {
+    return (
+      <div className="flex items-center gap-2 p-3 bg-primary/10 rounded-lg border border-primary/20">
+        <div className="flex-1">
+          <p className="font-medium text-foreground">{selectedFood.name}</p>
+          <p className="text-xs text-muted-foreground">
+            {selectedFood.calories_per_100g} kcal | {selectedFood.protein_per_100g}g proteína /100g
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={onClear}
+          className="p-1.5 rounded-full hover:bg-muted transition-colors"
+        >
+          <X className="h-4 w-4 text-muted-foreground" />
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-3">
+      {/* Search input */}
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input
+          placeholder="Buscar alimento..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="pl-9"
+        />
+      </div>
+
+      {/* Category filter */}
+      <div className="flex gap-2 flex-wrap">
+        <Badge
+          variant={category === null ? 'default' : 'outline'}
+          className="cursor-pointer"
+          onClick={() => setCategory(null)}
+        >
+          Todos
+        </Badge>
+        {FOOD_CATEGORIES.map((cat) => (
+          <Badge
+            key={cat.value}
+            variant={category === cat.value ? 'default' : 'outline'}
+            className="cursor-pointer"
+            onClick={() => setCategory(cat.value)}
+          >
+            {cat.icon} {cat.label}
+          </Badge>
+        ))}
+      </div>
+
+      {/* Results */}
+      {showResults && (
+        <ScrollArea className="h-48 rounded-lg border border-border">
+          {isLoading ? (
+            <div className="p-3 space-y-2">
+              {[...Array(4)].map((_, i) => (
+                <Skeleton key={i} className="h-12 w-full" />
+              ))}
+            </div>
+          ) : foods.length > 0 ? (
+            <div className="divide-y divide-border">
+              {foods.map((food) => (
+                <button
+                  key={food.id}
+                  type="button"
+                  onClick={() => {
+                    onSelect(food);
+                    setShowResults(false);
+                    setSearchTerm('');
+                  }}
+                  className="w-full p-3 text-left hover:bg-muted/50 transition-colors flex items-center justify-between"
+                >
+                  <div>
+                    <p className="text-sm font-medium text-foreground flex items-center gap-1.5">
+                      {food.name}
+                      {food.is_low_carb && (
+                        <Leaf className="h-3 w-3 text-green-500" />
+                      )}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {FOOD_CATEGORIES.find((c) => c.value === food.category)?.icon}{' '}
+                      {food.calories_per_100g} kcal • {food.protein_per_100g}g prot /100g
+                    </p>
+                  </div>
+                </button>
+              ))}
+            </div>
+          ) : (
+            <div className="p-6 text-center text-sm text-muted-foreground">
+              Nenhum alimento encontrado
+            </div>
+          )}
+        </ScrollArea>
+      )}
+
+      {/* Quick tip */}
+      {!showResults && searchTerm.length === 0 && (
+        <p className="text-xs text-muted-foreground text-center">
+          Digite pelo menos 2 letras para buscar
+        </p>
+      )}
+    </div>
+  );
+}
