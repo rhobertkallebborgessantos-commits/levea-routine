@@ -1,11 +1,13 @@
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Utensils, Beef, Flame } from 'lucide-react';
+import { Utensils, Beef, Flame, ChevronRight } from 'lucide-react';
 import { useMealSummary } from '@/hooks/useTodayMeals';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export function NutritionProgress() {
+  const navigate = useNavigate();
   const { data: summary, isLoading } = useMealSummary();
 
   if (isLoading) {
@@ -75,11 +77,17 @@ export function NutritionProgress() {
             />
           </div>
 
-          {/* Meals count */}
-          <div className="pt-2 border-t border-border/50 flex items-center justify-between text-sm">
-            <span className="text-muted-foreground">Refeições registradas</span>
-            <span className="font-medium text-foreground">{summary.mealsCompleted}</span>
-          </div>
+          {/* Link to meals */}
+          <button
+            onClick={() => navigate('/meals')}
+            className="w-full pt-3 border-t border-border/50 flex items-center justify-between text-sm group"
+          >
+            <div className="flex items-center gap-2">
+              <span className="text-muted-foreground">Refeições registradas</span>
+              <span className="font-medium text-foreground">{summary.mealsCompleted}</span>
+            </div>
+            <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+          </button>
         </CardContent>
       </Card>
     </motion.div>
