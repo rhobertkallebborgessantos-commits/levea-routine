@@ -419,37 +419,49 @@ export type Database = {
       }
       teas: {
         Row: {
+          alternatives: string[] | null
           benefits: string[] | null
           best_time: string | null
           created_at: string
           description: string | null
           id: string
+          intensity: string | null
+          main_benefit: string | null
           name: string
           preparation: string | null
           purpose: string[]
           safety_notes: string | null
+          time_of_day: string[] | null
         }
         Insert: {
+          alternatives?: string[] | null
           benefits?: string[] | null
           best_time?: string | null
           created_at?: string
           description?: string | null
           id?: string
+          intensity?: string | null
+          main_benefit?: string | null
           name: string
           preparation?: string | null
           purpose: string[]
           safety_notes?: string | null
+          time_of_day?: string[] | null
         }
         Update: {
+          alternatives?: string[] | null
           benefits?: string[] | null
           best_time?: string | null
           created_at?: string
           description?: string | null
           id?: string
+          intensity?: string | null
+          main_benefit?: string | null
           name?: string
           preparation?: string | null
           purpose?: string[]
           safety_notes?: string | null
+          time_of_day?: string[] | null
         }
         Relationships: []
       }
