@@ -14,6 +14,7 @@ import Settings from "./pages/Settings";
 import Tea from "./pages/Tea";
 import Progress from "./pages/Progress";
 import Meals from "./pages/Meals";
+import WeeklyCheckin from "./pages/WeeklyCheckin";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -32,6 +33,7 @@ function AnimatedRoutes() {
         <Route path="/tea" element={<PageTransition><Tea /></PageTransition>} />
         <Route path="/progress" element={<PageTransition><Progress /></PageTransition>} />
         <Route path="/meals" element={<PageTransition><Meals /></PageTransition>} />
+        <Route path="/checkin" element={<PageTransition><WeeklyCheckin /></PageTransition>} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
       </Routes>
