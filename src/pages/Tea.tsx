@@ -19,6 +19,7 @@ import {
   Calendar, TrendingUp, Star, Trash2, AlertTriangle 
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { BottomNav } from '@/components/BottomNav';
 import { toast } from 'sonner';
 import { format, parseISO, isToday } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -292,7 +293,7 @@ function TeaPageContent() {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-8">
+    <div className="min-h-screen bg-background pb-24">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50">
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center gap-3">
@@ -515,6 +516,8 @@ function TeaPageContent() {
         open={scheduleDialogOpen}
         onOpenChange={setScheduleDialogOpen}
       />
+
+      <BottomNav />
     </div>
   );
 }

@@ -39,6 +39,7 @@ import { useMealLogs, useAddMeal, useDeleteMeal, Food, calculateNutrition } from
 import { useMealSummary } from '@/hooks/useTodayMeals';
 import { MEAL_TYPES } from '@/lib/constants';
 import { cn } from '@/lib/utils';
+import { BottomNav } from '@/components/BottomNav';
 
 export default function Meals() {
   const navigate = useNavigate();
@@ -328,6 +329,8 @@ export default function Meals() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <BottomNav />
     </div>
   );
 }
