@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { RequireAuth } from '@/hooks/useAuth';
 import { useAllTeas, useTeasByPurpose, useTodayTeaLogs, useTeaHistory, useTeaStats, useLogTea, Tea } from '@/hooks/useTeas';
@@ -22,6 +22,7 @@ import {
 import { TeaPreparationDrawer } from '@/components/tea/TeaPreparationDrawer';
 import { cn } from '@/lib/utils';
 import { BottomNav } from '@/components/BottomNav';
+import { PageLoader } from '@/components/PageLoader';
 import { toast } from 'sonner';
 import { format, parseISO, isToday } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -339,6 +340,7 @@ function TeaScheduleDialog({
 }
 
 function TeaPageContent() {
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [selectedPurpose, setSelectedPurpose] = useState<string>('all');
   const [selectedTime, setSelectedTime] = useState<string>('all');
   const [selectedIntensity, setSelectedIntensity] = useState<string>('all');
@@ -353,6 +355,18 @@ function TeaPageContent() {
   const { data: teaReminders } = useReminders('tea');
   const logTea = useLogTea();
   const deleteReminder = useDeleteReminder();
+
+  // Show branded loading screen on initial mount
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsInitialLoading(false);
+    }, 400);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (isInitialLoading) {
+    return <PageLoader />;
+  }
 
   // Apply additional filters
   const teas = allTeas?.filter(tea => {
