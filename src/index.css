@@ -111,6 +111,16 @@
     --input: 160 15% 20%;
     --ring: 150 35% 55%;
 
+    /* Custom LEVEA colors - dark mode */
+    --levea-sage: 150 35% 55%;
+    --levea-sage-light: 150 20% 18%;
+    --levea-cream: 40 15% 15%;
+    --levea-warm: 35 20% 16%;
+    --levea-mint: 165 20% 16%;
+    --levea-rose: 350 20% 18%;
+    --levea-lavender: 260 15% 18%;
+    --levea-sky: 200 20% 16%;
+
     /* Dark mode time block colors */
     --morning: 45 40% 18%;
     --morning-foreground: 45 50% 75%;
