@@ -24,6 +24,7 @@ import { Leaf, ArrowLeft, User, Settings2, Bell, Check, Save, BellRing, BellOff,
 import { cn } from '@/lib/utils';
 import { BottomNav } from '@/components/BottomNav';
 import { Database } from '@/integrations/supabase/types';
+import { RemindersList } from '@/components/settings/RemindersList';
 
 type TimeBlock = Database['public']['Enums']['time_block'];
 type GoalType = typeof GOALS[number]['value'];
@@ -60,12 +61,6 @@ function SettingsContent() {
   const [struggles, setStruggles] = useState<string[]>([]);
   const [timeSlots, setTimeSlots] = useState<TimeBlock[]>([]);
 
-  // Notification settings (local for now)
-  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
-  const [morningReminder, setMorningReminder] = useState(true);
-  const [lunchReminder, setLunchReminder] = useState(true);
-  const [afternoonReminder, setAfternoonReminder] = useState(true);
-  const [eveningReminder, setEveningReminder] = useState(true);
 
   // Load initial data
   useEffect(() => {
@@ -153,12 +148,6 @@ function SettingsContent() {
     }
   };
 
-  const handleSaveNotifications = () => {
-    toast({
-      title: 'Notificações atualizadas! ✓',
-      description: 'Suas preferências de lembretes foram salvas.',
-    });
-  };
 
   const handleSignOut = async () => {
     await signOut();
@@ -563,75 +552,8 @@ function SettingsContent() {
                   </CardContent>
                 </Card>
 
-                {/* In-app reminders */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Lembretes por Período</CardTitle>
-                    <CardDescription>Escolha quando deseja ser lembrado</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <span className="text-xl">🌅</span>
-                        <div>
-                          <p className="font-medium text-foreground">Manhã</p>
-                          <p className="text-xs text-muted-foreground">6:00 - 12:00</p>
-                        </div>
-                      </div>
-                      <Switch
-                        checked={morningReminder}
-                        onCheckedChange={setMorningReminder}
-                      />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <span className="text-xl">☀️</span>
-                        <div>
-                          <p className="font-medium text-foreground">Almoço</p>
-                          <p className="text-xs text-muted-foreground">12:00 - 14:00</p>
-                        </div>
-                      </div>
-                      <Switch
-                        checked={lunchReminder}
-                        onCheckedChange={setLunchReminder}
-                      />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <span className="text-xl">🌤️</span>
-                        <div>
-                          <p className="font-medium text-foreground">Tarde</p>
-                          <p className="text-xs text-muted-foreground">14:00 - 18:00</p>
-                        </div>
-                      </div>
-                      <Switch
-                        checked={afternoonReminder}
-                        onCheckedChange={setAfternoonReminder}
-                      />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <span className="text-xl">🌙</span>
-                        <div>
-                          <p className="font-medium text-foreground">Noite</p>
-                          <p className="text-xs text-muted-foreground">18:00 - 22:00</p>
-                        </div>
-                      </div>
-                      <Switch
-                        checked={eveningReminder}
-                        onCheckedChange={setEveningReminder}
-                      />
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Button 
-                  onClick={handleSaveNotifications}
-                  className="w-full gap-2"
-                >
-                  <Save className="h-4 w-4" />
-                  Salvar Notificações
-                </Button>
+                {/* Custom Reminders Management */}
+                <RemindersList />
               </motion.div>
             </TabsContent>
           </Tabs>
