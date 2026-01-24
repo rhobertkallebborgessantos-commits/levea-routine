@@ -15,7 +15,7 @@ import { useToast } from '@/hooks/use-toast';
 import { 
   GOALS, 
   ACTIVITY_LEVELS, 
-  FOOD_PREFERENCES, 
+  DIETARY_RESTRICTIONS,
   STRUGGLES, 
   TIME_SLOTS 
 } from '@/lib/constants';
@@ -24,6 +24,8 @@ import { cn } from '@/lib/utils';
 import { Database } from '@/integrations/supabase/types';
 
 type TimeBlock = Database['public']['Enums']['time_block'];
+type GoalType = typeof GOALS[number]['value'];
+type ActivityLevelType = typeof ACTIVITY_LEVELS[number]['value'];
 
 function SettingsContent() {
   const navigate = useNavigate();
@@ -46,11 +48,12 @@ function SettingsContent() {
   const [fullName, setFullName] = useState('');
 
   // Preferences form state
-  const [goal, setGoal] = useState<'lose_weight' | 'maintain_weight' | 'build_habits' | null>(null);
+  const [goal, setGoal] = useState<GoalType | null>(null);
   const [currentWeight, setCurrentWeight] = useState('');
+  const [targetWeight, setTargetWeight] = useState('');
   const [height, setHeight] = useState('');
-  const [activityLevel, setActivityLevel] = useState<'low' | 'medium' | 'high' | null>(null);
-  const [foodPreference, setFoodPreference] = useState<'balanced' | 'low_carb' | null>(null);
+  const [activityLevel, setActivityLevel] = useState<ActivityLevelType | null>(null);
+  const [dietaryRestrictions, setDietaryRestrictions] = useState<string[]>([]);
   const [struggles, setStruggles] = useState<string[]>([]);
   const [timeSlots, setTimeSlots] = useState<TimeBlock[]>([]);
 
@@ -70,15 +73,25 @@ function SettingsContent() {
 
   useEffect(() => {
     if (preferences) {
-      setGoal(preferences.goal);
+      setGoal(preferences.primary_goal as GoalType || null);
       setCurrentWeight(preferences.current_weight?.toString() || '');
+      setTargetWeight(preferences.target_weight?.toString() || '');
       setHeight(preferences.height?.toString() || '');
-      setActivityLevel(preferences.activity_level);
-      setFoodPreference(preferences.food_preference);
+      setActivityLevel(preferences.activity_level as ActivityLevelType || null);
+      setDietaryRestrictions(preferences.dietary_restrictions || []);
       setStruggles(preferences.struggles || []);
       setTimeSlots((preferences.available_time_slots as TimeBlock[]) || []);
     }
   }, [preferences]);
+
+  const toggleRestriction = (value: string) => {
+    setDietaryRestrictions(prev => {
+      if (value === 'none') return ['none'];
+      return prev.includes(value)
+        ? prev.filter(s => s !== value)
+        : [...prev.filter(s => s !== 'none'), value];
+    });
+  };
 
   const toggleStruggle = (value: string) => {
     setStruggles(prev => 
@@ -115,11 +128,12 @@ function SettingsContent() {
   const handleSavePreferences = async () => {
     try {
       await updatePreferences.mutateAsync({
-        goal,
+        primary_goal: goal,
         current_weight: currentWeight ? parseFloat(currentWeight) : null,
+        target_weight: targetWeight ? parseFloat(targetWeight) : null,
         height: height ? parseFloat(height) : null,
         activity_level: activityLevel,
-        food_preference: foodPreference,
+        dietary_restrictions: dietaryRestrictions,
         struggles,
         available_time_slots: timeSlots,
       });
@@ -294,18 +308,30 @@ function SettingsContent() {
                 <Card>
                   <CardHeader>
                     <CardTitle>Medidas</CardTitle>
-                    <CardDescription>Opcional — ajuda a personalizar dicas</CardDescription>
+                    <CardDescription>Seus dados físicos</CardDescription>
                   </CardHeader>
-                  <CardContent className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="weight">Peso atual (kg)</Label>
-                      <Input
-                        id="weight"
-                        type="number"
-                        placeholder="ex: 70"
-                        value={currentWeight}
-                        onChange={(e) => setCurrentWeight(e.target.value)}
-                      />
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="weight">Peso atual (kg)</Label>
+                        <Input
+                          id="weight"
+                          type="number"
+                          placeholder="ex: 70"
+                          value={currentWeight}
+                          onChange={(e) => setCurrentWeight(e.target.value)}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="targetWeight">Peso meta (kg)</Label>
+                        <Input
+                          id="targetWeight"
+                          type="number"
+                          placeholder="ex: 65"
+                          value={targetWeight}
+                          onChange={(e) => setTargetWeight(e.target.value)}
+                        />
+                      </div>
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="height">Altura (cm)</Label>
@@ -351,34 +377,30 @@ function SettingsContent() {
                   </CardContent>
                 </Card>
 
-                {/* Food Preference */}
+                {/* Dietary Restrictions */}
                 <Card>
                   <CardHeader>
-                    <CardTitle>Preferência Alimentar</CardTitle>
+                    <CardTitle>Restrições Alimentares</CardTitle>
+                    <CardDescription>Selecione todas que se aplicam</CardDescription>
                   </CardHeader>
-                  <CardContent className="space-y-2">
-                    {FOOD_PREFERENCES.map((pref) => (
-                      <button
-                        key={pref.value}
-                        onClick={() => setFoodPreference(pref.value)}
-                        className={cn(
-                          "w-full p-3 rounded-xl border-2 text-left transition-all",
-                          foodPreference === pref.value
-                            ? "border-primary bg-primary/5"
-                            : "border-border hover:border-primary/50 bg-card"
-                        )}
-                      >
-                        <div className="flex items-center gap-3">
-                          <span className="text-xl">{pref.icon}</span>
-                          <div className="flex-1">
-                            <p className="font-medium text-foreground text-sm">{pref.label}</p>
-                          </div>
-                          {foodPreference === pref.value && (
-                            <Check className="h-4 w-4 text-primary" />
+                  <CardContent>
+                    <div className="grid grid-cols-2 gap-2">
+                      {DIETARY_RESTRICTIONS.map((restriction) => (
+                        <button
+                          key={restriction.value}
+                          onClick={() => toggleRestriction(restriction.value)}
+                          className={cn(
+                            "p-3 rounded-xl border-2 text-left transition-all",
+                            dietaryRestrictions.includes(restriction.value)
+                              ? "border-primary bg-primary/5"
+                              : "border-border hover:border-primary/50 bg-card"
                           )}
-                        </div>
-                      </button>
-                    ))}
+                        >
+                          <span className="text-lg block mb-1">{restriction.icon}</span>
+                          <p className="font-medium text-foreground text-xs">{restriction.label}</p>
+                        </button>
+                      ))}
+                    </div>
                   </CardContent>
                 </Card>
 
@@ -446,7 +468,6 @@ function SettingsContent() {
                   onClick={handleSavePreferences} 
                   disabled={updatePreferences.isPending}
                   className="w-full gap-2"
-                  size="lg"
                 >
                   <Save className="h-4 w-4" />
                   {updatePreferences.isPending ? 'Salvando...' : 'Salvar Preferências'}
@@ -461,117 +482,63 @@ function SettingsContent() {
                 animate={{ opacity: 1, y: 0 }}
                 className="space-y-6"
               >
-                {/* Push Notifications Card */}
-                <Card className={pushSubscribed ? "border-primary/50 bg-primary/5" : ""}>
+                {/* Push Notifications */}
+                <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                      {pushSubscribed ? (
-                        <BellRing className="h-5 w-5 text-primary" />
-                      ) : (
-                        <BellOff className="h-5 w-5 text-muted-foreground" />
-                      )}
+                      {pushSubscribed ? <BellRing className="h-5 w-5 text-primary" /> : <BellOff className="h-5 w-5" />}
                       Notificações Push
                     </CardTitle>
                     <CardDescription>
-                      {pushSupported 
-                        ? "Receba lembretes mesmo quando o app estiver fechado"
-                        : "Seu navegador não suporta notificações push"}
+                      Receba lembretes mesmo quando o app está fechado
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    {pushSupported ? (
-                      <>
-                        {pushPermission === ('denied' as typeof pushPermission) ? (
-                          <div className="p-4 rounded-lg bg-destructive/10 border border-destructive/20">
-                            <p className="text-sm text-destructive font-medium">
-                              Notificações bloqueadas
-                            </p>
-                            <p className="text-sm text-muted-foreground mt-1">
-                              Você bloqueou as notificações. Para ativá-las, acesse as configurações do seu navegador.
-                            </p>
-                          </div>
-                        ) : pushSubscribed ? (
-                          <div className="space-y-4">
-                            <div className="flex items-center gap-3 p-4 rounded-lg bg-primary/10 border border-primary/20">
-                              <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
-                                <Check className="h-5 w-5 text-primary" />
-                              </div>
-                              <div>
-                                <p className="font-medium text-foreground">Notificações ativadas!</p>
-                                <p className="text-sm text-muted-foreground">
-                                  Você receberá lembretes ao longo do dia.
-                                </p>
-                              </div>
-                            </div>
-                            <Button 
-                              variant="outline" 
-                              onClick={async () => {
-                                const success = await unsubscribePush();
-                                if (success) {
-                                  toast({
-                                    title: 'Notificações desativadas',
-                                    description: 'Você não receberá mais lembretes push.',
-                                  });
-                                }
-                              }}
-                              disabled={pushLoading}
-                              className="w-full"
-                            >
-                              {pushLoading ? 'Processando...' : 'Desativar Notificações Push'}
-                            </Button>
-                          </div>
-                        ) : (
-                          <div className="space-y-4">
-                            <p className="text-sm text-muted-foreground">
-                              Ative as notificações push para receber lembretes gentis sobre suas tarefas diárias, 
-                              mesmo quando não estiver usando o app.
-                            </p>
-                            <Button 
-                              onClick={async () => {
-                                const success = await subscribePush();
-                                if (success) {
-                                  toast({
-                                    title: 'Notificações ativadas! 🔔',
-                                    description: 'Você receberá lembretes ao longo do dia.',
-                                  });
-                                } else if (pushPermission === ('denied' as typeof pushPermission)) {
-                                  toast({
-                                    variant: 'destructive',
-                                    title: 'Permissão negada',
-                                    description: 'Você precisa permitir notificações nas configurações do navegador.',
-                                  });
-                                }
-                              }}
-                              disabled={pushLoading}
-                              className="w-full gap-2"
-                            >
-                              <BellRing className="h-4 w-4" />
-                              {pushLoading ? 'Ativando...' : 'Ativar Notificações Push'}
-                            </Button>
-                          </div>
-                        )}
-                      </>
-                    ) : (
+                    {!pushSupported ? (
                       <p className="text-sm text-muted-foreground">
-                        Use um navegador moderno como Chrome, Firefox ou Safari para receber notificações push.
+                        Notificações push não são suportadas neste navegador.
                       </p>
+                    ) : pushPermission === 'denied' ? (
+                      <p className="text-sm text-destructive">
+                        Notificações bloqueadas. Habilite nas configurações do navegador.
+                      </p>
+                    ) : (
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-medium text-foreground">
+                            {pushSubscribed ? 'Ativadas' : 'Desativadas'}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            {pushSubscribed 
+                              ? 'Você receberá lembretes de rotina' 
+                              : 'Ative para receber lembretes'}
+                          </p>
+                        </div>
+                        <Switch
+                          checked={pushSubscribed}
+                          onCheckedChange={(checked) => 
+                            checked ? subscribePush() : unsubscribePush()
+                          }
+                          disabled={pushLoading}
+                        />
+                      </div>
                     )}
                   </CardContent>
                 </Card>
 
-                {/* Time-based reminders */}
+                {/* In-app reminders */}
                 <Card>
                   <CardHeader>
-                    <CardTitle>Horários dos Lembretes</CardTitle>
-                    <CardDescription>Escolha quando deseja receber lembretes</CardDescription>
+                    <CardTitle>Lembretes por Período</CardTitle>
+                    <CardDescription>Escolha quando deseja ser lembrado</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <span className="text-lg">🌅</span>
+                        <span className="text-xl">🌅</span>
                         <div>
-                          <p className="font-medium text-foreground text-sm">Manhã</p>
-                          <p className="text-xs text-muted-foreground">6h - 12h</p>
+                          <p className="font-medium text-foreground">Manhã</p>
+                          <p className="text-xs text-muted-foreground">6:00 - 12:00</p>
                         </div>
                       </div>
                       <Switch
@@ -579,13 +546,12 @@ function SettingsContent() {
                         onCheckedChange={setMorningReminder}
                       />
                     </div>
-
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <span className="text-lg">🍽️</span>
+                        <span className="text-xl">☀️</span>
                         <div>
-                          <p className="font-medium text-foreground text-sm">Almoço</p>
-                          <p className="text-xs text-muted-foreground">12h - 14h</p>
+                          <p className="font-medium text-foreground">Almoço</p>
+                          <p className="text-xs text-muted-foreground">12:00 - 14:00</p>
                         </div>
                       </div>
                       <Switch
@@ -593,13 +559,12 @@ function SettingsContent() {
                         onCheckedChange={setLunchReminder}
                       />
                     </div>
-
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <span className="text-lg">☀️</span>
+                        <span className="text-xl">🌤️</span>
                         <div>
-                          <p className="font-medium text-foreground text-sm">Tarde</p>
-                          <p className="text-xs text-muted-foreground">14h - 18h</p>
+                          <p className="font-medium text-foreground">Tarde</p>
+                          <p className="text-xs text-muted-foreground">14:00 - 18:00</p>
                         </div>
                       </div>
                       <Switch
@@ -607,13 +572,12 @@ function SettingsContent() {
                         onCheckedChange={setAfternoonReminder}
                       />
                     </div>
-
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <span className="text-lg">🌙</span>
+                        <span className="text-xl">🌙</span>
                         <div>
-                          <p className="font-medium text-foreground text-sm">Noite</p>
-                          <p className="text-xs text-muted-foreground">18h - 22h</p>
+                          <p className="font-medium text-foreground">Noite</p>
+                          <p className="text-xs text-muted-foreground">18:00 - 22:00</p>
                         </div>
                       </div>
                       <Switch
@@ -627,10 +591,9 @@ function SettingsContent() {
                 <Button 
                   onClick={handleSaveNotifications}
                   className="w-full gap-2"
-                  size="lg"
                 >
                   <Save className="h-4 w-4" />
-                  Salvar Preferências de Lembretes
+                  Salvar Notificações
                 </Button>
               </motion.div>
             </TabsContent>
