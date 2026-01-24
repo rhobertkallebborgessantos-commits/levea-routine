@@ -1,30 +1,24 @@
 import { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { RequireAuth, useAuth } from '@/hooks/useAuth';
-import { useProfile } from '@/hooks/useProfile';
+import { useProfile, useUserPreferences } from '@/hooks/useProfile';
 import { useTodayRoutines, useInitializeDailyRoutines, useToggleRoutineCompletion } from '@/hooks/useRoutines';
 import { useUserStreak, useUpdateStreak } from '@/hooks/useStreaks';
 import { useMotivationalMessage } from '@/hooks/useMotivationalMessage';
 import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { WeeklyProgressSummary } from '@/components/WeeklyProgressSummary';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Skeleton } from '@/components/ui/skeleton';
-import { TIME_BLOCK_STYLES } from '@/lib/constants';
-import { Leaf, LogOut, Flame, Sun, Coffee, CloudSun, Moon, Bell, Settings } from 'lucide-react';
-import { cn } from '@/lib/utils';
-
-const timeBlockIcons = {
-  morning: Sun,
-  lunch: Coffee,
-  afternoon: CloudSun,
-  evening: Moon,
-};
+import { DailyFocusCard } from '@/components/dashboard/DailyFocusCard';
+import { NutritionProgress } from '@/components/dashboard/NutritionProgress';
+import { TeaRecommendations } from '@/components/dashboard/TeaRecommendations';
+import { QuickStatsRow } from '@/components/dashboard/QuickStatsRow';
+import { RoutineSection } from '@/components/dashboard/RoutineSection';
+import { Leaf, LogOut, Bell, Settings } from 'lucide-react';
 
 function DashboardContent() {
   const { user, signOut } = useAuth();
   const { data: profile, isLoading: profileLoading } = useProfile();
+  const { data: preferences } = useUserPreferences();
   const { data: routines, isLoading: routinesLoading } = useTodayRoutines();
   const { data: streak } = useUserStreak();
   const { data: motivationalMessage } = useMotivationalMessage();
@@ -67,14 +61,6 @@ function DashboardContent() {
   const totalCount = routines?.length || 0;
   const progressPercent = totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
 
-  // Group routines by time block
-  const routinesByBlock = routines?.reduce((acc, routine) => {
-    const block = routine.time_block;
-    if (!acc[block]) acc[block] = [];
-    acc[block].push(routine);
-    return acc;
-  }, {} as Record<string, typeof routines>) || {};
-
   const greeting = () => {
     const hour = new Date().getHours();
     if (hour < 12) return 'Bom dia';
@@ -83,7 +69,7 @@ function DashboardContent() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-8">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50">
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
@@ -109,154 +95,50 @@ function DashboardContent() {
         </div>
       </header>
 
-      <main className="max-w-2xl mx-auto px-4 py-6 space-y-6">
+      <main className="max-w-2xl mx-auto px-4 py-6 space-y-5">
         {/* Welcome Section */}
         <motion.section
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="space-y-2"
+          className="space-y-1"
         >
           <h1 className="text-2xl font-display font-bold text-foreground">
             {greeting()}, {profile?.full_name?.split(' ')[0] || 'você'}! 👋
           </h1>
           {motivationalMessage && (
-            <p className="text-muted-foreground">{motivationalMessage}</p>
+            <p className="text-sm text-muted-foreground">{motivationalMessage}</p>
           )}
         </motion.section>
 
-        {/* Stats Row */}
-        <motion.section
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="grid grid-cols-2 gap-4"
-        >
-          {/* Streak Card */}
-          <Card className="bg-gradient-to-br from-levea-warm to-levea-rose border-0">
-            <CardContent className="p-4 flex items-center gap-3">
-              <div className="w-12 h-12 rounded-xl bg-background/50 flex items-center justify-center">
-                <Flame className="h-6 w-6 text-destructive" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-foreground">
-                  {streak?.current_streak || 0}
-                </p>
-                <p className="text-sm text-muted-foreground">Dias seguidos</p>
-              </div>
-            </CardContent>
-          </Card>
+        {/* Quick Stats */}
+        <QuickStatsRow
+          currentStreak={streak?.current_streak || 0}
+          completedCount={completedCount}
+          totalCount={totalCount}
+          progressPercent={progressPercent}
+        />
 
-          {/* Progress Card */}
-          <Card className="bg-gradient-to-br from-levea-mint to-levea-sky border-0">
-            <CardContent className="p-4 flex items-center gap-3">
-              <div className="w-12 h-12 rounded-xl bg-background/50 flex items-center justify-center">
-                <div className="relative">
-                  <svg className="w-8 h-8 -rotate-90">
-                    <circle
-                      cx="16"
-                      cy="16"
-                      r="12"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="3"
-                      className="text-background/50"
-                    />
-                    <circle
-                      cx="16"
-                      cy="16"
-                      r="12"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="3"
-                      strokeDasharray={`${progressPercent * 0.754} 100`}
-                      className="text-primary"
-                    />
-                  </svg>
-                </div>
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-foreground">
-                  {completedCount}/{totalCount}
-                </p>
-                <p className="text-sm text-muted-foreground">Tarefas de hoje</p>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.section>
+        {/* Daily Focus */}
+        <DailyFocusCard
+          weeklyFocus={preferences?.weekly_focus || null}
+          diagnosisSummary={preferences?.diagnosis_summary || null}
+        />
+
+        {/* Nutrition Progress */}
+        <NutritionProgress />
+
+        {/* Tea Recommendations */}
+        <TeaRecommendations />
 
         {/* Weekly Progress Summary */}
         <WeeklyProgressSummary />
 
         {/* Today's Routine */}
-        <motion.section
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="space-y-4"
-        >
-          <h2 className="text-lg font-display font-semibold text-foreground">
-            Rotina de Hoje
-          </h2>
-
-          {routinesLoading ? (
-            <div className="space-y-4">
-              {[1, 2, 3, 4].map((i) => (
-                <Skeleton key={i} className="h-32 w-full rounded-xl" />
-              ))}
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {(['morning', 'lunch', 'afternoon', 'evening'] as const).map((block) => {
-                const blockRoutines = routinesByBlock[block] || [];
-                if (blockRoutines.length === 0) return null;
-
-                const style = TIME_BLOCK_STYLES[block];
-                const Icon = timeBlockIcons[block];
-
-                return (
-                  <Card key={block} className="overflow-hidden border-border/50">
-                    <CardHeader className={cn("py-3 px-4", style.bg)}>
-                      <CardTitle className={cn("text-base font-medium flex items-center gap-2", style.text)}>
-                        <Icon className="h-4 w-4" />
-                        {style.label}
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-0 divide-y divide-border/50">
-                      {blockRoutines.map((routine) => (
-                        <div
-                          key={routine.id}
-                          className={cn(
-                            "p-4 flex items-start gap-3 transition-colors",
-                            routine.is_completed && "bg-muted/30"
-                          )}
-                        >
-                          <Checkbox
-                            checked={routine.is_completed || false}
-                            onCheckedChange={() => handleToggleRoutine(routine.id, routine.is_completed || false)}
-                            className="mt-0.5"
-                          />
-                          <div className="flex-1 min-w-0">
-                            <p className={cn(
-                              "font-medium text-foreground",
-                              routine.is_completed && "line-through text-muted-foreground"
-                            )}>
-                              {routine.action_title}
-                            </p>
-                            {routine.action_description && (
-                              <p className="text-sm text-muted-foreground mt-0.5">
-                                {routine.action_description}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
-          )}
-        </motion.section>
+        <RoutineSection
+          routines={routines}
+          isLoading={routinesLoading}
+          onToggle={handleToggleRoutine}
+        />
       </main>
     </div>
   );
