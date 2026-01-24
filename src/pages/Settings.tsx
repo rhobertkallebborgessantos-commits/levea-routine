@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useTheme } from 'next-themes';
 import { RequireAuth, useAuth } from '@/hooks/useAuth';
 import { useProfile, useUserPreferences, useUpdateProfile, useUpdateUserPreferences } from '@/hooks/useProfile';
 import { usePushNotifications } from '@/hooks/usePushNotifications';
@@ -19,7 +20,7 @@ import {
   STRUGGLES, 
   TIME_SLOTS 
 } from '@/lib/constants';
-import { Leaf, ArrowLeft, User, Settings2, Bell, Check, Save, BellRing, BellOff } from 'lucide-react';
+import { Leaf, ArrowLeft, User, Settings2, Bell, Check, Save, BellRing, BellOff, Sun, Moon, Monitor } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { BottomNav } from '@/components/BottomNav';
 import { Database } from '@/integrations/supabase/types';
@@ -31,6 +32,7 @@ type ActivityLevelType = typeof ACTIVITY_LEVELS[number]['value'];
 function SettingsContent() {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { theme, setTheme } = useTheme();
   const { user, signOut } = useAuth();
   const { data: profile, isLoading: profileLoading } = useProfile();
   const { data: preferences, isLoading: preferencesLoading } = useUserPreferences();
@@ -249,6 +251,40 @@ function SettingsContent() {
                       <Save className="h-4 w-4" />
                       {updateProfile.isPending ? 'Salvando...' : 'Salvar Perfil'}
                     </Button>
+                  </CardContent>
+                </Card>
+
+                {/* Appearance */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Aparência</CardTitle>
+                    <CardDescription>Escolha o tema do aplicativo</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    {[
+                      { value: 'light', label: 'Claro', icon: Sun },
+                      { value: 'dark', label: 'Escuro', icon: Moon },
+                      { value: 'system', label: 'Sistema', icon: Monitor },
+                    ].map((option) => (
+                      <button
+                        key={option.value}
+                        onClick={() => setTheme(option.value)}
+                        className={cn(
+                          "w-full p-3 rounded-xl border-2 text-left transition-all",
+                          theme === option.value
+                            ? "border-primary bg-primary/5"
+                            : "border-border hover:border-primary/50 bg-card"
+                        )}
+                      >
+                        <div className="flex items-center gap-3">
+                          <option.icon className="h-5 w-5" />
+                          <span className="font-medium text-foreground text-sm">{option.label}</span>
+                          {theme === option.value && (
+                            <Check className="h-4 w-4 text-primary ml-auto" />
+                          )}
+                        </div>
+                      </button>
+                    ))}
                   </CardContent>
                 </Card>
 
