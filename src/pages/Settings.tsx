@@ -21,6 +21,7 @@ import {
 } from '@/lib/constants';
 import { Leaf, ArrowLeft, User, Settings2, Bell, Check, Save, BellRing, BellOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { BottomNav } from '@/components/BottomNav';
 import { Database } from '@/integrations/supabase/types';
 
 type TimeBlock = Database['public']['Enums']['time_block'];
@@ -183,7 +184,7 @@ function SettingsContent() {
         </div>
       </header>
 
-      <main className="max-w-2xl mx-auto px-4 py-6">
+      <main className="max-w-2xl mx-auto px-4 py-6 pb-24">
         {isLoading ? (
           <div className="space-y-4">
             <Skeleton className="h-12 w-full" />
@@ -600,6 +601,8 @@ function SettingsContent() {
           </Tabs>
         )}
       </main>
+
+      <BottomNav />
     </div>
   );
 }

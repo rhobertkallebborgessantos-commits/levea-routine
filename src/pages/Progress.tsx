@@ -7,6 +7,7 @@ import { MeasurementsTracker } from '@/components/progress/MeasurementsTracker';
 import { PhotoGallery } from '@/components/progress/PhotoGallery';
 import { useProgress } from '@/hooks/useProgress';
 import { Skeleton } from '@/components/ui/skeleton';
+import { BottomNav } from '@/components/BottomNav';
 
 export default function Progress() {
   const navigate = useNavigate();
@@ -85,6 +86,8 @@ export default function Progress() {
           </>
         )}
       </main>
+
+      <BottomNav />
     </div>
   );
 }
