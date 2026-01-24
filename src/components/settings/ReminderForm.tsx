@@ -30,10 +30,114 @@ const reminderSchema = z.object({
   category: z.string().optional(),
 });
 
+export interface ReminderTemplate {
+  id: string;
+  title: string;
+  message: string;
+  scheduled_time: string;
+  time_block: 'morning' | 'lunch' | 'afternoon' | 'evening';
+  category: string;
+  icon: string;
+}
+
+export const REMINDER_TEMPLATES: ReminderTemplate[] = [
+  {
+    id: 'water-morning',
+    title: 'Beber água',
+    message: 'Hora de se hidratar! 💧 Beba um copo de água.',
+    scheduled_time: '08:00',
+    time_block: 'morning',
+    category: 'hydration',
+    icon: '💧',
+  },
+  {
+    id: 'water-afternoon',
+    title: 'Beber água',
+    message: 'Mantenha-se hidratada! 💧 Beba mais um copo de água.',
+    scheduled_time: '15:00',
+    time_block: 'afternoon',
+    category: 'hydration',
+    icon: '💧',
+  },
+  {
+    id: 'tea-morning',
+    title: 'Hora do chá',
+    message: 'Prepare seu chá da manhã! 🍵 Um momento de cuidado.',
+    scheduled_time: '10:00',
+    time_block: 'morning',
+    category: 'tea',
+    icon: '🍵',
+  },
+  {
+    id: 'tea-afternoon',
+    title: 'Hora do chá',
+    message: 'Pausa para o chá da tarde! 🍵 Relaxe e aproveite.',
+    scheduled_time: '16:00',
+    time_block: 'afternoon',
+    category: 'tea',
+    icon: '🍵',
+  },
+  {
+    id: 'breakfast',
+    title: 'Café da manhã',
+    message: 'Hora do café da manhã! 🍳 Comece o dia bem nutrida.',
+    scheduled_time: '07:30',
+    time_block: 'morning',
+    category: 'meal',
+    icon: '🍳',
+  },
+  {
+    id: 'lunch',
+    title: 'Almoço',
+    message: 'Hora do almoço! 🥗 Faça uma refeição equilibrada.',
+    scheduled_time: '12:30',
+    time_block: 'lunch',
+    category: 'meal',
+    icon: '🥗',
+  },
+  {
+    id: 'dinner',
+    title: 'Jantar',
+    message: 'Hora do jantar! 🍽️ Escolha opções leves.',
+    scheduled_time: '19:00',
+    time_block: 'evening',
+    category: 'meal',
+    icon: '🍽️',
+  },
+  {
+    id: 'snack',
+    title: 'Lanche',
+    message: 'Hora do lanche! 🥜 Uma opção saudável te espera.',
+    scheduled_time: '15:30',
+    time_block: 'afternoon',
+    category: 'meal',
+    icon: '🥜',
+  },
+  {
+    id: 'exercise',
+    title: 'Exercício',
+    message: 'Hora de se movimentar! 💪 Seu corpo agradece.',
+    scheduled_time: '18:00',
+    time_block: 'evening',
+    category: 'exercise',
+    icon: '💪',
+  },
+  {
+    id: 'supplement',
+    title: 'Suplemento',
+    message: 'Hora do suplemento! 💊 Não esqueça.',
+    scheduled_time: '08:30',
+    time_block: 'morning',
+    category: 'supplement',
+    icon: '💊',
+  },
+];
+
 interface ReminderFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   reminder?: Reminder | null;
+  template?: ReminderTemplate | null;
   onSubmit: (data: {
     title: string;
     message: string;
@@ -65,6 +169,7 @@ export function ReminderForm({
   open,
   onOpenChange,
   reminder,
+  template,
   onSubmit,
   isLoading,
 }: ReminderFormProps) {
@@ -84,6 +189,12 @@ export function ReminderForm({
       setScheduledTime(reminder.scheduled_time.slice(0, 5));
       setTimeBlock(reminder.time_block);
       setCategory(reminder.category || 'general');
+    } else if (template) {
+      setTitle(template.title);
+      setMessage(template.message);
+      setScheduledTime(template.scheduled_time);
+      setTimeBlock(template.time_block);
+      setCategory(template.category);
     } else {
       setTitle('');
       setMessage('');
@@ -92,7 +203,7 @@ export function ReminderForm({
       setCategory('general');
     }
     setErrors({});
-  }, [reminder, open]);
+  }, [reminder, template, open]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -15,9 +15,9 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { useReminders, useCreateReminder, useUpdateReminder, useDeleteReminder, useToggleReminder, Reminder } from '@/hooks/useReminders';
-import { ReminderForm } from './ReminderForm';
+import { ReminderForm, REMINDER_TEMPLATES, ReminderTemplate } from './ReminderForm';
 import { useToast } from '@/hooks/use-toast';
-import { Plus, Pencil, Trash2, Clock, Bell, BellOff } from 'lucide-react';
+import { Plus, Pencil, Trash2, Clock, Bell, BellOff, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const TIME_BLOCK_LABELS: Record<string, { label: string; icon: string }> = {
@@ -47,16 +47,27 @@ export function RemindersList() {
 
   const [formOpen, setFormOpen] = useState(false);
   const [editingReminder, setEditingReminder] = useState<Reminder | null>(null);
+  const [selectedTemplate, setSelectedTemplate] = useState<ReminderTemplate | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [reminderToDelete, setReminderToDelete] = useState<Reminder | null>(null);
+  const [showTemplates, setShowTemplates] = useState(false);
 
   const handleCreate = () => {
     setEditingReminder(null);
+    setSelectedTemplate(null);
+    setFormOpen(true);
+  };
+
+  const handleTemplateSelect = (template: ReminderTemplate) => {
+    setEditingReminder(null);
+    setSelectedTemplate(template);
+    setShowTemplates(false);
     setFormOpen(true);
   };
 
   const handleEdit = (reminder: Reminder) => {
     setEditingReminder(reminder);
+    setSelectedTemplate(null);
     setFormOpen(true);
   };
 
@@ -195,15 +206,62 @@ export function RemindersList() {
           </div>
         </CardHeader>
         <CardContent>
+          {/* Template Quick Add Section */}
+          <div className="mb-6">
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full gap-2 mb-3"
+              onClick={() => setShowTemplates(!showTemplates)}
+            >
+              <Sparkles className="h-4 w-4 text-primary" />
+              {showTemplates ? 'Ocultar modelos' : 'Adicionar de modelos'}
+            </Button>
+            
+            <AnimatePresence>
+              {showTemplates && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="overflow-hidden"
+                >
+                  <div className="grid grid-cols-2 gap-2 p-3 rounded-lg bg-muted/50 border">
+                    {REMINDER_TEMPLATES.map((template) => (
+                      <motion.button
+                        key={template.id}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => handleTemplateSelect(template)}
+                        className="flex items-center gap-2 p-2 rounded-md bg-background border hover:border-primary hover:bg-primary/5 transition-all text-left"
+                      >
+                        <span className="text-lg">{template.icon}</span>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-medium truncate">{template.title}</p>
+                          <p className="text-[10px] text-muted-foreground">
+                            {TIME_BLOCK_LABELS[template.time_block]?.icon} {template.scheduled_time}
+                          </p>
+                        </div>
+                      </motion.button>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
           {(!reminders || reminders.length === 0) ? (
             <div className="text-center py-8">
               <Bell className="h-12 w-12 text-muted-foreground/50 mx-auto mb-3" />
               <p className="text-muted-foreground">
                 Você ainda não tem lembretes.
               </p>
+              <p className="text-sm text-muted-foreground mt-1">
+                Use os modelos acima ou crie um personalizado.
+              </p>
               <Button onClick={handleCreate} variant="outline" className="mt-4 gap-2">
                 <Plus className="h-4 w-4" />
-                Criar primeiro lembrete
+                Criar lembrete personalizado
               </Button>
             </div>
           ) : (
@@ -306,6 +364,7 @@ export function RemindersList() {
         open={formOpen}
         onOpenChange={setFormOpen}
         reminder={editingReminder}
+        template={selectedTemplate}
         onSubmit={handleFormSubmit}
         isLoading={createReminder.isPending || updateReminder.isPending}
       />
