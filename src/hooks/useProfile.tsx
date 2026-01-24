@@ -41,9 +41,9 @@ export function useUserPreferences() {
         .from('user_preferences')
         .select('*')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
       
-      if (error && error.code !== 'PGRST116') throw error; // PGRST116 = no rows returned
+      if (error) throw error;
       return data;
     },
     enabled: !!user,
@@ -87,7 +87,7 @@ export function useUpdateUserPreferences() {
         .from('user_preferences')
         .select('id')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
       if (existing) {
         // Update existing preferences
