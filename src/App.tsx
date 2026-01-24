@@ -7,7 +7,7 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { AnimatePresence } from "framer-motion";
 import { PageTransition } from "@/components/PageTransition";
-import { Skeleton } from "@/components/ui/skeleton";
+import { PageLoader } from "@/components/PageLoader";
 
 // Critical path - load immediately
 import Index from "./pages/Index";
@@ -22,18 +22,6 @@ const Tea = lazy(() => import("./pages/Tea"));
 const Progress = lazy(() => import("./pages/Progress"));
 const Meals = lazy(() => import("./pages/Meals"));
 const WeeklyCheckin = lazy(() => import("./pages/WeeklyCheckin"));
-
-// Loading fallback component
-function PageLoader() {
-  return (
-    <div className="min-h-screen bg-background p-4 space-y-4">
-      <Skeleton className="h-12 w-3/4" />
-      <Skeleton className="h-32 w-full" />
-      <Skeleton className="h-24 w-full" />
-      <Skeleton className="h-24 w-full" />
-    </div>
-  );
-}
 
 const queryClient = new QueryClient();
 
