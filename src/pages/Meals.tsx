@@ -38,8 +38,10 @@ import { PortionSelector } from '@/components/meals/PortionSelector';
 import { useMealLogs, useAddMeal, useDeleteMeal, Food, calculateNutrition } from '@/hooks/useMeals';
 import { useMealSummary } from '@/hooks/useTodayMeals';
 import { MEAL_TYPES } from '@/lib/constants';
+import { MealSuggestion } from '@/lib/meal-suggestions';
 import { cn } from '@/lib/utils';
 import { BottomNav } from '@/components/BottomNav';
+import { MealSuggestions } from '@/components/meals/MealSuggestions';
 
 export default function Meals() {
   const navigate = useNavigate();
@@ -54,6 +56,26 @@ export default function Meals() {
   const [portion, setPortion] = useState(100);
   const [notes, setNotes] = useState('');
   const [deletingMealId, setDeletingMealId] = useState<string | null>(null);
+  const [pendingSuggestion, setPendingSuggestion] = useState<MealSuggestion | null>(null);
+
+  const handleSuggestionSelect = (suggestion: MealSuggestion, mealTypeValue: string) => {
+    setPendingSuggestion(suggestion);
+    setMealType(mealTypeValue);
+    // Add all items from the suggestion
+    suggestion.items.forEach((item, index) => {
+      setTimeout(() => {
+        addMeal.mutate({
+          mealType: mealTypeValue,
+          foodName: item.foodName,
+          portionGrams: item.portionGrams,
+          calories: Math.round(suggestion.totalCalories / suggestion.items.length),
+          protein: Math.round((suggestion.totalProtein / suggestion.items.length) * 10) / 10,
+          notes: index === 0 ? `Combo: ${suggestion.name}` : undefined,
+        });
+      }, index * 100);
+    });
+    setPendingSuggestion(null);
+  };
 
   const handleAddMeal = () => {
     if (!selectedFood) return;
@@ -230,16 +252,26 @@ export default function Meals() {
                       ))}
                     </div>
                   ) : (
-                    <button
-                      onClick={() => {
-                        setMealType(mealBlock.value);
-                        setIsAddDialogOpen(true);
-                      }}
-                      className="w-full p-4 flex items-center justify-center gap-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors"
-                    >
-                      <Plus className="h-4 w-4" />
-                      Adicionar refeição
-                    </button>
+                    <div className="space-y-0">
+                      {/* Meal Suggestions for empty blocks */}
+                      <div className="p-3">
+                        <MealSuggestions
+                          mealType={mealBlock.value}
+                          mealLabel={mealBlock.label}
+                          onSelectSuggestion={(suggestion) => handleSuggestionSelect(suggestion, mealBlock.value)}
+                        />
+                      </div>
+                      <button
+                        onClick={() => {
+                          setMealType(mealBlock.value);
+                          setIsAddDialogOpen(true);
+                        }}
+                        className="w-full p-4 flex items-center justify-center gap-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors border-t border-border"
+                      >
+                        <Plus className="h-4 w-4" />
+                        Adicionar manualmente
+                      </button>
+                    </div>
                   )}
                 </CardContent>
               </Card>
