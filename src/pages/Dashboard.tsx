@@ -12,6 +12,7 @@ import { DailyFocusCard } from '@/components/dashboard/DailyFocusCard';
 import { NutritionProgress } from '@/components/dashboard/NutritionProgress';
 import { TeaRecommendations } from '@/components/dashboard/TeaRecommendations';
 import { QuickStatsRow } from '@/components/dashboard/QuickStatsRow';
+import { ProgressPreviewCard } from '@/components/dashboard/ProgressPreviewCard';
 import { RoutineSection } from '@/components/dashboard/RoutineSection';
 import { Leaf, LogOut, Bell, Settings } from 'lucide-react';
 
@@ -129,6 +130,9 @@ function DashboardContent() {
 
         {/* Tea Recommendations */}
         <TeaRecommendations />
+
+        {/* Progress Preview */}
+        <ProgressPreviewCard />
 
         {/* Weekly Progress Summary */}
         <WeeklyProgressSummary />
