@@ -11,7 +11,6 @@ import { Link } from 'react-router-dom';
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 
@@ -89,25 +88,23 @@ function TeaCard({ tea, isLogged, onLog }: { tea: Tea; isLogged: boolean; onLog:
         
         <div className="flex items-center gap-1">
           {tea.preparation && (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <Info className="h-4 w-4 text-muted-foreground" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="left" className="max-w-xs">
-                  <p className="font-medium mb-1">Preparo</p>
-                  <p className="text-xs">{tea.preparation}</p>
-                  {tea.safety_notes && (
-                    <>
-                      <p className="font-medium mt-2 mb-1 text-destructive">⚠️ Atenção</p>
-                      <p className="text-xs">{tea.safety_notes}</p>
-                    </>
-                  )}
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <Info className="h-4 w-4 text-muted-foreground" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="left" className="max-w-xs">
+                <p className="font-medium mb-1">Preparo</p>
+                <p className="text-xs">{tea.preparation}</p>
+                {tea.safety_notes && (
+                  <>
+                    <p className="font-medium mt-2 mb-1 text-destructive">⚠️ Atenção</p>
+                    <p className="text-xs">{tea.safety_notes}</p>
+                  </>
+                )}
+              </TooltipContent>
+            </Tooltip>
           )}
           
           {!isLogged && (
