@@ -14,6 +14,7 @@ export interface Food {
   carbs_per_100g: number | null;
   fat_per_100g: number | null;
   is_low_carb: boolean;
+  is_custom: boolean;
   swap_suggestion: string | null;
 }
 
@@ -154,6 +155,8 @@ export function useAddCustomFood() {
       category: string;
       caloriesPer100g: number;
       proteinPer100g: number;
+      carbsPer100g?: number;
+      fatPer100g?: number;
     }) => {
       if (!user) throw new Error('Not authenticated');
 
@@ -164,6 +167,8 @@ export function useAddCustomFood() {
           category: food.category,
           calories_per_100g: food.caloriesPer100g,
           protein_per_100g: food.proteinPer100g,
+          carbs_per_100g: food.carbsPer100g || null,
+          fat_per_100g: food.fatPer100g || null,
           is_custom: true,
           created_by: user.id,
         })
