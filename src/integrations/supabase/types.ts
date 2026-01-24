@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      body_measurements: {
+        Row: {
+          arm: number | null
+          chest: number | null
+          created_at: string
+          date: string
+          hip: number | null
+          id: string
+          notes: string | null
+          thigh: number | null
+          user_id: string
+          waist: number | null
+        }
+        Insert: {
+          arm?: number | null
+          chest?: number | null
+          created_at?: string
+          date?: string
+          hip?: number | null
+          id?: string
+          notes?: string | null
+          thigh?: number | null
+          user_id: string
+          waist?: number | null
+        }
+        Update: {
+          arm?: number | null
+          chest?: number | null
+          created_at?: string
+          date?: string
+          hip?: number | null
+          id?: string
+          notes?: string | null
+          thigh?: number | null
+          user_id?: string
+          waist?: number | null
+        }
+        Relationships: []
+      }
       daily_routines: {
         Row: {
           action_description: string | null
@@ -49,6 +88,134 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      daily_tips: {
+        Row: {
+          category: string | null
+          content: string
+          created_at: string
+          id: string
+          is_active: boolean | null
+          title: string
+          trigger_context: string | null
+        }
+        Insert: {
+          category?: string | null
+          content: string
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          title: string
+          trigger_context?: string | null
+        }
+        Update: {
+          category?: string | null
+          content?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          title?: string
+          trigger_context?: string | null
+        }
+        Relationships: []
+      }
+      foods: {
+        Row: {
+          calories_per_100g: number | null
+          carbs_per_100g: number | null
+          category: string
+          created_at: string
+          created_by: string | null
+          fat_per_100g: number | null
+          id: string
+          is_custom: boolean | null
+          is_low_carb: boolean | null
+          name: string
+          protein_per_100g: number | null
+          swap_suggestion: string | null
+        }
+        Insert: {
+          calories_per_100g?: number | null
+          carbs_per_100g?: number | null
+          category: string
+          created_at?: string
+          created_by?: string | null
+          fat_per_100g?: number | null
+          id?: string
+          is_custom?: boolean | null
+          is_low_carb?: boolean | null
+          name: string
+          protein_per_100g?: number | null
+          swap_suggestion?: string | null
+        }
+        Update: {
+          calories_per_100g?: number | null
+          carbs_per_100g?: number | null
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          fat_per_100g?: number | null
+          id?: string
+          is_custom?: boolean | null
+          is_low_carb?: boolean | null
+          name?: string
+          protein_per_100g?: number | null
+          swap_suggestion?: string | null
+        }
+        Relationships: []
+      }
+      meal_logs: {
+        Row: {
+          calories: number | null
+          created_at: string
+          date: string
+          food_id: string | null
+          food_name: string
+          id: string
+          is_completed: boolean | null
+          meal_type: string
+          notes: string | null
+          portion_grams: number | null
+          protein: number | null
+          user_id: string
+        }
+        Insert: {
+          calories?: number | null
+          created_at?: string
+          date?: string
+          food_id?: string | null
+          food_name: string
+          id?: string
+          is_completed?: boolean | null
+          meal_type: string
+          notes?: string | null
+          portion_grams?: number | null
+          protein?: number | null
+          user_id: string
+        }
+        Update: {
+          calories?: number | null
+          created_at?: string
+          date?: string
+          food_id?: string | null
+          food_name?: string
+          id?: string
+          is_completed?: boolean | null
+          meal_type?: string
+          notes?: string | null
+          portion_grams?: number | null
+          protein?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meal_logs_food_id_fkey"
+            columns: ["food_id"]
+            isOneToOne: false
+            referencedRelation: "foods"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       motivational_messages: {
         Row: {
@@ -104,6 +271,36 @@ export type Database = {
         }
         Relationships: []
       }
+      progress_photos: {
+        Row: {
+          created_at: string
+          date: string
+          id: string
+          notes: string | null
+          photo_type: string | null
+          photo_url: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          date?: string
+          id?: string
+          notes?: string | null
+          photo_type?: string | null
+          photo_url: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          id?: string
+          notes?: string | null
+          photo_type?: string | null
+          photo_url?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       push_subscriptions: {
         Row: {
           auth: string
@@ -141,9 +338,11 @@ export type Database = {
           id: string
           is_active: boolean | null
           message: string
+          reminder_type: string | null
           scheduled_time: string
           time_block: Database["public"]["Enums"]["time_block"]
           title: string
+          tone: string | null
           updated_at: string
           user_id: string
         }
@@ -153,9 +352,11 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           message: string
+          reminder_type?: string | null
           scheduled_time: string
           time_block: Database["public"]["Enums"]["time_block"]
           title: string
+          tone?: string | null
           updated_at?: string
           user_id: string
         }
@@ -165,63 +366,178 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           message?: string
+          reminder_type?: string | null
           scheduled_time?: string
           time_block?: Database["public"]["Enums"]["time_block"]
           title?: string
+          tone?: string | null
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      tea_logs: {
+        Row: {
+          created_at: string
+          date: string
+          id: string
+          notes: string | null
+          tea_id: string | null
+          tea_name: string
+          time_consumed: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          date?: string
+          id?: string
+          notes?: string | null
+          tea_id?: string | null
+          tea_name: string
+          time_consumed?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          id?: string
+          notes?: string | null
+          tea_id?: string | null
+          tea_name?: string
+          time_consumed?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tea_logs_tea_id_fkey"
+            columns: ["tea_id"]
+            isOneToOne: false
+            referencedRelation: "teas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      teas: {
+        Row: {
+          benefits: string[] | null
+          best_time: string | null
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          preparation: string | null
+          purpose: string[]
+          safety_notes: string | null
+        }
+        Insert: {
+          benefits?: string[] | null
+          best_time?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          preparation?: string | null
+          purpose: string[]
+          safety_notes?: string | null
+        }
+        Update: {
+          benefits?: string[] | null
+          best_time?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          preparation?: string | null
+          purpose?: string[]
+          safety_notes?: string | null
         }
         Relationships: []
       }
       user_preferences: {
         Row: {
           activity_level: Database["public"]["Enums"]["activity_level"] | null
+          age: number | null
           available_time_slots:
             | Database["public"]["Enums"]["time_block"][]
             | null
           created_at: string
           current_weight: number | null
+          daily_calorie_target: number | null
+          diagnosis_summary: string | null
+          dietary_restrictions: string[] | null
           food_preference: Database["public"]["Enums"]["food_preference"] | null
+          gender: string | null
           goal: Database["public"]["Enums"]["user_goal"] | null
           height: number | null
           id: string
+          meals_per_day: number | null
+          medical_notes: string | null
+          previous_dieting_experience: string | null
+          primary_goal: string | null
+          protein_target: number | null
           struggles: string[] | null
+          target_weight: number | null
           updated_at: string
           user_id: string
+          weekly_focus: string | null
         }
         Insert: {
           activity_level?: Database["public"]["Enums"]["activity_level"] | null
+          age?: number | null
           available_time_slots?:
             | Database["public"]["Enums"]["time_block"][]
             | null
           created_at?: string
           current_weight?: number | null
+          daily_calorie_target?: number | null
+          diagnosis_summary?: string | null
+          dietary_restrictions?: string[] | null
           food_preference?:
             | Database["public"]["Enums"]["food_preference"]
             | null
+          gender?: string | null
           goal?: Database["public"]["Enums"]["user_goal"] | null
           height?: number | null
           id?: string
+          meals_per_day?: number | null
+          medical_notes?: string | null
+          previous_dieting_experience?: string | null
+          primary_goal?: string | null
+          protein_target?: number | null
           struggles?: string[] | null
+          target_weight?: number | null
           updated_at?: string
           user_id: string
+          weekly_focus?: string | null
         }
         Update: {
           activity_level?: Database["public"]["Enums"]["activity_level"] | null
+          age?: number | null
           available_time_slots?:
             | Database["public"]["Enums"]["time_block"][]
             | null
           created_at?: string
           current_weight?: number | null
+          daily_calorie_target?: number | null
+          diagnosis_summary?: string | null
+          dietary_restrictions?: string[] | null
           food_preference?:
             | Database["public"]["Enums"]["food_preference"]
             | null
+          gender?: string | null
           goal?: Database["public"]["Enums"]["user_goal"] | null
           height?: number | null
           id?: string
+          meals_per_day?: number | null
+          medical_notes?: string | null
+          previous_dieting_experience?: string | null
+          primary_goal?: string | null
+          protein_target?: number | null
           struggles?: string[] | null
+          target_weight?: number | null
           updated_at?: string
           user_id?: string
+          weekly_focus?: string | null
         }
         Relationships: []
       }
@@ -252,6 +568,78 @@ export type Database = {
           longest_streak?: number | null
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      weekly_checkins: {
+        Row: {
+          adherence_score: number | null
+          adjustments: string[] | null
+          analysis_summary: string | null
+          created_at: string
+          id: string
+          meals_completed: number | null
+          new_calorie_target: number | null
+          new_focus: string | null
+          teas_consumed: number | null
+          user_id: string
+          week_start: string
+          weight_change: number | null
+        }
+        Insert: {
+          adherence_score?: number | null
+          adjustments?: string[] | null
+          analysis_summary?: string | null
+          created_at?: string
+          id?: string
+          meals_completed?: number | null
+          new_calorie_target?: number | null
+          new_focus?: string | null
+          teas_consumed?: number | null
+          user_id: string
+          week_start: string
+          weight_change?: number | null
+        }
+        Update: {
+          adherence_score?: number | null
+          adjustments?: string[] | null
+          analysis_summary?: string | null
+          created_at?: string
+          id?: string
+          meals_completed?: number | null
+          new_calorie_target?: number | null
+          new_focus?: string | null
+          teas_consumed?: number | null
+          user_id?: string
+          week_start?: string
+          weight_change?: number | null
+        }
+        Relationships: []
+      }
+      weight_logs: {
+        Row: {
+          created_at: string
+          date: string
+          id: string
+          notes: string | null
+          user_id: string
+          weight: number
+        }
+        Insert: {
+          created_at?: string
+          date?: string
+          id?: string
+          notes?: string | null
+          user_id: string
+          weight: number
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          id?: string
+          notes?: string | null
+          user_id?: string
+          weight?: number
         }
         Relationships: []
       }
