@@ -14,6 +14,7 @@ import { TeaRecommendations } from '@/components/dashboard/TeaRecommendations';
 import { QuickStatsRow } from '@/components/dashboard/QuickStatsRow';
 import { ProgressPreviewCard } from '@/components/dashboard/ProgressPreviewCard';
 import { RoutineSection } from '@/components/dashboard/RoutineSection';
+import { WeeklyCheckinPrompt } from '@/components/dashboard/WeeklyCheckinPrompt';
 import { Leaf, LogOut, Bell, Settings } from 'lucide-react';
 
 function DashboardContent() {
@@ -127,6 +128,9 @@ function DashboardContent() {
 
         {/* Nutrition Progress */}
         <NutritionProgress />
+
+        {/* Weekly Check-in Prompt */}
+        <WeeklyCheckinPrompt />
 
         {/* Tea Recommendations */}
         <TeaRecommendations />
