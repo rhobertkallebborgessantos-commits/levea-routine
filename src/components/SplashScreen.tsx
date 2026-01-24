@@ -15,8 +15,19 @@ export function SplashScreen({ onComplete, duration = 2000 }: SplashScreenProps)
       setIsVisible(false);
     }, duration);
 
-    return () => clearTimeout(timer);
-  }, [duration]);
+    // Fallback: force complete if animation somehow fails
+    const fallbackTimer = setTimeout(() => {
+      if (isVisible) {
+        setIsVisible(false);
+        onComplete();
+      }
+    }, duration + 1500);
+
+    return () => {
+      clearTimeout(timer);
+      clearTimeout(fallbackTimer);
+    };
+  }, [duration, isVisible, onComplete]);
 
   return (
     <AnimatePresence onExitComplete={onComplete}>
