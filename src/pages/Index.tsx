@@ -53,7 +53,15 @@ export default function Index() {
     },
   ];
 
-  if (!isReady) return null;
+  if (!isReady) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-background">
+        <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center animate-pulse">
+          <Leaf className="h-6 w-6 text-primary-foreground" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
