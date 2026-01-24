@@ -84,17 +84,37 @@ export function useProgress() {
     enabled: !!user,
   });
 
-  // Add weight log
+  // Add weight log (upsert to allow updating same day)
   const addWeightMutation = useMutation({
     mutationFn: async ({ weight, notes }: { weight: number; notes?: string }) => {
       if (!user) throw new Error('Not authenticated');
-      const { error } = await supabase.from('weight_logs').insert({
-        user_id: user.id,
-        weight,
-        notes: notes || null,
-        date: format(new Date(), 'yyyy-MM-dd'),
-      });
-      if (error) throw error;
+      const today = format(new Date(), 'yyyy-MM-dd');
+      
+      // Check if there's already a log for today
+      const { data: existing } = await supabase
+        .from('weight_logs')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('date', today)
+        .maybeSingle();
+      
+      if (existing) {
+        // Update existing entry
+        const { error } = await supabase
+          .from('weight_logs')
+          .update({ weight, notes: notes || null })
+          .eq('id', existing.id);
+        if (error) throw error;
+      } else {
+        // Insert new entry
+        const { error } = await supabase.from('weight_logs').insert({
+          user_id: user.id,
+          weight,
+          notes: notes || null,
+          date: today,
+        });
+        if (error) throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['weight-logs'] });
