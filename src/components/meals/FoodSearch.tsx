@@ -114,22 +114,31 @@ export function FoodSearch({ onSelect, selectedFood, onClear }: FoodSearchProps)
                     setShowResults(false);
                     setSearchTerm('');
                   }}
-                  className="w-full p-3 text-left hover:bg-muted/50 transition-colors flex items-center justify-between"
+                  className="w-full p-3 text-left hover:bg-muted/50 transition-colors"
                 >
-                  <div>
-                    <p className="text-sm font-medium text-foreground flex items-center gap-1.5">
-                      {food.name}
-                      {food.is_low_carb && (
-                        <Leaf className="h-3 w-3 text-success" />
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-foreground flex items-center gap-1.5">
+                        {food.name}
+                        {food.is_low_carb && (
+                          <Badge variant="secondary" className="text-[10px] px-1 py-0 bg-success/10 text-success">
+                            Low Carb
+                          </Badge>
+                        )}
+                        {food.is_custom && (
+                          <User className="h-3 w-3 text-muted-foreground" />
+                        )}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        {FOOD_CATEGORIES.find((c) => c.value === food.category)?.icon}{' '}
+                        {food.calories_per_100g} kcal • {food.protein_per_100g}g prot /100g
+                      </p>
+                      {food.swap_suggestion && (
+                        <p className="text-xs text-primary/70 mt-1 flex items-center gap-1">
+                          💡 Alternativa: {food.swap_suggestion}
+                        </p>
                       )}
-                      {food.is_custom && (
-                        <User className="h-3 w-3 text-muted-foreground" />
-                      )}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {FOOD_CATEGORIES.find((c) => c.value === food.category)?.icon}{' '}
-                      {food.calories_per_100g} kcal • {food.protein_per_100g}g prot /100g
-                    </p>
+                    </div>
                   </div>
                 </button>
               ))}

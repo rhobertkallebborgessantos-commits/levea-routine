@@ -12,6 +12,10 @@ export interface Tea {
   preparation: string | null;
   best_time: string | null;
   safety_notes: string | null;
+  intensity: string | null;
+  time_of_day: string[] | null;
+  alternatives: string[] | null;
+  main_benefit: string | null;
 }
 
 export interface TeaLog {
@@ -90,17 +94,19 @@ export function useRecommendedTeas() {
       const struggles = prefs?.struggles || [];
 
       // Map struggles to tea purposes
-      const purposeMap: Record<string, string> = {
-        'anxiety': 'ansiedade',
-        'sweet_craving': 'compulsao',
-        'water_retention': 'retencao',
-        'slow_metabolism': 'metabolismo',
-        'bloating': 'digestao',
-        'snacking': 'saciedade',
+      const purposeMap: Record<string, string[]> = {
+        'anxiety': ['anxiety', 'ansiedade'],
+        'sweet_craving': ['metabolism', 'metabolismo', 'compulsao'],
+        'water_retention': ['bloating', 'retencao'],
+        'slow_metabolism': ['metabolism', 'metabolismo'],
+        'bloating': ['digestion', 'digestao', 'bloating'],
+        'snacking': ['metabolism', 'saciedade'],
+        'emotional_eating': ['anxiety', 'ansiedade'],
+        'night_eating': ['sleep', 'sono'],
       };
 
       const targetPurposes = struggles
-        .map((s: string) => purposeMap[s])
+        .flatMap((s: string) => purposeMap[s] || [])
         .filter(Boolean);
 
       // Fetch all teas
