@@ -16,16 +16,23 @@ import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
   Leaf, ArrowLeft, Clock, Check, Info, Bell, Plus, 
-  Calendar, TrendingUp, Star, Trash2, AlertTriangle 
+  Calendar, TrendingUp, Star, Trash2, AlertTriangle,
+  Sparkles, Filter
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { BottomNav } from '@/components/BottomNav';
 import { toast } from 'sonner';
 import { format, parseISO, isToday } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { TEA_PURPOSES, TIME_BLOCK_STYLES } from '@/lib/constants';
+import { TEA_PURPOSES, TEA_INTENSITIES, TEA_TIMES, TIME_BLOCK_STYLES } from '@/lib/constants';
 
 const purposeLabels: Record<string, string> = {
+  'metabolism': 'Metabolismo',
+  'digestion': 'Digestão',
+  'anxiety': 'Ansiedade',
+  'bloating': 'Inchaço',
+  'sleep': 'Sono',
+  // Legacy mappings
   'metabolismo': 'Metabolismo',
   'digestao': 'Digestão',
   'ansiedade': 'Ansiedade',
@@ -36,6 +43,12 @@ const purposeLabels: Record<string, string> = {
 };
 
 const purposeColors: Record<string, string> = {
+  'metabolism': 'bg-destructive/10 text-destructive border-destructive/20',
+  'digestion': 'bg-success/10 text-success border-success/20',
+  'anxiety': 'bg-levea-lavender text-purple-700 border-purple-200',
+  'bloating': 'bg-levea-sky text-blue-700 border-blue-200',
+  'sleep': 'bg-levea-lavender text-purple-700 border-purple-200',
+  // Legacy
   'metabolismo': 'bg-destructive/10 text-destructive border-destructive/20',
   'digestao': 'bg-success/10 text-success border-success/20',
   'ansiedade': 'bg-levea-lavender text-purple-700 border-purple-200',
@@ -43,6 +56,19 @@ const purposeColors: Record<string, string> = {
   'compulsao': 'bg-levea-rose text-rose-700 border-rose-200',
   'saciedade': 'bg-levea-warm text-amber-700 border-amber-200',
   'sono': 'bg-levea-lavender text-purple-700 border-purple-200',
+};
+
+const intensityLabels: Record<string, { label: string; color: string }> = {
+  'mild': { label: 'Suave', color: 'bg-success/10 text-success' },
+  'moderate': { label: 'Moderado', color: 'bg-warning/10 text-warning' },
+  'occasional': { label: 'Ocasional', color: 'bg-destructive/10 text-destructive' },
+};
+
+const timeLabels: Record<string, string> = {
+  'morning': '🌅 Manhã',
+  'afternoon': '☀️ Tarde',
+  'evening': '🌙 Noite',
+  'any': '⏰ Qualquer',
 };
 
 function TeaCard({ tea, isLogged, onLog, onSchedule }: { 
@@ -66,6 +92,13 @@ function TeaCard({ tea, isLogged, onLog, onSchedule }: {
               {isLogged && <Check className="h-4 w-4 text-success" />}
             </div>
             
+            {/* Main benefit - quick highlight */}
+            {tea.main_benefit && (
+              <p className="text-sm font-medium text-primary mb-2">
+                {tea.main_benefit}
+              </p>
+            )}
+            
             <div className="flex flex-wrap gap-1 mb-2">
               {tea.purpose.map((p) => (
                 <Badge 
@@ -76,6 +109,14 @@ function TeaCard({ tea, isLogged, onLog, onSchedule }: {
                   {purposeLabels[p] || p}
                 </Badge>
               ))}
+              {tea.intensity && intensityLabels[tea.intensity] && (
+                <Badge 
+                  variant="secondary" 
+                  className={cn("text-xs", intensityLabels[tea.intensity].color)}
+                >
+                  {intensityLabels[tea.intensity].label}
+                </Badge>
+              )}
             </div>
 
             {tea.description && (
@@ -84,12 +125,19 @@ function TeaCard({ tea, isLogged, onLog, onSchedule }: {
               </p>
             )}
 
-            {tea.best_time && (
-              <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                <Clock className="h-3 w-3" />
-                <span>{tea.best_time}</span>
-              </div>
-            )}
+            <div className="flex items-center gap-3 text-xs text-muted-foreground">
+              {tea.best_time && (
+                <div className="flex items-center gap-1">
+                  <Clock className="h-3 w-3" />
+                  <span>{tea.best_time}</span>
+                </div>
+              )}
+              {tea.time_of_day && tea.time_of_day.length > 0 && (
+                <span className="flex items-center gap-1">
+                  {tea.time_of_day.map(t => timeLabels[t]?.split(' ')[0] || t).join(' ')}
+                </span>
+              )}
+            </div>
           </div>
         </div>
 
@@ -169,6 +217,30 @@ function TeaCard({ tea, isLogged, onLog, onSchedule }: {
                       Atenção
                     </div>
                     <p className="text-sm text-destructive/80">{tea.safety_notes}</p>
+                  </div>
+                )}
+
+                {/* Alternatives */}
+                {tea.alternatives && tea.alternatives.length > 0 && (
+                  <div>
+                    <h4 className="font-medium text-sm mb-2">Alternativas similares</h4>
+                    <div className="flex flex-wrap gap-1">
+                      {tea.alternatives.map((alt, i) => (
+                        <Badge key={i} variant="outline" className="text-xs">
+                          {alt}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Intensity indicator */}
+                {tea.intensity && intensityLabels[tea.intensity] && (
+                  <div className="flex items-center gap-2 text-sm">
+                    <span className="text-muted-foreground">Intensidade:</span>
+                    <Badge className={intensityLabels[tea.intensity].color}>
+                      {intensityLabels[tea.intensity].label}
+                    </Badge>
                   </div>
                 )}
               </div>
@@ -256,10 +328,13 @@ function TeaScheduleDialog({
 
 function TeaPageContent() {
   const [selectedPurpose, setSelectedPurpose] = useState<string>('all');
+  const [selectedTime, setSelectedTime] = useState<string>('all');
+  const [selectedIntensity, setSelectedIntensity] = useState<string>('all');
+  const [showFilters, setShowFilters] = useState(false);
   const [scheduleDialogOpen, setScheduleDialogOpen] = useState(false);
   const [selectedTeaForSchedule, setSelectedTeaForSchedule] = useState<Tea | null>(null);
 
-  const { data: teas, isLoading: teasLoading } = useTeasByPurpose(selectedPurpose);
+  const { data: allTeas, isLoading: teasLoading } = useTeasByPurpose(selectedPurpose);
   const { data: todayLogs } = useTodayTeaLogs();
   const { data: history, isLoading: historyLoading } = useTeaHistory(7);
   const { data: stats } = useTeaStats();
@@ -267,7 +342,19 @@ function TeaPageContent() {
   const logTea = useLogTea();
   const deleteReminder = useDeleteReminder();
 
+  // Apply additional filters
+  const teas = allTeas?.filter(tea => {
+    if (selectedTime !== 'all' && tea.time_of_day && !tea.time_of_day.includes(selectedTime)) {
+      return false;
+    }
+    if (selectedIntensity !== 'all' && tea.intensity !== selectedIntensity) {
+      return false;
+    }
+    return true;
+  });
+
   const loggedTeaNames = todayLogs?.map(l => l.tea_name.toLowerCase()) || [];
+  const hasActiveFilters = selectedPurpose !== 'all' || selectedTime !== 'all' || selectedIntensity !== 'all';
 
   const handleLogTea = async (tea: Tea) => {
     try {
@@ -353,28 +440,96 @@ function TeaPageContent() {
 
           {/* Catalog Tab */}
           <TabsContent value="catalog" className="space-y-4 mt-4">
-            {/* Purpose Filter */}
-            <ScrollArea className="w-full whitespace-nowrap">
-              <div className="flex gap-2 pb-2">
-                <Badge
-                  variant={selectedPurpose === 'all' ? 'default' : 'outline'}
-                  className="cursor-pointer shrink-0"
-                  onClick={() => setSelectedPurpose('all')}
-                >
-                  Todos
-                </Badge>
-                {TEA_PURPOSES.map((purpose) => (
+            {/* Filters Section */}
+            <div className="space-y-3">
+              {/* Purpose Filter */}
+              <ScrollArea className="w-full whitespace-nowrap">
+                <div className="flex gap-2 pb-2">
                   <Badge
-                    key={purpose.value}
-                    variant={selectedPurpose === purpose.value ? 'default' : 'outline'}
+                    variant={selectedPurpose === 'all' ? 'default' : 'outline'}
                     className="cursor-pointer shrink-0"
-                    onClick={() => setSelectedPurpose(purpose.value)}
+                    onClick={() => setSelectedPurpose('all')}
                   >
-                    {purpose.icon} {purpose.label}
+                    Todos
                   </Badge>
-                ))}
-              </div>
-            </ScrollArea>
+                  {TEA_PURPOSES.map((purpose) => (
+                    <Badge
+                      key={purpose.value}
+                      variant={selectedPurpose === purpose.value ? 'default' : 'outline'}
+                      className="cursor-pointer shrink-0"
+                      onClick={() => setSelectedPurpose(purpose.value)}
+                    >
+                      {purpose.icon} {purpose.label}
+                    </Badge>
+                  ))}
+                </div>
+              </ScrollArea>
+
+              {/* Advanced Filters Toggle */}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowFilters(!showFilters)}
+                className="w-full justify-between"
+              >
+                <span className="flex items-center gap-2">
+                  <Filter className="h-4 w-4" />
+                  Mais filtros
+                  {hasActiveFilters && (
+                    <Badge variant="secondary" className="text-xs">
+                      {[selectedTime !== 'all', selectedIntensity !== 'all'].filter(Boolean).length + (selectedPurpose !== 'all' ? 1 : 0)} ativos
+                    </Badge>
+                  )}
+                </span>
+                <Sparkles className={cn("h-4 w-4 transition-transform", showFilters && "rotate-180")} />
+              </Button>
+
+              {/* Advanced Filters */}
+              {showFilters && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="grid grid-cols-2 gap-3"
+                >
+                  {/* Time of Day */}
+                  <div className="space-y-1.5">
+                    <Label className="text-xs">Horário</Label>
+                    <Select value={selectedTime} onValueChange={setSelectedTime}>
+                      <SelectTrigger className="h-9">
+                        <SelectValue placeholder="Qualquer" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Qualquer horário</SelectItem>
+                        {TEA_TIMES.map((t) => (
+                          <SelectItem key={t.value} value={t.value}>
+                            {t.icon} {t.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Intensity */}
+                  <div className="space-y-1.5">
+                    <Label className="text-xs">Intensidade</Label>
+                    <Select value={selectedIntensity} onValueChange={setSelectedIntensity}>
+                      <SelectTrigger className="h-9">
+                        <SelectValue placeholder="Qualquer" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Qualquer</SelectItem>
+                        {TEA_INTENSITIES.map((i) => (
+                          <SelectItem key={i.value} value={i.value}>
+                            {i.icon} {i.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </motion.div>
+              )}
+            </div>
 
             {/* Tea List */}
             {teasLoading ? (

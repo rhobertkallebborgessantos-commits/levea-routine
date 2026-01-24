@@ -79,6 +79,7 @@ export const FOOD_CATEGORIES = [
   { value: 'carbs', label: 'Carboidratos', icon: '🍚', color: 'text-amber-500' },
   { value: 'fats', label: 'Gorduras', icon: '🥑', color: 'text-green-600' },
   { value: 'vegetables', label: 'Vegetais', icon: '🥬', color: 'text-green-500' },
+  { value: 'fruits', label: 'Frutas', icon: '🍎', color: 'text-pink-500' },
   { value: 'drinks', label: 'Bebidas', icon: '🥤', color: 'text-blue-500' },
 ] as const;
 
@@ -89,6 +90,21 @@ export const TEA_PURPOSES = [
   { value: 'anxiety', label: 'Ansiedade', icon: '🧘', description: 'Acalmar' },
   { value: 'bloating', label: 'Inchaço', icon: '💧', description: 'Reduzir retenção' },
   { value: 'sleep', label: 'Sono', icon: '😴', description: 'Dormir melhor' },
+] as const;
+
+// Tea intensities
+export const TEA_INTENSITIES = [
+  { value: 'mild', label: 'Suave', icon: '🌱', description: 'Uso diário' },
+  { value: 'moderate', label: 'Moderado', icon: '🌿', description: 'Uso regular' },
+  { value: 'occasional', label: 'Ocasional', icon: '⚡', description: 'Uso limitado' },
+] as const;
+
+// Tea time of day
+export const TEA_TIMES = [
+  { value: 'morning', label: 'Manhã', icon: '🌅' },
+  { value: 'afternoon', label: 'Tarde', icon: '☀️' },
+  { value: 'evening', label: 'Noite', icon: '🌙' },
+  { value: 'any', label: 'Qualquer', icon: '⏰' },
 ] as const;
 
 // Default routine actions per time block

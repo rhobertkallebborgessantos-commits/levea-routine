@@ -16,6 +16,12 @@ import {
 } from '@/components/ui/tooltip';
 
 const purposeLabels: Record<string, string> = {
+  'metabolism': 'Metabolismo',
+  'digestion': 'Digestão',
+  'anxiety': 'Ansiedade',
+  'bloating': 'Inchaço',
+  'sleep': 'Sono',
+  // Legacy
   'metabolismo': 'Metabolismo',
   'digestao': 'Digestão',
   'ansiedade': 'Ansiedade',
@@ -26,6 +32,12 @@ const purposeLabels: Record<string, string> = {
 };
 
 const purposeColors: Record<string, string> = {
+  'metabolism': 'bg-destructive/10 text-destructive',
+  'digestion': 'bg-success/10 text-success',
+  'anxiety': 'bg-levea-lavender text-purple-700',
+  'bloating': 'bg-levea-sky text-blue-700',
+  'sleep': 'bg-levea-lavender text-purple-700',
+  // Legacy
   'metabolismo': 'bg-destructive/10 text-destructive',
   'digestao': 'bg-success/10 text-success',
   'ansiedade': 'bg-levea-lavender text-purple-700',
@@ -49,6 +61,11 @@ function TeaCard({ tea, isLogged, onLog }: { tea: Tea; isLogged: boolean; onLog:
             <h4 className="font-medium text-foreground truncate">{tea.name}</h4>
             {isLogged && <Check className="h-4 w-4 text-success shrink-0" />}
           </div>
+          
+          {/* Main benefit highlight */}
+          {tea.main_benefit && (
+            <p className="text-xs text-primary font-medium mt-0.5">{tea.main_benefit}</p>
+          )}
           
           <div className="flex items-center gap-1 mt-1 flex-wrap">
             {tea.purpose.slice(0, 2).map((p) => (
