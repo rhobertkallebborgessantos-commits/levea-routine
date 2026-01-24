@@ -3,10 +3,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Leaf, Check, Clock, Info } from 'lucide-react';
-import { useRecommendedTeas, useTodayTeaLogs, useLogTea, Tea } from '@/hooks/useTodayTeas';
+import { Leaf, Check, Clock, Info, ChevronRight } from 'lucide-react';
+import { useRecommendedTeas, useTodayTeaLogs, useLogTea, Tea } from '@/hooks/useTeas';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { Link } from 'react-router-dom';
 import {
   Tooltip,
   TooltipContent,
@@ -155,11 +156,18 @@ export function TeaRecommendations() {
               <Leaf className="h-4 w-4 text-primary" />
               Chás Recomendados
             </CardTitle>
-            {teasLogged > 0 && (
-              <Badge variant="secondary" className="bg-success/10 text-success">
-                {teasLogged} tomado{teasLogged > 1 ? 's' : ''} hoje
-              </Badge>
-            )}
+            <div className="flex items-center gap-2">
+              {teasLogged > 0 && (
+                <Badge variant="secondary" className="bg-success/10 text-success">
+                  {teasLogged} tomado{teasLogged > 1 ? 's' : ''} hoje
+                </Badge>
+              )}
+              <Button variant="ghost" size="sm" asChild className="h-7 px-2">
+                <Link to="/tea">
+                  Ver todos <ChevronRight className="h-4 w-4 ml-1" />
+                </Link>
+              </Button>
+            </div>
           </div>
         </CardHeader>
         <CardContent className="space-y-2">
