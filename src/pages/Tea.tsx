@@ -17,8 +17,9 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
   Leaf, ArrowLeft, Clock, Check, Info, Bell, Plus, 
   Calendar, TrendingUp, Star, Trash2, AlertTriangle,
-  Sparkles, Filter
+  Sparkles, Filter, Coffee
 } from 'lucide-react';
+import { TeaPreparationDrawer } from '@/components/tea/TeaPreparationDrawer';
 import { cn } from '@/lib/utils';
 import { BottomNav } from '@/components/BottomNav';
 import { toast } from 'sonner';
@@ -78,177 +79,188 @@ function TeaCard({ tea, isLogged, onLog, onSchedule }: {
   onSchedule: () => void;
 }) {
   const [showDetails, setShowDetails] = useState(false);
+  const [showPreparation, setShowPreparation] = useState(false);
 
   return (
-    <Card className={cn(
-      "overflow-hidden transition-all",
-      isLogged ? "border-success/30 bg-success/5" : "border-border/50"
-    )}>
-      <CardContent className="p-4">
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-2">
-              <h3 className="font-semibold text-foreground">{tea.name}</h3>
-              {isLogged && <Check className="h-4 w-4 text-success" />}
-            </div>
-            
-            {/* Main benefit - quick highlight */}
-            {tea.main_benefit && (
-              <p className="text-sm font-medium text-primary mb-2">
-                {tea.main_benefit}
-              </p>
-            )}
-            
-            <div className="flex flex-wrap gap-1 mb-2">
-              {tea.purpose.map((p) => (
-                <Badge 
-                  key={p} 
-                  variant="outline" 
-                  className={cn("text-xs", purposeColors[p])}
-                >
-                  {purposeLabels[p] || p}
-                </Badge>
-              ))}
-              {tea.intensity && intensityLabels[tea.intensity] && (
-                <Badge 
-                  variant="secondary" 
-                  className={cn("text-xs", intensityLabels[tea.intensity].color)}
-                >
-                  {intensityLabels[tea.intensity].label}
-                </Badge>
+    <>
+      <Card className={cn(
+        "overflow-hidden transition-all",
+        isLogged ? "border-success/30 bg-success/5" : "border-border/50"
+      )}>
+        <CardContent className="p-4">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-2">
+                <h3 className="font-semibold text-foreground">{tea.name}</h3>
+                {isLogged && <Check className="h-4 w-4 text-success" />}
+              </div>
+              
+              {/* Main benefit - quick highlight */}
+              {tea.main_benefit && (
+                <p className="text-sm font-medium text-primary mb-2">
+                  {tea.main_benefit}
+                </p>
               )}
-            </div>
-
-            {tea.description && (
-              <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
-                {tea.description}
-              </p>
-            )}
-
-            <div className="flex items-center gap-3 text-xs text-muted-foreground">
-              {tea.best_time && (
-                <div className="flex items-center gap-1">
-                  <Clock className="h-3 w-3" />
-                  <span>{tea.best_time}</span>
-                </div>
-              )}
-              {tea.time_of_day && tea.time_of_day.length > 0 && (
-                <span className="flex items-center gap-1">
-                  {tea.time_of_day.map(t => timeLabels[t]?.split(' ')[0] || t).join(' ')}
-                </span>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Action buttons */}
-        <div className="flex items-center gap-2 mt-3 pt-3 border-t border-border/30">
-          <Button 
-            variant={isLogged ? "secondary" : "default"}
-            size="sm" 
-            onClick={onLog}
-            className="flex-1"
-          >
-            <Check className="h-4 w-4 mr-1" />
-            {isLogged ? 'Registrar outro' : 'Tomei'}
-          </Button>
-          
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={onSchedule}
-          >
-            <Bell className="h-4 w-4" />
-          </Button>
-          
-          <Dialog open={showDetails} onOpenChange={setShowDetails}>
-            <DialogTrigger asChild>
-              <Button variant="outline" size="sm">
-                <Info className="h-4 w-4" />
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-md">
-              <DialogHeader>
-                <DialogTitle className="flex items-center gap-2">
-                  <Leaf className="h-5 w-5 text-primary" />
-                  {tea.name}
-                </DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4">
-                <div className="flex flex-wrap gap-1">
-                  {tea.purpose.map((p) => (
-                    <Badge key={p} variant="outline" className={cn("text-xs", purposeColors[p])}>
-                      {purposeLabels[p] || p}
-                    </Badge>
-                  ))}
-                </div>
-
-                {tea.description && (
-                  <p className="text-sm text-muted-foreground">{tea.description}</p>
-                )}
-
-                {tea.benefits && tea.benefits.length > 0 && (
-                  <div>
-                    <h4 className="font-medium text-sm mb-2">Benefícios</h4>
-                    <ul className="text-sm text-muted-foreground space-y-1">
-                      {tea.benefits.map((b, i) => (
-                        <li key={i} className="flex items-start gap-2">
-                          <span className="text-success">✓</span>
-                          {b}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
-                {tea.preparation && (
-                  <div>
-                    <h4 className="font-medium text-sm mb-2">Como preparar</h4>
-                    <p className="text-sm text-muted-foreground bg-muted/30 p-3 rounded-lg">
-                      {tea.preparation}
-                    </p>
-                  </div>
-                )}
-
-                {tea.safety_notes && (
-                  <div className="bg-destructive/10 p-3 rounded-lg">
-                    <div className="flex items-center gap-2 text-destructive font-medium text-sm mb-1">
-                      <AlertTriangle className="h-4 w-4" />
-                      Atenção
-                    </div>
-                    <p className="text-sm text-destructive/80">{tea.safety_notes}</p>
-                  </div>
-                )}
-
-                {/* Alternatives */}
-                {tea.alternatives && tea.alternatives.length > 0 && (
-                  <div>
-                    <h4 className="font-medium text-sm mb-2">Alternativas similares</h4>
-                    <div className="flex flex-wrap gap-1">
-                      {tea.alternatives.map((alt, i) => (
-                        <Badge key={i} variant="outline" className="text-xs">
-                          {alt}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Intensity indicator */}
+              
+              <div className="flex flex-wrap gap-1 mb-2">
+                {tea.purpose.map((p) => (
+                  <Badge 
+                    key={p} 
+                    variant="outline" 
+                    className={cn("text-xs", purposeColors[p])}
+                  >
+                    {purposeLabels[p] || p}
+                  </Badge>
+                ))}
                 {tea.intensity && intensityLabels[tea.intensity] && (
-                  <div className="flex items-center gap-2 text-sm">
-                    <span className="text-muted-foreground">Intensidade:</span>
-                    <Badge className={intensityLabels[tea.intensity].color}>
-                      {intensityLabels[tea.intensity].label}
-                    </Badge>
-                  </div>
+                  <Badge 
+                    variant="secondary" 
+                    className={cn("text-xs", intensityLabels[tea.intensity].color)}
+                  >
+                    {intensityLabels[tea.intensity].label}
+                  </Badge>
                 )}
               </div>
-            </DialogContent>
-          </Dialog>
-        </div>
-      </CardContent>
-    </Card>
+
+              {tea.description && (
+                <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
+                  {tea.description}
+                </p>
+              )}
+
+              <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                {tea.best_time && (
+                  <div className="flex items-center gap-1">
+                    <Clock className="h-3 w-3" />
+                    <span>{tea.best_time}</span>
+                  </div>
+                )}
+                {tea.time_of_day && tea.time_of_day.length > 0 && (
+                  <span className="flex items-center gap-1">
+                    {tea.time_of_day.map(t => timeLabels[t]?.split(' ')[0] || t).join(' ')}
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Action buttons */}
+          <div className="flex items-center gap-2 mt-3 pt-3 border-t border-border/30">
+            <Button 
+              variant={isLogged ? "secondary" : "default"}
+              size="sm" 
+              onClick={onLog}
+              className="flex-1"
+            >
+              <Check className="h-4 w-4 mr-1" />
+              {isLogged ? 'Registrar outro' : 'Tomei'}
+            </Button>
+            
+            {/* Preparation button */}
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => setShowPreparation(true)}
+              className="text-primary hover:text-primary"
+            >
+              <Coffee className="h-4 w-4" />
+            </Button>
+            
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={onSchedule}
+            >
+              <Bell className="h-4 w-4" />
+            </Button>
+            
+            <Dialog open={showDetails} onOpenChange={setShowDetails}>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <Info className="h-4 w-4" />
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-md">
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2">
+                    <Leaf className="h-5 w-5 text-primary" />
+                    {tea.name}
+                  </DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div className="flex flex-wrap gap-1">
+                    {tea.purpose.map((p) => (
+                      <Badge key={p} variant="outline" className={cn("text-xs", purposeColors[p])}>
+                        {purposeLabels[p] || p}
+                      </Badge>
+                    ))}
+                  </div>
+
+                  {tea.description && (
+                    <p className="text-sm text-muted-foreground">{tea.description}</p>
+                  )}
+
+                  {tea.benefits && tea.benefits.length > 0 && (
+                    <div>
+                      <h4 className="font-medium text-sm mb-2">Benefícios</h4>
+                      <ul className="text-sm text-muted-foreground space-y-1">
+                        {tea.benefits.map((b, i) => (
+                          <li key={i} className="flex items-start gap-2">
+                            <span className="text-success">✓</span>
+                            {b}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {tea.safety_notes && (
+                    <div className="bg-destructive/10 p-3 rounded-lg">
+                      <div className="flex items-center gap-2 text-destructive font-medium text-sm mb-1">
+                        <AlertTriangle className="h-4 w-4" />
+                        Atenção
+                      </div>
+                      <p className="text-sm text-destructive/80">{tea.safety_notes}</p>
+                    </div>
+                  )}
+
+                  {/* Alternatives */}
+                  {tea.alternatives && tea.alternatives.length > 0 && (
+                    <div>
+                      <h4 className="font-medium text-sm mb-2">Alternativas similares</h4>
+                      <div className="flex flex-wrap gap-1">
+                        {tea.alternatives.map((alt, i) => (
+                          <Badge key={i} variant="outline" className="text-xs">
+                            {alt}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Intensity indicator */}
+                  {tea.intensity && intensityLabels[tea.intensity] && (
+                    <div className="flex items-center gap-2 text-sm">
+                      <span className="text-muted-foreground">Intensidade:</span>
+                      <Badge className={intensityLabels[tea.intensity].color}>
+                        {intensityLabels[tea.intensity].label}
+                      </Badge>
+                    </div>
+                  )}
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Preparation Drawer */}
+      <TeaPreparationDrawer 
+        tea={tea} 
+        open={showPreparation} 
+        onOpenChange={setShowPreparation} 
+      />
+    </>
   );
 }
 

@@ -425,10 +425,14 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
+          infusion_time: string | null
           intensity: string | null
           main_benefit: string | null
           name: string
           preparation: string | null
+          preparation_ingredients: string[] | null
+          preparation_notes: string | null
+          preparation_steps: string[] | null
           purpose: string[]
           safety_notes: string | null
           time_of_day: string[] | null
@@ -440,10 +444,14 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          infusion_time?: string | null
           intensity?: string | null
           main_benefit?: string | null
           name: string
           preparation?: string | null
+          preparation_ingredients?: string[] | null
+          preparation_notes?: string | null
+          preparation_steps?: string[] | null
           purpose: string[]
           safety_notes?: string | null
           time_of_day?: string[] | null
@@ -455,10 +463,14 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          infusion_time?: string | null
           intensity?: string | null
           main_benefit?: string | null
           name?: string
           preparation?: string | null
+          preparation_ingredients?: string[] | null
+          preparation_notes?: string | null
+          preparation_steps?: string[] | null
           purpose?: string[]
           safety_notes?: string | null
           time_of_day?: string[] | null

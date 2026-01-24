@@ -16,6 +16,11 @@ export interface Tea {
   time_of_day: string[] | null;
   alternatives: string[] | null;
   main_benefit: string | null;
+  // Structured preparation fields
+  preparation_ingredients: string[] | null;
+  preparation_steps: string[] | null;
+  infusion_time: string | null;
+  preparation_notes: string | null;
 }
 
 export interface TeaLog {
