@@ -34,7 +34,7 @@ import {
 import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
 import { FoodSearch } from '@/components/meals/FoodSearch';
-import { PortionSelector } from '@/components/meals/PortionSelector';
+import { MealTray, TrayItem } from '@/components/meals/MealTray';
 import { useMealLogs, useAddMeal, useDeleteMeal, Food, calculateNutrition } from '@/hooks/useMeals';
 import { useMealSummary } from '@/hooks/useTodayMeals';
 import { MEAL_TYPES } from '@/lib/constants';
@@ -42,6 +42,7 @@ import { MealSuggestion } from '@/lib/meal-suggestions';
 import { cn } from '@/lib/utils';
 import { BottomNav } from '@/components/BottomNav';
 import { MealSuggestions } from '@/components/meals/MealSuggestions';
+import { toast } from 'sonner';
 
 export default function Meals() {
   const navigate = useNavigate();
@@ -51,15 +52,13 @@ export default function Meals() {
   const deleteMeal = useDeleteMeal();
 
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [selectedFood, setSelectedFood] = useState<Food | null>(null);
+  const [mealTray, setMealTray] = useState<TrayItem[]>([]);
   const [mealType, setMealType] = useState<string>(MEAL_TYPES[0].value);
-  const [portion, setPortion] = useState(100);
   const [notes, setNotes] = useState('');
   const [deletingMealId, setDeletingMealId] = useState<string | null>(null);
-  const [pendingSuggestion, setPendingSuggestion] = useState<MealSuggestion | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSuggestionSelect = (suggestion: MealSuggestion, mealTypeValue: string) => {
-    setPendingSuggestion(suggestion);
     setMealType(mealTypeValue);
     // Add all items from the suggestion
     suggestion.items.forEach((item, index) => {
@@ -74,37 +73,76 @@ export default function Meals() {
         });
       }, index * 100);
     });
-    setPendingSuggestion(null);
   };
 
-  const handleAddMeal = () => {
-    if (!selectedFood) return;
+  // Add food to tray
+  const handleAddToTray = (food: Food) => {
+    setMealTray((prev) => [...prev, { food, portion: 100 }]);
+  };
 
-    const nutrition = calculateNutrition(selectedFood, portion);
-
-    addMeal.mutate(
-      {
-        mealType,
-        foodId: selectedFood.id,
-        foodName: selectedFood.name,
-        portionGrams: portion,
-        calories: nutrition.calories,
-        protein: nutrition.protein,
-        notes: notes || undefined,
-      },
-      {
-        onSuccess: () => {
-          resetForm();
-          setIsAddDialogOpen(false);
-        },
-      }
+  // Update portion in tray
+  const handleUpdatePortion = (index: number, portion: number) => {
+    setMealTray((prev) =>
+      prev.map((item, i) => (i === index ? { ...item, portion } : item))
     );
   };
 
+  // Remove from tray
+  const handleRemoveFromTray = (index: number) => {
+    setMealTray((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  // Submit all items in tray
+  const handleAddMeals = async () => {
+    if (mealTray.length === 0) return;
+
+    setIsSubmitting(true);
+
+    try {
+      // Add each item sequentially with small delays
+      for (let i = 0; i < mealTray.length; i++) {
+        const item = mealTray[i];
+        const nutrition = calculateNutrition(item.food, item.portion);
+
+        await new Promise<void>((resolve, reject) => {
+          addMeal.mutate(
+            {
+              mealType,
+              foodId: item.food.id,
+              foodName: item.food.name,
+              portionGrams: item.portion,
+              calories: nutrition.calories,
+              protein: nutrition.protein,
+              notes: i === 0 && notes ? notes : undefined,
+            },
+            {
+              onSuccess: () => resolve(),
+              onError: (err) => reject(err),
+            }
+          );
+        });
+
+        // Small delay between items
+        if (i < mealTray.length - 1) {
+          await new Promise((resolve) => setTimeout(resolve, 100));
+        }
+      }
+
+      toast.success(
+        `${mealTray.length} ${mealTray.length === 1 ? 'alimento registrado' : 'alimentos registrados'}!`
+      );
+      resetForm();
+      setIsAddDialogOpen(false);
+    } catch (error) {
+      toast.error('Erro ao registrar refeição');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const resetForm = () => {
-    setSelectedFood(null);
+    setMealTray([]);
     setMealType(MEAL_TYPES[0].value);
-    setPortion(100);
     setNotes('');
   };
 
@@ -113,6 +151,14 @@ export default function Meals() {
       deleteMeal.mutate(deletingMealId);
       setDeletingMealId(null);
     }
+  };
+
+  const handleOpenDialog = (presetMealType?: string) => {
+    resetForm();
+    if (presetMealType) {
+      setMealType(presetMealType);
+    }
+    setIsAddDialogOpen(true);
   };
 
   // Group meals by meal type
@@ -127,6 +173,9 @@ export default function Meals() {
   const proteinPercent = summary
     ? Math.min(100, (summary.totalProtein / summary.targetProtein) * 100)
     : 0;
+
+  // Get added food IDs for the tray (to show "added" state in search)
+  const addedFoodIds = mealTray.map((item) => item.food.id);
 
   return (
     <div className="min-h-screen bg-background">
@@ -149,7 +198,7 @@ export default function Meals() {
             <Utensils className="h-5 w-5 text-primary" />
             <h1 className="text-lg font-semibold">Alimentação</h1>
           </div>
-          <Button size="sm" onClick={() => setIsAddDialogOpen(true)}>
+          <Button size="sm" onClick={() => handleOpenDialog()}>
             <Plus className="h-4 w-4 mr-1" />
             Adicionar
           </Button>
@@ -262,10 +311,7 @@ export default function Meals() {
                         />
                       </div>
                       <button
-                        onClick={() => {
-                          setMealType(mealBlock.value);
-                          setIsAddDialogOpen(true);
-                        }}
+                        onClick={() => handleOpenDialog(mealBlock.value)}
                         className="w-full p-4 flex items-center justify-center gap-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors border-t border-border"
                       >
                         <Plus className="h-4 w-4" />
@@ -284,7 +330,7 @@ export default function Meals() {
       <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
         <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Adicionar Refeição</DialogTitle>
+            <DialogTitle>Montar Refeição</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             {/* Meal Type */}
@@ -304,24 +350,22 @@ export default function Meals() {
               </Select>
             </div>
 
-            {/* Food Search */}
+            {/* Food Search (Multi mode) */}
             <div className="space-y-2">
-              <Label>Alimento</Label>
+              <Label>Buscar Alimentos</Label>
               <FoodSearch
-                selectedFood={selectedFood}
-                onSelect={setSelectedFood}
-                onClear={() => setSelectedFood(null)}
+                mode="multi"
+                onSelect={handleAddToTray}
+                addedFoodIds={addedFoodIds}
               />
             </div>
 
-            {/* Portion */}
-            {selectedFood && (
-              <PortionSelector
-                food={selectedFood}
-                portion={portion}
-                onPortionChange={setPortion}
-              />
-            )}
+            {/* Meal Tray */}
+            <MealTray
+              items={mealTray}
+              onUpdatePortion={handleUpdatePortion}
+              onRemove={handleRemoveFromTray}
+            />
 
             {/* Notes */}
             <div className="space-y-2">
@@ -337,10 +381,12 @@ export default function Meals() {
             {/* Submit */}
             <Button
               className="w-full"
-              onClick={handleAddMeal}
-              disabled={!selectedFood || addMeal.isPending}
+              onClick={handleAddMeals}
+              disabled={mealTray.length === 0 || isSubmitting}
             >
-              {addMeal.isPending ? 'Salvando...' : 'Registrar Refeição'}
+              {isSubmitting
+                ? 'Salvando...'
+                : `Registrar Refeição${mealTray.length > 0 ? ` (${mealTray.length})` : ''}`}
             </Button>
           </div>
         </DialogContent>
