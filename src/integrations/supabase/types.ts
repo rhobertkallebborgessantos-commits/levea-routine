@@ -14,6 +14,138 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_access_logs: {
+        Row: {
+          action: string
+          admin_id: string
+          created_at: string
+          id: string
+          ip_address: string | null
+          metadata: Json | null
+          user_agent: string | null
+        }
+        Insert: {
+          action: string
+          admin_id: string
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          user_agent?: string | null
+        }
+        Update: {
+          action?: string
+          admin_id?: string
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
+      admin_alerts: {
+        Row: {
+          acknowledged_at: string | null
+          acknowledged_by: string | null
+          alert_type: string
+          created_at: string
+          description: string | null
+          id: string
+          is_acknowledged: boolean | null
+          severity: string
+          title: string
+        }
+        Insert: {
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          alert_type: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_acknowledged?: boolean | null
+          severity?: string
+          title: string
+        }
+        Update: {
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          alert_type?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_acknowledged?: boolean | null
+          severity?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      admin_allowlist: {
+        Row: {
+          added_by: string | null
+          created_at: string
+          email: string
+          id: string
+          role: Database["public"]["Enums"]["admin_role"]
+          updated_at: string
+        }
+        Insert: {
+          added_by?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          role?: Database["public"]["Enums"]["admin_role"]
+          updated_at?: string
+        }
+        Update: {
+          added_by?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          role?: Database["public"]["Enums"]["admin_role"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      admin_messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          is_broadcast: boolean | null
+          is_read: boolean | null
+          message_type: string | null
+          read_at: string | null
+          recipient_user_id: string | null
+          sender_admin_id: string
+          title: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          is_broadcast?: boolean | null
+          is_read?: boolean | null
+          message_type?: string | null
+          read_at?: string | null
+          recipient_user_id?: string | null
+          sender_admin_id: string
+          title: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          is_broadcast?: boolean | null
+          is_read?: boolean | null
+          message_type?: string | null
+          read_at?: string | null
+          recipient_user_id?: string | null
+          sender_admin_id?: string
+          title?: string
+        }
+        Relationships: []
+      }
       body_measurements: {
         Row: {
           arm: number | null
@@ -50,6 +182,33 @@ export type Database = {
           thigh?: number | null
           user_id?: string
           waist?: number | null
+        }
+        Relationships: []
+      }
+      cancellation_logs: {
+        Row: {
+          cancelled_at: string
+          feedback: string | null
+          id: string
+          reason: string
+          reason_category: string | null
+          user_id: string
+        }
+        Insert: {
+          cancelled_at?: string
+          feedback?: string | null
+          id?: string
+          reason: string
+          reason_category?: string | null
+          user_id: string
+        }
+        Update: {
+          cancelled_at?: string
+          feedback?: string | null
+          id?: string
+          reason?: string
+          reason_category?: string | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -116,6 +275,39 @@ export type Database = {
           is_active?: boolean | null
           title?: string
           trigger_context?: string | null
+        }
+        Relationships: []
+      }
+      data_access_requests: {
+        Row: {
+          created_at: string
+          id: string
+          notes: string | null
+          processed_at: string | null
+          processed_by: string | null
+          request_type: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          processed_at?: string | null
+          processed_by?: string | null
+          request_type: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          processed_at?: string | null
+          processed_by?: string | null
+          request_type?: string
+          status?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -244,28 +436,43 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          cancelled_at: string | null
           created_at: string
           full_name: string | null
           id: string
+          last_login_at: string | null
           onboarding_completed: boolean | null
+          platform: string | null
+          subscription_plan: string | null
+          subscription_status: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
           avatar_url?: string | null
+          cancelled_at?: string | null
           created_at?: string
           full_name?: string | null
           id?: string
+          last_login_at?: string | null
           onboarding_completed?: boolean | null
+          platform?: string | null
+          subscription_plan?: string | null
+          subscription_status?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
           avatar_url?: string | null
+          cancelled_at?: string | null
           created_at?: string
           full_name?: string | null
           id?: string
+          last_login_at?: string | null
           onboarding_completed?: boolean | null
+          platform?: string | null
+          subscription_plan?: string | null
+          subscription_status?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -328,6 +535,45 @@ export type Database = {
           p256dh?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      reengagement_campaigns: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          is_active: boolean | null
+          message_content: string
+          message_title: string
+          name: string
+          trigger_hours: number
+          trigger_type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean | null
+          message_content: string
+          message_title: string
+          name: string
+          trigger_hours: number
+          trigger_type: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean | null
+          message_content?: string
+          message_title?: string
+          name?: string
+          trigger_hours?: number
+          trigger_type?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -477,6 +723,78 @@ export type Database = {
         }
         Relationships: []
       }
+      user_analytics: {
+        Row: {
+          created_at: string
+          date: string
+          id: string
+          is_online: boolean | null
+          last_activity_at: string | null
+          modules_accessed: string[] | null
+          session_count: number | null
+          total_session_duration_seconds: number | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          date?: string
+          id?: string
+          is_online?: boolean | null
+          last_activity_at?: string | null
+          modules_accessed?: string[] | null
+          session_count?: number | null
+          total_session_duration_seconds?: number | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          id?: string
+          is_online?: boolean | null
+          last_activity_at?: string | null
+          modules_accessed?: string[] | null
+          session_count?: number | null
+          total_session_duration_seconds?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_consents: {
+        Row: {
+          consent_type: string
+          created_at: string
+          granted_at: string | null
+          id: string
+          ip_address: string | null
+          is_granted: boolean
+          revoked_at: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          consent_type: string
+          created_at?: string
+          granted_at?: string | null
+          id?: string
+          ip_address?: string | null
+          is_granted: boolean
+          revoked_at?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          consent_type?: string
+          created_at?: string
+          granted_at?: string | null
+          id?: string
+          ip_address?: string | null
+          is_granted?: boolean
+          revoked_at?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_preferences: {
         Row: {
           activity_level: Database["public"]["Enums"]["activity_level"] | null
@@ -562,6 +880,45 @@ export type Database = {
           updated_at?: string
           user_id?: string
           weekly_focus?: string | null
+        }
+        Relationships: []
+      }
+      user_risk_flags: {
+        Row: {
+          created_at: string
+          id: string
+          is_resolved: boolean | null
+          notes: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          risk_score: number | null
+          risk_type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_resolved?: boolean | null
+          notes?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          risk_score?: number | null
+          risk_type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_resolved?: boolean | null
+          notes?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          risk_score?: number | null
+          risk_type?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -672,10 +1029,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_admin_role: {
+        Args: { _user_id: string }
+        Returns: Database["public"]["Enums"]["admin_role"]
+      }
+      is_admin: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
       activity_level: "low" | "medium" | "high"
+      admin_role: "master_admin" | "operational_admin"
       food_preference: "balanced" | "low_carb"
       time_block: "morning" | "lunch" | "afternoon" | "evening"
       user_goal: "lose_weight" | "maintain_weight" | "build_habits"
@@ -807,6 +1169,7 @@ export const Constants = {
   public: {
     Enums: {
       activity_level: ["low", "medium", "high"],
+      admin_role: ["master_admin", "operational_admin"],
       food_preference: ["balanced", "low_carb"],
       time_block: ["morning", "lunch", "afternoon", "evening"],
       user_goal: ["lose_weight", "maintain_weight", "build_habits"],
