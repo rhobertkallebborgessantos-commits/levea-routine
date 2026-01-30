@@ -23,6 +23,20 @@ const Progress = lazy(() => import("./pages/Progress"));
 const Meals = lazy(() => import("./pages/Meals"));
 const WeeklyCheckin = lazy(() => import("./pages/WeeklyCheckin"));
 
+// Admin pages - lazy loaded
+const AdminLogin = lazy(() => import("./pages/admin/AdminLogin"));
+const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
+const AdminUsers = lazy(() => import("./pages/admin/AdminUsers"));
+const AdminChurn = lazy(() => import("./pages/admin/AdminChurn"));
+const AdminEngagement = lazy(() => import("./pages/admin/AdminEngagement"));
+const AdminRisks = lazy(() => import("./pages/admin/AdminRisks"));
+const AdminContent = lazy(() => import("./pages/admin/AdminContent"));
+const AdminCommunications = lazy(() => import("./pages/admin/AdminCommunications"));
+const AdminFinancial = lazy(() => import("./pages/admin/AdminFinancial"));
+const AdminReports = lazy(() => import("./pages/admin/AdminReports"));
+const AdminCompliance = lazy(() => import("./pages/admin/AdminCompliance"));
+const AdminSettings = lazy(() => import("./pages/admin/AdminSettings"));
+
 const queryClient = new QueryClient();
 
 function AnimatedRoutes() {
@@ -40,6 +54,21 @@ function AnimatedRoutes() {
         <Route path="/progress" element={<PageTransition><Suspense fallback={<PageLoader />}><Progress /></Suspense></PageTransition>} />
         <Route path="/meals" element={<PageTransition><Suspense fallback={<PageLoader />}><Meals /></Suspense></PageTransition>} />
         <Route path="/checkin" element={<PageTransition><Suspense fallback={<PageLoader />}><WeeklyCheckin /></Suspense></PageTransition>} />
+        
+        {/* Admin Routes */}
+        <Route path="/admin" element={<Suspense fallback={<PageLoader />}><AdminLogin /></Suspense>} />
+        <Route path="/admin/dashboard" element={<Suspense fallback={<PageLoader />}><AdminDashboard /></Suspense>} />
+        <Route path="/admin/users" element={<Suspense fallback={<PageLoader />}><AdminUsers /></Suspense>} />
+        <Route path="/admin/churn" element={<Suspense fallback={<PageLoader />}><AdminChurn /></Suspense>} />
+        <Route path="/admin/engagement" element={<Suspense fallback={<PageLoader />}><AdminEngagement /></Suspense>} />
+        <Route path="/admin/risks" element={<Suspense fallback={<PageLoader />}><AdminRisks /></Suspense>} />
+        <Route path="/admin/content" element={<Suspense fallback={<PageLoader />}><AdminContent /></Suspense>} />
+        <Route path="/admin/communications" element={<Suspense fallback={<PageLoader />}><AdminCommunications /></Suspense>} />
+        <Route path="/admin/financial" element={<Suspense fallback={<PageLoader />}><AdminFinancial /></Suspense>} />
+        <Route path="/admin/reports" element={<Suspense fallback={<PageLoader />}><AdminReports /></Suspense>} />
+        <Route path="/admin/compliance" element={<Suspense fallback={<PageLoader />}><AdminCompliance /></Suspense>} />
+        <Route path="/admin/settings" element={<Suspense fallback={<PageLoader />}><AdminSettings /></Suspense>} />
+        
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
       </Routes>
