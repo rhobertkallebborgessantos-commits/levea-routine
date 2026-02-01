@@ -46,6 +46,35 @@ const purposeColors: Record<string, string> = {
   'sono': 'bg-levea-lavender text-purple-700',
 };
 
+// Translation helper for best_time field
+const translateBestTime = (bestTime: string): string => {
+  const translations: Record<string, string> = {
+    'morning': 'Manhã',
+    'afternoon': 'Tarde',
+    'evening': 'Noite',
+    'any': 'Qualquer horário',
+    'before meals': 'Antes das refeições',
+    'after meals': 'Após as refeições',
+    'before bed': 'Antes de dormir',
+    'before sleep': 'Antes de dormir',
+    'night': 'Noite',
+    'anytime': 'Qualquer horário',
+  };
+  
+  const lowerBestTime = bestTime.toLowerCase();
+  if (translations[lowerBestTime]) {
+    return translations[lowerBestTime];
+  }
+  
+  let translated = bestTime;
+  Object.entries(translations).forEach(([en, pt]) => {
+    const regex = new RegExp(en, 'gi');
+    translated = translated.replace(regex, pt);
+  });
+  
+  return translated;
+};
+
 function TeaCard({ tea, isLogged, onLog }: { tea: Tea; isLogged: boolean; onLog: () => void }) {
   return (
     <div className={cn(
@@ -81,7 +110,7 @@ function TeaCard({ tea, isLogged, onLog }: { tea: Tea; isLogged: boolean; onLog:
           {tea.best_time && (
             <div className="flex items-center gap-1 mt-2 text-xs text-muted-foreground">
               <Clock className="h-3 w-3" />
-              {tea.best_time}
+              {translateBestTime(tea.best_time)}
             </div>
           )}
         </div>

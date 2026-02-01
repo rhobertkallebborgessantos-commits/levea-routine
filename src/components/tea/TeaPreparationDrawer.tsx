@@ -3,6 +3,35 @@ import { Badge } from '@/components/ui/badge';
 import { Leaf, Clock, Droplets, Flame, Info, AlertTriangle } from 'lucide-react';
 import { Tea } from '@/hooks/useTeas';
 
+// Translation helper for best_time field
+const translateBestTime = (bestTime: string): string => {
+  const translations: Record<string, string> = {
+    'morning': 'Manhã',
+    'afternoon': 'Tarde',
+    'evening': 'Noite',
+    'any': 'Qualquer horário',
+    'before meals': 'Antes das refeições',
+    'after meals': 'Após as refeições',
+    'before bed': 'Antes de dormir',
+    'before sleep': 'Antes de dormir',
+    'night': 'Noite',
+    'anytime': 'Qualquer horário',
+  };
+  
+  const lowerBestTime = bestTime.toLowerCase();
+  if (translations[lowerBestTime]) {
+    return translations[lowerBestTime];
+  }
+  
+  let translated = bestTime;
+  Object.entries(translations).forEach(([en, pt]) => {
+    const regex = new RegExp(en, 'gi');
+    translated = translated.replace(regex, pt);
+  });
+  
+  return translated;
+};
+
 interface TeaPreparationDrawerProps {
   tea: Tea | null;
   open: boolean;
@@ -98,7 +127,7 @@ export function TeaPreparationDrawer({ tea, open, onOpenChange }: TeaPreparation
                 )}
                 {tea.best_time && (
                   <Badge variant="outline" className="text-sm py-1.5 px-3">
-                    🕐 Melhor horário: {tea.best_time}
+                    🕐 Melhor horário: {translateBestTime(tea.best_time)}
                   </Badge>
                 )}
               </div>
