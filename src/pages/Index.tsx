@@ -114,7 +114,7 @@ export default function Index() {
                 }}
                 className="rounded-md"
               >
-                <Button size="lg" className="gap-2 text-base px-8 transition-all duration-200 hover:scale-105 hover:brightness-110 hover:shadow-lg" asChild>
+                <Button size="lg" className="gap-2 text-base px-8" asChild>
                   <Link to="/auth">
                     Acessar Levea
                     <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
