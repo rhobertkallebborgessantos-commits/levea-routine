@@ -98,16 +98,13 @@ export default function Index() {
               LEVEA te ajuda a construir hábitos saudáveis através de lembretes, rotinas organizadas e orientação personalizada — sem dietas restritivas, sem culpa, apenas progresso.
             </p>
             
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+            <div className="flex justify-center pt-4">
               <Button size="lg" className="gap-2 text-base px-8" asChild>
                 <Link to="/auth">
                   Acessar Levea
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
-              <p className="text-sm text-muted-foreground">
-                Configuração em 2 minutos
-              </p>
             </div>
           </motion.div>
         </div>
