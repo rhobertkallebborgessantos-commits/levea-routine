@@ -28,7 +28,7 @@ export default function Index() {
   }, {
     icon: Bell,
     title: 'Lembretes Inteligentes',
-    description: 'Notificações gentis e personalizadas para refeições, hidratação e pausas.'
+    description: 'Notificações personalizadas para refeições, hidratação e pausas.'
   }, {
     icon: Heart,
     title: 'Sem Culpa, Só Progresso',
