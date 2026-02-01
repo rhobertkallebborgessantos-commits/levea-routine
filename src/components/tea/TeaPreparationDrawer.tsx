@@ -9,27 +9,39 @@ const translateBestTime = (bestTime: string): string => {
     'morning': 'Manhã',
     'afternoon': 'Tarde',
     'evening': 'Noite',
-    'any': 'Qualquer horário',
-    'before meals': 'Antes das refeições',
-    'after meals': 'Após as refeições',
-    'before bed': 'Antes de dormir',
-    'before sleep': 'Antes de dormir',
     'night': 'Noite',
+    'any': 'Qualquer horário',
     'anytime': 'Qualquer horário',
+    'before_bed': 'Antes de dormir',
+    'before bed': 'Antes de dormir',
+    'before_sleep': 'Antes de dormir',
+    'before sleep': 'Antes de dormir',
+    'before_meals': 'Antes das refeições',
+    'before meals': 'Antes das refeições',
+    'after_meals': 'Após as refeições',
+    'after meals': 'Após as refeições',
+    'after_lunch': 'Após o almoço',
+    'after lunch': 'Após o almoço',
+    'after_dinner': 'Após o jantar',
+    'after dinner': 'Após o jantar',
+    'with_meals': 'Durante as refeições',
+    'with meals': 'Durante as refeições',
+    'fasting': 'Em jejum',
+    'empty_stomach': 'Em jejum',
+    'empty stomach': 'Em jejum',
   };
   
-  const lowerBestTime = bestTime.toLowerCase();
-  if (translations[lowerBestTime]) {
-    return translations[lowerBestTime];
+  const normalized = bestTime.toLowerCase().replace(/_/g, ' ').trim();
+  
+  if (translations[normalized]) {
+    return translations[normalized];
   }
   
-  let translated = bestTime;
-  Object.entries(translations).forEach(([en, pt]) => {
-    const regex = new RegExp(en, 'gi');
-    translated = translated.replace(regex, pt);
-  });
+  if (translations[bestTime.toLowerCase()]) {
+    return translations[bestTime.toLowerCase()];
+  }
   
-  return translated;
+  return bestTime;
 };
 
 interface TeaPreparationDrawerProps {
