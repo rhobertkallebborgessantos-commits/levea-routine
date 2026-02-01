@@ -73,6 +73,37 @@ const timeLabels: Record<string, string> = {
   'any': '⏰ Qualquer',
 };
 
+// Translation helper for best_time field
+const translateBestTime = (bestTime: string): string => {
+  const translations: Record<string, string> = {
+    'morning': 'Manhã',
+    'afternoon': 'Tarde',
+    'evening': 'Noite',
+    'any': 'Qualquer horário',
+    'before meals': 'Antes das refeições',
+    'after meals': 'Após as refeições',
+    'before bed': 'Antes de dormir',
+    'before sleep': 'Antes de dormir',
+    'night': 'Noite',
+    'anytime': 'Qualquer horário',
+  };
+  
+  // Check for exact match first
+  const lowerBestTime = bestTime.toLowerCase();
+  if (translations[lowerBestTime]) {
+    return translations[lowerBestTime];
+  }
+  
+  // Try to translate common patterns
+  let translated = bestTime;
+  Object.entries(translations).forEach(([en, pt]) => {
+    const regex = new RegExp(en, 'gi');
+    translated = translated.replace(regex, pt);
+  });
+  
+  return translated;
+};
+
 function TeaCard({ tea, isLogged, onLog, onSchedule }: { 
   tea: Tea; 
   isLogged: boolean; 
@@ -133,7 +164,7 @@ function TeaCard({ tea, isLogged, onLog, onSchedule }: {
                 {tea.best_time && (
                   <div className="flex items-center gap-1">
                     <Clock className="h-3 w-3" />
-                    <span>{tea.best_time}</span>
+                    <span>{translateBestTime(tea.best_time)}</span>
                   </div>
                 )}
                 {tea.time_of_day && tea.time_of_day.length > 0 && (
