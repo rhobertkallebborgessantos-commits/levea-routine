@@ -4,22 +4,14 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { SplashScreen } from '@/components/SplashScreen';
-import { 
-  Leaf, 
-  ArrowRight, 
-  Bell, 
-  Calendar, 
-  Heart,
-  Sparkles
-} from 'lucide-react';
-
+import { Leaf, ArrowRight, Bell, Calendar, Heart, Sparkles } from 'lucide-react';
 const SPLASH_SHOWN_KEY = 'levea_splash_shown';
-
 export default function Index() {
-  const { user } = useAuth();
+  const {
+    user
+  } = useAuth();
   const [showSplash, setShowSplash] = useState(false);
   const [isReady, setIsReady] = useState(false);
-
   useEffect(() => {
     // Only show splash once per session
     const splashShown = sessionStorage.getItem(SPLASH_SHOWN_KEY);
@@ -29,42 +21,31 @@ export default function Index() {
     }
     setIsReady(true);
   }, []);
-
-  const features = [
-    {
-      icon: Calendar,
-      title: 'Rotina Diária Guiada',
-      description: 'Estrutura simples da manhã à noite que organiza seu dia sem esforço.',
-    },
-    {
-      icon: Bell,
-      title: 'Lembretes Inteligentes',
-      description: 'Notificações gentis e personalizadas para refeições, hidratação e pausas.',
-    },
-    {
-      icon: Heart,
-      title: 'Sem Culpa, Só Progresso',
-      description: 'Foco em consistência, não em perfeição. Cada pequeno passo conta.',
-    },
-    {
-      icon: Sparkles,
-      title: 'Experiência Personalizada',
-      description: 'Adaptado aos seus objetivos, dificuldades e horários disponíveis.',
-    },
-  ];
-
+  const features = [{
+    icon: Calendar,
+    title: 'Rotina Diária Guiada',
+    description: 'Estrutura simples da manhã à noite que organiza seu dia sem esforço.'
+  }, {
+    icon: Bell,
+    title: 'Lembretes Inteligentes',
+    description: 'Notificações gentis e personalizadas para refeições, hidratação e pausas.'
+  }, {
+    icon: Heart,
+    title: 'Sem Culpa, Só Progresso',
+    description: 'Foco em consistência, não em perfeição. Cada pequeno passo conta.'
+  }, {
+    icon: Sparkles,
+    title: 'Experiência Personalizada',
+    description: 'Adaptado aos seus objetivos, dificuldades e horários disponíveis.'
+  }];
   if (!isReady) {
-    return (
-      <div className="fixed inset-0 flex items-center justify-center bg-background">
+    return <div className="fixed inset-0 flex items-center justify-center bg-background">
         <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center animate-pulse">
           <Leaf className="h-6 w-6 text-primary-foreground" />
         </div>
-      </div>
-    );
+      </div>;
   }
-
-  return (
-    <>
+  return <>
       {showSplash && <SplashScreen onComplete={() => setShowSplash(false)} />}
       <div className="min-h-screen bg-background">
       {/* Header */}
@@ -77,20 +58,16 @@ export default function Index() {
             <span className="text-xl font-display font-bold text-foreground">LEVEA</span>
           </div>
           <div className="flex items-center gap-3">
-            {user ? (
-              <Button asChild>
+            {user ? <Button asChild>
                 <Link to="/dashboard">Ir para o Painel</Link>
-              </Button>
-            ) : (
-              <>
+              </Button> : <>
                 <Button variant="ghost" asChild>
                   <Link to="/auth">Entrar</Link>
                 </Button>
                 <Button asChild>
                   <Link to="/auth">Começar</Link>
                 </Button>
-              </>
-            )}
+              </>}
           </div>
         </div>
       </header>
@@ -98,12 +75,15 @@ export default function Index() {
       {/* Hero Section */}
       <section className="pt-32 pb-20 px-4">
         <div className="max-w-3xl mx-auto text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="space-y-6"
-          >
+          <motion.div initial={{
+            opacity: 0,
+            y: 20
+          }} animate={{
+            opacity: 1,
+            y: 0
+          }} transition={{
+            duration: 0.6
+          }} className="space-y-6">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent text-accent-foreground text-sm font-medium">
               <Sparkles className="h-4 w-4" />
               Rotina inteligente para emagrecer sem sofrimento
@@ -115,9 +95,7 @@ export default function Index() {
             </h1>
             
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-              LEVEA te ajuda a construir hábitos saudáveis através de lembretes gentis, 
-              rotinas organizadas e orientação personalizada — sem dietas restritivas, 
-              sem culpa, apenas progresso.
+              LEVEA te ajuda a construir hábitos saudáveis através de lembretes, rotinas organizadas e orientação personalizada — sem dietas restritivas, sem culpa, apenas progresso.
             </p>
             
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
@@ -138,13 +116,17 @@ export default function Index() {
       {/* Features Section */}
       <section className="py-20 px-4 bg-muted/30">
         <div className="max-w-5xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-12"
-          >
+          <motion.div initial={{
+            opacity: 0,
+            y: 20
+          }} whileInView={{
+            opacity: 1,
+            y: 0
+          }} viewport={{
+            once: true
+          }} transition={{
+            duration: 0.6
+          }} className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground mb-4">
               Tudo que você precisa para manter a consistência
             </h2>
@@ -154,15 +136,18 @@ export default function Index() {
           </motion.div>
 
           <div className="grid md:grid-cols-2 gap-6">
-            {features.map((feature, index) => (
-              <motion.div
-                key={feature.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="bg-card rounded-2xl p-6 border border-border/50 hover:border-primary/30 transition-colors"
-              >
+            {features.map((feature, index) => <motion.div key={feature.title} initial={{
+              opacity: 0,
+              y: 20
+            }} whileInView={{
+              opacity: 1,
+              y: 0
+            }} viewport={{
+              once: true
+            }} transition={{
+              duration: 0.5,
+              delay: index * 0.1
+            }} className="bg-card rounded-2xl p-6 border border-border/50 hover:border-primary/30 transition-colors">
                 <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
                   <feature.icon className="h-6 w-6 text-primary" />
                 </div>
@@ -172,8 +157,7 @@ export default function Index() {
                 <p className="text-muted-foreground">
                   {feature.description}
                 </p>
-              </motion.div>
-            ))}
+              </motion.div>)}
           </div>
         </div>
       </section>
@@ -181,31 +165,44 @@ export default function Index() {
       {/* How It Works */}
       <section className="py-20 px-4">
         <div className="max-w-4xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
-          >
+          <motion.div initial={{
+            opacity: 0,
+            y: 20
+          }} whileInView={{
+            opacity: 1,
+            y: 0
+          }} viewport={{
+            once: true
+          }} className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground mb-4">
               Como a LEVEA funciona
             </h2>
           </motion.div>
 
           <div className="space-y-8">
-            {[
-              { step: '1', title: 'Conte sobre você', description: 'Perguntas rápidas sobre seus objetivos e horários.' },
-              { step: '2', title: 'Receba sua rotina personalizada', description: 'Criamos uma estrutura diária com lembretes gentis.' },
-              { step: '3', title: 'Mantenha a consistência, veja resultados', description: 'Acompanhe sua sequência e celebre suas conquistas.' },
-            ].map((item, index) => (
-              <motion.div
-                key={item.step}
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.15 }}
-                className="flex gap-6 items-start"
-              >
+            {[{
+              step: '1',
+              title: 'Conte sobre você',
+              description: 'Perguntas rápidas sobre seus objetivos e horários.'
+            }, {
+              step: '2',
+              title: 'Receba sua rotina personalizada',
+              description: 'Criamos uma estrutura diária com lembretes gentis.'
+            }, {
+              step: '3',
+              title: 'Mantenha a consistência, veja resultados',
+              description: 'Acompanhe sua sequência e celebre suas conquistas.'
+            }].map((item, index) => <motion.div key={item.step} initial={{
+              opacity: 0,
+              x: -20
+            }} whileInView={{
+              opacity: 1,
+              x: 0
+            }} viewport={{
+              once: true
+            }} transition={{
+              delay: index * 0.15
+            }} className="flex gap-6 items-start">
                 <div className="flex-shrink-0 w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-display font-bold text-lg">
                   {item.step}
                 </div>
@@ -213,8 +210,7 @@ export default function Index() {
                   <h3 className="text-xl font-display font-semibold text-foreground mb-1">{item.title}</h3>
                   <p className="text-muted-foreground">{item.description}</p>
                 </div>
-              </motion.div>
-            ))}
+              </motion.div>)}
           </div>
         </div>
       </section>
@@ -222,12 +218,15 @@ export default function Index() {
       {/* CTA */}
       <section className="py-20 px-4">
         <div className="max-w-3xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            className="bg-gradient-to-br from-primary/10 via-accent to-levea-mint rounded-3xl p-8 md:p-12 text-center"
-          >
+          <motion.div initial={{
+            opacity: 0,
+            scale: 0.95
+          }} whileInView={{
+            opacity: 1,
+            scale: 1
+          }} viewport={{
+            once: true
+          }} className="bg-gradient-to-br from-primary/10 via-accent to-levea-mint rounded-3xl p-8 md:p-12 text-center">
             <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground mb-4">
               Pronto para transformar sua rotina?
             </h2>
@@ -257,6 +256,5 @@ export default function Index() {
         </div>
       </footer>
       </div>
-    </>
-  );
+    </>;
 }
