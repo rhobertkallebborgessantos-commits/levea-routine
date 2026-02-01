@@ -99,12 +99,28 @@ export default function Index() {
             </p>
             
             <div className="flex justify-center pt-4">
-              <Button size="lg" className="gap-2 text-base px-8" asChild>
-                <Link to="/auth">
-                  Acessar Levea
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              </Button>
+              <motion.div
+                animate={{ 
+                  boxShadow: [
+                    "0 0 0 0 hsl(var(--primary) / 0)",
+                    "0 0 0 8px hsl(var(--primary) / 0.15)",
+                    "0 0 0 0 hsl(var(--primary) / 0)"
+                  ]
+                }}
+                transition={{ 
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+                className="rounded-md"
+              >
+                <Button size="lg" className="gap-2 text-base px-8" asChild>
+                  <Link to="/auth">
+                    Acessar Levea
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </Button>
+              </motion.div>
             </div>
           </motion.div>
         </div>
