@@ -187,7 +187,7 @@ export default function Index() {
             }, {
               step: '2',
               title: 'Receba sua rotina personalizada',
-              description: 'Criamos uma estrutura diária com lembretes gentis.'
+              description: 'Criamos uma estrutura diária com lembretes.'
             }, {
               step: '3',
               title: 'Mantenha a consistência, veja resultados',
