@@ -20,7 +20,7 @@ import {
   STRUGGLES, 
   TIME_SLOTS 
 } from '@/lib/constants';
-import { Leaf, ArrowLeft, User, Settings2, Bell, Check, Save, BellRing, BellOff, Sun, Moon, Monitor } from 'lucide-react';
+import { Leaf, ArrowLeft, User, Settings2, Bell, Check, Save, BellRing, BellOff, Sun, Moon, Monitor, CreditCard } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { BottomNav } from '@/components/BottomNav';
 import { Database } from '@/integrations/supabase/types';
@@ -271,6 +271,22 @@ function SettingsContent() {
                         </div>
                       </button>
                     ))}
+                  </CardContent>
+                </Card>
+
+                {/* Subscription */}
+                <Card className="cursor-pointer hover:border-primary/50 transition-colors" onClick={() => navigate('/subscription')}>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <CreditCard className="h-5 w-5 text-primary" />
+                      Minha Assinatura
+                    </CardTitle>
+                    <CardDescription>Gerencie seu plano e pagamentos</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <Button variant="outline" className="w-full">
+                      Ver detalhes
+                    </Button>
                   </CardContent>
                 </Card>
 
