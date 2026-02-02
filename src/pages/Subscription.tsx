@@ -361,17 +361,19 @@ function SubscriptionContent() {
             </div>
           </div>
           
-          {/* Dev Reset Button */}
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={handleResetSubscription}
-            disabled={isResetting}
-            className="text-xs gap-1"
-          >
-            <RotateCcw className={cn("h-3 w-3", isResetting && "animate-spin")} />
-            {isResetting ? 'Resetando...' : 'Reset (Dev)'}
-          </Button>
+          {/* Dev Reset Button - Only for specific test account */}
+          {user?.id === '4745a1f4-17be-420e-b669-f191f992df64' && (
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handleResetSubscription}
+              disabled={isResetting}
+              className="text-xs gap-1"
+            >
+              <RotateCcw className={cn("h-3 w-3", isResetting && "animate-spin")} />
+              {isResetting ? 'Resetando...' : 'Reset (Dev)'}
+            </Button>
+          )}
         </div>
       </header>
 
