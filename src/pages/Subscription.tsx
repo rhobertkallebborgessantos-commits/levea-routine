@@ -69,6 +69,7 @@ function SubscriptionContent() {
   const [showPlanSelector, setShowPlanSelector] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<'pix' | 'credit_card' | null>(null);
+  const [hasAutoSelected, setHasAutoSelected] = useState(false);
 
   const { data: subscription, isLoading: subLoading } = useUserSubscription();
   const { data: plans, isLoading: plansLoading } = useSubscriptionPlans();
@@ -78,6 +79,13 @@ function SubscriptionContent() {
   const cancelSubscription = useCancelSubscription();
   const reactivateSubscription = useReactivateSubscription();
   const createSubscription = useCreateSubscription();
+
+  // Auto-select annual plan when plans load (default to annual)
+  const annualPlan = plans?.find(p => p.interval === 'yearly');
+  if (plans && !selectedPlan && !hasAutoSelected && annualPlan) {
+    setSelectedPlan(annualPlan.id);
+    setHasAutoSelected(true);
+  }
   const simulatePixPayment = useSimulatePixPayment();
 
   const isLoading = subLoading || plansLoading;
@@ -189,63 +197,118 @@ function SubscriptionContent() {
             animate={{ opacity: 1, y: 0 }}
             className="space-y-6"
           >
-            <Card className="border-primary/30 bg-gradient-to-br from-primary/5 to-transparent">
-              <CardHeader className="text-center">
-                <Crown className="h-12 w-12 mx-auto text-primary mb-2" />
-                <CardTitle className="text-2xl">Comece sua jornada</CardTitle>
-                <CardDescription>
-                  Escolha o plano ideal para você e tenha acesso completo ao LEVEA
-                </CardDescription>
-              </CardHeader>
-            </Card>
-
-            <div className="space-y-4">
-              {plans?.map((plan) => (
-                <Card 
-                  key={plan.id}
-                  className={cn(
-                    "cursor-pointer transition-all border-2",
-                    selectedPlan === plan.id 
-                      ? "border-primary bg-primary/5" 
-                      : "border-border hover:border-primary/50"
-                  )}
-                  onClick={() => setSelectedPlan(plan.id)}
-                >
-                  <CardHeader>
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <CardTitle className="flex items-center gap-2">
-                          {plan.name}
-                          {plan.interval === 'yearly' && (
-                            <Badge variant="secondary" className="bg-green-500/10 text-green-600">
-                              Economia de 2 meses
-                            </Badge>
-                          )}
-                        </CardTitle>
-                        <CardDescription>{plan.description}</CardDescription>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-2xl font-bold text-foreground">{formatPrice(plan.price_cents)}</p>
-                        <p className="text-sm text-muted-foreground">
-                          /{plan.interval === 'yearly' ? 'ano' : 'mês'}
-                        </p>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-2">
-                      {(plan.features as string[])?.map((feature, i) => (
-                        <li key={i} className="flex items-center gap-2 text-sm">
-                          <Check className="h-4 w-4 text-green-500" />
-                          {feature}
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
-              ))}
+            {/* Header */}
+            <div className="text-center space-y-2">
+              <h1 className="text-2xl font-bold text-foreground">
+                Escolha o plano ideal para sua jornada
+              </h1>
+              <p className="text-muted-foreground">
+                Cancele a qualquer momento. Sem taxas escondidas.
+              </p>
             </div>
 
+            {/* Plans - Annual first */}
+            <div className="space-y-4">
+              {[...(plans || [])]
+                .sort((a, b) => (a.interval === 'yearly' ? -1 : 1))
+                .map((plan) => {
+                  const isAnnual = plan.interval === 'yearly';
+                  const monthlyEquivalent = isAnnual ? Math.round(plan.price_cents / 12) : null;
+                  const isSelected = selectedPlan === plan.id;
+
+                  return (
+                    <Card 
+                      key={plan.id}
+                      className={cn(
+                        "cursor-pointer transition-all border-2 relative overflow-hidden",
+                        isSelected 
+                          ? "border-primary bg-primary/5 ring-2 ring-primary/20" 
+                          : isAnnual
+                            ? "border-primary/50 hover:border-primary bg-gradient-to-br from-primary/5 to-transparent"
+                            : "border-border hover:border-primary/30"
+                      )}
+                      onClick={() => setSelectedPlan(plan.id)}
+                    >
+                      {/* Most Popular Badge */}
+                      {isAnnual && (
+                        <div className="absolute top-0 right-0">
+                          <Badge className="rounded-none rounded-bl-lg bg-primary text-primary-foreground px-3 py-1">
+                            <Sparkles className="h-3 w-3 mr-1" />
+                            Mais popular
+                          </Badge>
+                        </div>
+                      )}
+
+                      <CardHeader className={cn(isAnnual && "pt-8")}>
+                        <div className="flex items-start justify-between">
+                          <div className="space-y-1">
+                            <CardTitle className="text-xl">{plan.name}</CardTitle>
+                            <CardDescription>
+                              {isAnnual 
+                                ? "Melhor custo-benefício" 
+                                : "Ideal para começar e testar o método"
+                              }
+                            </CardDescription>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-3xl font-bold text-foreground">
+                              {formatPrice(plan.price_cents)}
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              /{isAnnual ? 'ano' : 'mês'}
+                            </p>
+                            {monthlyEquivalent && (
+                              <p className="text-xs text-muted-foreground mt-1">
+                                ~{formatPrice(monthlyEquivalent)}/mês
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      </CardHeader>
+
+                      <CardContent className="space-y-4">
+                        {/* Savings highlight for annual */}
+                        {isAnnual && (
+                          <div className="flex items-center gap-2 p-3 rounded-lg bg-green-500/10 border border-green-500/20">
+                            <Check className="h-5 w-5 text-green-600 flex-shrink-0" />
+                            <span className="text-sm font-medium text-green-700">
+                              Economize mais de 2 meses
+                            </span>
+                          </div>
+                        )}
+
+                        <ul className="space-y-2">
+                          {(plan.features as string[])?.map((feature, i) => (
+                            <li key={i} className="flex items-center gap-2 text-sm">
+                              <Check className="h-4 w-4 text-green-500 flex-shrink-0" />
+                              <span>{feature}</span>
+                            </li>
+                          ))}
+                        </ul>
+
+                        {/* Selection indicator */}
+                        <div className={cn(
+                          "flex items-center justify-center gap-2 py-2 rounded-lg border-2 transition-all",
+                          isSelected 
+                            ? "border-primary bg-primary text-primary-foreground"
+                            : "border-border bg-muted/50 text-muted-foreground"
+                        )}>
+                          {isSelected ? (
+                            <>
+                              <Check className="h-4 w-4" />
+                              <span className="font-medium">Selecionado</span>
+                            </>
+                          ) : (
+                            <span>Selecionar plano</span>
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+            </div>
+
+            {/* Payment method section */}
             {selectedPlan && (
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
@@ -303,6 +366,10 @@ function SubscriptionContent() {
                 >
                   {createSubscription.isPending ? 'Processando...' : 'Assinar agora'}
                 </Button>
+
+                <p className="text-xs text-center text-muted-foreground">
+                  Ao assinar, você concorda com nossos termos de uso e política de privacidade.
+                </p>
               </motion.div>
             )}
           </motion.div>
