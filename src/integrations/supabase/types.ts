@@ -747,6 +747,76 @@ export type Database = {
         }
         Relationships: []
       }
+      subscription_changes: {
+        Row: {
+          amount_charged_cents: number | null
+          amount_credited_cents: number | null
+          change_type: string
+          created_at: string
+          created_by: string | null
+          effective_at: string
+          from_plan_id: string | null
+          id: string
+          notes: string | null
+          scheduled_for: string | null
+          subscription_id: string
+          to_plan_id: string | null
+          user_id: string
+        }
+        Insert: {
+          amount_charged_cents?: number | null
+          amount_credited_cents?: number | null
+          change_type: string
+          created_at?: string
+          created_by?: string | null
+          effective_at?: string
+          from_plan_id?: string | null
+          id?: string
+          notes?: string | null
+          scheduled_for?: string | null
+          subscription_id: string
+          to_plan_id?: string | null
+          user_id: string
+        }
+        Update: {
+          amount_charged_cents?: number | null
+          amount_credited_cents?: number | null
+          change_type?: string
+          created_at?: string
+          created_by?: string | null
+          effective_at?: string
+          from_plan_id?: string | null
+          id?: string
+          notes?: string | null
+          scheduled_for?: string | null
+          subscription_id?: string
+          to_plan_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscription_changes_from_plan_id_fkey"
+            columns: ["from_plan_id"]
+            isOneToOne: false
+            referencedRelation: "subscription_plans"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "subscription_changes_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "subscriptions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "subscription_changes_to_plan_id_fkey"
+            columns: ["to_plan_id"]
+            isOneToOne: false
+            referencedRelation: "subscription_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       subscription_plans: {
         Row: {
           created_at: string
@@ -792,6 +862,33 @@ export type Database = {
         }
         Relationships: []
       }
+      subscription_settings: {
+        Row: {
+          description: string | null
+          id: string
+          setting_key: string
+          setting_value: Json
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          description?: string | null
+          id?: string
+          setting_key: string
+          setting_value?: Json
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          description?: string | null
+          id?: string
+          setting_key?: string
+          setting_value?: Json
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       subscriptions: {
         Row: {
           cancel_at_period_end: boolean
@@ -801,8 +898,13 @@ export type Database = {
           current_period_start: string
           grace_period_end: string | null
           id: string
+          pause_count_this_cycle: number | null
+          pause_until: string | null
+          paused_at: string | null
           payment_method: string | null
           plan_id: string
+          scheduled_change_type: string | null
+          scheduled_plan_id: string | null
           status: string
           updated_at: string
           user_id: string
@@ -815,8 +917,13 @@ export type Database = {
           current_period_start?: string
           grace_period_end?: string | null
           id?: string
+          pause_count_this_cycle?: number | null
+          pause_until?: string | null
+          paused_at?: string | null
           payment_method?: string | null
           plan_id: string
+          scheduled_change_type?: string | null
+          scheduled_plan_id?: string | null
           status?: string
           updated_at?: string
           user_id: string
@@ -829,8 +936,13 @@ export type Database = {
           current_period_start?: string
           grace_period_end?: string | null
           id?: string
+          pause_count_this_cycle?: number | null
+          pause_until?: string | null
+          paused_at?: string | null
           payment_method?: string | null
           plan_id?: string
+          scheduled_change_type?: string | null
+          scheduled_plan_id?: string | null
           status?: string
           updated_at?: string
           user_id?: string
@@ -839,6 +951,13 @@ export type Database = {
           {
             foreignKeyName: "subscriptions_plan_id_fkey"
             columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "subscription_plans"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "subscriptions_scheduled_plan_id_fkey"
+            columns: ["scheduled_plan_id"]
             isOneToOne: false
             referencedRelation: "subscription_plans"
             referencedColumns: ["id"]

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { RequireAuth, useAuth } from '@/hooks/useAuth';
@@ -11,9 +11,17 @@ import {
   useReactivateSubscription,
   useCreateSubscription,
   useSimulatePixPayment,
+  useUpgradeSubscription,
+  useDowngradeSubscription,
+  usePauseSubscription,
+  useResumeSubscription,
+  useCancelScheduledChange,
+  useSubscriptionSettings,
+  calculateUpgradeProration,
   formatPrice,
   getStatusInfo,
 } from '@/hooks/useSubscription';
+import { UpgradeDialog, DowngradeDialog, PauseDialog, ResumeDialog } from '@/components/subscription';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -49,6 +57,10 @@ import {
   Receipt,
   Sparkles,
   Crown,
+  TrendingUp,
+  TrendingDown,
+  Pause,
+  Play,
 } from 'lucide-react';
 import { BottomNav } from '@/components/BottomNav';
 
@@ -71,24 +83,52 @@ function SubscriptionContent() {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<'pix' | 'credit_card' | null>(null);
   const [hasAutoSelected, setHasAutoSelected] = useState(false);
 
+  // Dialog states
+  const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
+  const [showDowngradeDialog, setShowDowngradeDialog] = useState(false);
+  const [showPauseDialog, setShowPauseDialog] = useState(false);
+  const [showResumeDialog, setShowResumeDialog] = useState(false);
+
   const { data: subscription, isLoading: subLoading } = useUserSubscription();
   const { data: plans, isLoading: plansLoading } = useSubscriptionPlans();
   const { data: payments, isLoading: paymentsLoading } = usePaymentHistory();
   const { data: invoices, isLoading: invoicesLoading } = useInvoices();
+  const { data: settings } = useSubscriptionSettings();
 
   const cancelSubscription = useCancelSubscription();
   const reactivateSubscription = useReactivateSubscription();
   const createSubscription = useCreateSubscription();
+  const simulatePixPayment = useSimulatePixPayment();
+  const upgradeSubscription = useUpgradeSubscription();
+  const downgradeSubscription = useDowngradeSubscription();
+  const pauseSubscription = usePauseSubscription();
+  const resumeSubscription = useResumeSubscription();
+  const cancelScheduledChange = useCancelScheduledChange();
 
   // Auto-select annual plan when plans load (default to annual)
   const annualPlan = plans?.find(p => p.interval === 'yearly');
-  if (plans && !selectedPlan && !hasAutoSelected && annualPlan) {
-    setSelectedPlan(annualPlan.id);
-    setHasAutoSelected(true);
-  }
-  const simulatePixPayment = useSimulatePixPayment();
+  const monthlyPlan = plans?.find(p => p.interval === 'monthly');
+  
+  useEffect(() => {
+    if (plans && !selectedPlan && !hasAutoSelected && annualPlan) {
+      setSelectedPlan(annualPlan.id);
+      setHasAutoSelected(true);
+    }
+  }, [plans, selectedPlan, hasAutoSelected, annualPlan]);
 
   const isLoading = subLoading || plansLoading;
+
+  // Check settings
+  const allowDowngrades = settings?.allow_downgrades?.enabled !== false;
+  const allowPauses = settings?.allow_pauses?.enabled !== false;
+  const maxPauseDays = settings?.allow_pauses?.max_days || 30;
+  const canPause = subscription?.pause_count_this_cycle === 0 || !subscription?.pause_count_this_cycle;
+
+  // Determine available actions based on current plan
+  const isAnnualPlan = subscription?.plan?.interval === 'yearly';
+  const isMonthlyPlan = subscription?.plan?.interval === 'monthly';
+  const isPaused = subscription?.status === 'paused';
+  const hasScheduledDowngrade = subscription?.scheduled_change_type === 'downgrade';
 
   const handleCancelSubscription = async () => {
     if (!subscription) return;
@@ -160,6 +200,102 @@ function SubscriptionContent() {
       toast({
         variant: 'destructive',
         title: 'Erro ao confirmar',
+        description: 'Por favor, tente novamente.',
+      });
+    }
+  };
+
+  const handleUpgrade = async () => {
+    if (!subscription || !annualPlan) return;
+    try {
+      const { chargeAmount } = calculateUpgradeProration(subscription, annualPlan);
+      await upgradeSubscription.mutateAsync({
+        subscriptionId: subscription.id,
+        newPlanId: annualPlan.id,
+        prorationAmount: chargeAmount,
+      });
+      toast({
+        title: 'Upgrade realizado! 🎉',
+        description: 'Seu plano foi atualizado para anual.',
+      });
+    } catch {
+      toast({
+        variant: 'destructive',
+        title: 'Erro ao fazer upgrade',
+        description: 'Por favor, tente novamente.',
+      });
+    }
+  };
+
+  const handleDowngrade = async () => {
+    if (!subscription || !monthlyPlan) return;
+    try {
+      await downgradeSubscription.mutateAsync({
+        subscriptionId: subscription.id,
+        newPlanId: monthlyPlan.id,
+      });
+      toast({
+        title: 'Mudança agendada',
+        description: 'Seu plano mudará para mensal na próxima renovação.',
+      });
+    } catch {
+      toast({
+        variant: 'destructive',
+        title: 'Erro ao agendar mudança',
+        description: 'Por favor, tente novamente.',
+      });
+    }
+  };
+
+  const handlePause = async (days: number) => {
+    if (!subscription) return;
+    try {
+      await pauseSubscription.mutateAsync({
+        subscriptionId: subscription.id,
+        pauseDays: days,
+      });
+      toast({
+        title: 'Assinatura pausada',
+        description: `Sua assinatura foi pausada por ${days} dias.`,
+      });
+    } catch {
+      toast({
+        variant: 'destructive',
+        title: 'Erro ao pausar',
+        description: 'Por favor, tente novamente.',
+      });
+    }
+  };
+
+  const handleResume = async () => {
+    if (!subscription) return;
+    try {
+      await resumeSubscription.mutateAsync(subscription.id);
+      toast({
+        title: 'Assinatura retomada! 🎉',
+        description: 'Seu acesso completo foi restaurado.',
+      });
+    } catch {
+      toast({
+        variant: 'destructive',
+        title: 'Erro ao retomar',
+        description: 'Por favor, tente novamente.',
+      });
+    }
+  };
+
+  const handleCancelScheduledChange = async () => {
+    if (!subscription) return;
+    try {
+      await cancelScheduledChange.mutateAsync(subscription.id);
+      toast({
+        title: 'Mudança cancelada',
+        description: 'Seu plano permanecerá o mesmo.',
+      });
+    } catch {
+      toast({
+        variant: 'destructive',
+        title: 'Erro ao cancelar mudança',
         description: 'Por favor, tente novamente.',
       });
     }
@@ -423,6 +559,57 @@ function SubscriptionContent() {
                   </Card>
                 )}
 
+                {/* Paused Alert */}
+                {isPaused && subscription.pause_until && (
+                  <Card className="border-yellow-500/50 bg-yellow-500/10">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-yellow-600">
+                        <Pause className="h-5 w-5" />
+                        Assinatura pausada
+                      </CardTitle>
+                      <CardDescription>
+                        Sua assinatura está pausada até{' '}
+                        <strong>{format(new Date(subscription.pause_until), "dd 'de' MMMM", { locale: ptBR })}</strong>
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <Button 
+                        onClick={() => setShowResumeDialog(true)}
+                        className="w-full"
+                      >
+                        <Play className="h-4 w-4 mr-2" />
+                        Retomar agora
+                      </Button>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Scheduled Downgrade Alert */}
+                {hasScheduledDowngrade && (
+                  <Card className="border-blue-500/50 bg-blue-500/10">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-blue-600">
+                        <TrendingDown className="h-5 w-5" />
+                        Mudança de plano agendada
+                      </CardTitle>
+                      <CardDescription>
+                        Seu plano mudará para Mensal em{' '}
+                        <strong>{format(new Date(subscription.current_period_end), "dd 'de' MMMM", { locale: ptBR })}</strong>
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <Button 
+                        variant="outline"
+                        onClick={handleCancelScheduledChange}
+                        disabled={cancelScheduledChange.isPending}
+                        className="w-full"
+                      >
+                        Cancelar mudança
+                      </Button>
+                    </CardContent>
+                  </Card>
+                )}
+
                 {/* Current Plan */}
                 <Card>
                   <CardHeader>
@@ -440,14 +627,14 @@ function SubscriptionContent() {
                         variant="outline"
                         className={cn(
                           "capitalize",
-                          getStatusInfo(subscription.status).textColor
+                          getStatusInfo(subscription.status as any).textColor
                         )}
                       >
                         <div className={cn(
                           "w-2 h-2 rounded-full mr-2",
-                          getStatusInfo(subscription.status).color
+                          getStatusInfo(subscription.status as any).color
                         )} />
-                        {getStatusInfo(subscription.status).label}
+                        {getStatusInfo(subscription.status as any).label}
                       </Badge>
                     </div>
                   </CardHeader>
@@ -506,6 +693,47 @@ function SubscriptionContent() {
                     )}
                   </CardContent>
                   <CardFooter className="flex flex-col gap-3">
+                    {/* Plan change buttons */}
+                    {!subscription.cancel_at_period_end && !isPaused && (
+                      <div className="w-full grid grid-cols-2 gap-3">
+                        {/* Upgrade button for monthly users */}
+                        {isMonthlyPlan && annualPlan && (
+                          <Button 
+                            onClick={() => setShowUpgradeDialog(true)}
+                            className="col-span-2"
+                          >
+                            <TrendingUp className="h-4 w-4 mr-2" />
+                            Upgrade para Anual
+                          </Button>
+                        )}
+
+                        {/* Downgrade button for annual users */}
+                        {isAnnualPlan && monthlyPlan && allowDowngrades && !hasScheduledDowngrade && (
+                          <Button 
+                            variant="outline"
+                            onClick={() => setShowDowngradeDialog(true)}
+                            className="col-span-1"
+                          >
+                            <TrendingDown className="h-4 w-4 mr-2" />
+                            Mudar para Mensal
+                          </Button>
+                        )}
+
+                        {/* Pause button */}
+                        {allowPauses && canPause && (
+                          <Button 
+                            variant="outline"
+                            onClick={() => setShowPauseDialog(true)}
+                            className={cn(isAnnualPlan && allowDowngrades && !hasScheduledDowngrade ? "col-span-1" : "col-span-2")}
+                          >
+                            <Pause className="h-4 w-4 mr-2" />
+                            Pausar assinatura
+                          </Button>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Cancel/Reactivate buttons */}
                     {subscription.cancel_at_period_end ? (
                       <Button 
                         onClick={handleReactivateSubscription}
@@ -515,7 +743,7 @@ function SubscriptionContent() {
                         <RefreshCw className="h-4 w-4 mr-2" />
                         Reativar assinatura
                       </Button>
-                    ) : (
+                    ) : !isPaused && (
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <Button variant="outline" className="w-full text-destructive hover:text-destructive">
@@ -673,6 +901,50 @@ function SubscriptionContent() {
       </main>
 
       <BottomNav />
+
+      {/* Dialogs */}
+      {subscription && annualPlan && (
+        <UpgradeDialog
+          open={showUpgradeDialog}
+          onOpenChange={setShowUpgradeDialog}
+          subscription={subscription}
+          annualPlan={annualPlan}
+          onConfirm={handleUpgrade}
+          isPending={upgradeSubscription.isPending}
+        />
+      )}
+
+      {subscription && monthlyPlan && (
+        <DowngradeDialog
+          open={showDowngradeDialog}
+          onOpenChange={setShowDowngradeDialog}
+          subscription={subscription}
+          monthlyPlan={monthlyPlan}
+          onConfirm={handleDowngrade}
+          isPending={downgradeSubscription.isPending}
+        />
+      )}
+
+      {subscription && (
+        <PauseDialog
+          open={showPauseDialog}
+          onOpenChange={setShowPauseDialog}
+          subscription={subscription}
+          maxPauseDays={maxPauseDays}
+          onConfirm={handlePause}
+          isPending={pauseSubscription.isPending}
+        />
+      )}
+
+      {subscription && (
+        <ResumeDialog
+          open={showResumeDialog}
+          onOpenChange={setShowResumeDialog}
+          subscription={subscription}
+          onConfirm={handleResume}
+          isPending={resumeSubscription.isPending}
+        />
+      )}
     </div>
   );
 }
