@@ -28,6 +28,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { useQueryClient } from '@tanstack/react-query';
 import { 
   AlertDialog,
   AlertDialogAction,
@@ -61,6 +63,7 @@ import {
   TrendingDown,
   Pause,
   Play,
+  RotateCcw,
 } from 'lucide-react';
 import { BottomNav } from '@/components/BottomNav';
 
@@ -78,10 +81,12 @@ function SubscriptionContent() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { user } = useAuth();
+  const queryClient = useQueryClient();
   const [showPlanSelector, setShowPlanSelector] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<'pix' | 'credit_card' | null>(null);
   const [hasAutoSelected, setHasAutoSelected] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
 
   // Dialog states
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
@@ -104,6 +109,41 @@ function SubscriptionContent() {
   const pauseSubscription = usePauseSubscription();
   const resumeSubscription = useResumeSubscription();
   const cancelScheduledChange = useCancelScheduledChange();
+
+  // Reset subscription for testing (only for current user)
+  const handleResetSubscription = async () => {
+    if (!user) return;
+    setIsResetting(true);
+    try {
+      // Delete in order: subscription_changes, invoices, payments, subscriptions
+      await supabase.from('subscription_changes').delete().eq('user_id', user.id);
+      await supabase.from('invoices').delete().eq('user_id', user.id);
+      await supabase.from('payments').delete().eq('user_id', user.id);
+      await supabase.from('subscriptions').delete().eq('user_id', user.id);
+      
+      // Invalidate queries to refresh UI
+      queryClient.invalidateQueries({ queryKey: ['user-subscription'] });
+      queryClient.invalidateQueries({ queryKey: ['payment-history'] });
+      queryClient.invalidateQueries({ queryKey: ['invoices'] });
+      queryClient.invalidateQueries({ queryKey: ['subscription-changes'] });
+      
+      setHasAutoSelected(false);
+      setSelectedPlan(null);
+      
+      toast({
+        title: 'Assinatura resetada',
+        description: 'Você pode testar novamente o fluxo de assinatura.',
+      });
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Erro ao resetar',
+        description: 'Por favor, tente novamente.',
+      });
+    } finally {
+      setIsResetting(false);
+    }
+  };
 
   // Auto-select annual plan when plans load (default to annual)
   const annualPlan = plans?.find(p => p.interval === 'yearly');
@@ -320,6 +360,18 @@ function SubscriptionContent() {
               <span className="font-display font-semibold text-foreground">Minha Assinatura</span>
             </div>
           </div>
+          
+          {/* Dev Reset Button */}
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={handleResetSubscription}
+            disabled={isResetting}
+            className="text-xs gap-1"
+          >
+            <RotateCcw className={cn("h-3 w-3", isResetting && "animate-spin")} />
+            {isResetting ? 'Resetando...' : 'Reset (Dev)'}
+          </Button>
         </div>
       </header>
 
