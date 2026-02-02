@@ -22,6 +22,7 @@ import {
   Menu,
   X,
   Bell,
+  CreditCard,
 } from 'lucide-react';
 
 interface AdminLayoutProps {
@@ -31,6 +32,7 @@ interface AdminLayoutProps {
 const navItems = [
   { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/admin/users', label: 'Usuários', icon: Users },
+  { href: '/admin/subscriptions', label: 'Assinaturas', icon: CreditCard },
   { href: '/admin/churn', label: 'Churn & Cancelamentos', icon: TrendingDown },
   { href: '/admin/engagement', label: 'Engajamento', icon: Activity },
   { href: '/admin/risks', label: 'Riscos & Alertas', icon: AlertTriangle },

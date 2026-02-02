@@ -22,6 +22,7 @@ const Tea = lazy(() => import("./pages/Tea"));
 const Progress = lazy(() => import("./pages/Progress"));
 const Meals = lazy(() => import("./pages/Meals"));
 const WeeklyCheckin = lazy(() => import("./pages/WeeklyCheckin"));
+const Subscription = lazy(() => import("./pages/Subscription"));
 
 // Admin pages - lazy loaded
 const AdminLogin = lazy(() => import("./pages/admin/AdminLogin"));
@@ -36,6 +37,7 @@ const AdminFinancial = lazy(() => import("./pages/admin/AdminFinancial"));
 const AdminReports = lazy(() => import("./pages/admin/AdminReports"));
 const AdminCompliance = lazy(() => import("./pages/admin/AdminCompliance"));
 const AdminSettings = lazy(() => import("./pages/admin/AdminSettings"));
+const AdminSubscriptions = lazy(() => import("./pages/admin/AdminSubscriptions"));
 
 const queryClient = new QueryClient();
 
@@ -54,6 +56,7 @@ function AnimatedRoutes() {
         <Route path="/progress" element={<PageTransition><Suspense fallback={<PageLoader />}><Progress /></Suspense></PageTransition>} />
         <Route path="/meals" element={<PageTransition><Suspense fallback={<PageLoader />}><Meals /></Suspense></PageTransition>} />
         <Route path="/checkin" element={<PageTransition><Suspense fallback={<PageLoader />}><WeeklyCheckin /></Suspense></PageTransition>} />
+        <Route path="/subscription" element={<PageTransition><Suspense fallback={<PageLoader />}><Subscription /></Suspense></PageTransition>} />
         
         {/* Admin Routes */}
         <Route path="/admin" element={<Suspense fallback={<PageLoader />}><AdminLogin /></Suspense>} />
@@ -68,6 +71,7 @@ function AnimatedRoutes() {
         <Route path="/admin/reports" element={<Suspense fallback={<PageLoader />}><AdminReports /></Suspense>} />
         <Route path="/admin/compliance" element={<Suspense fallback={<PageLoader />}><AdminCompliance /></Suspense>} />
         <Route path="/admin/settings" element={<Suspense fallback={<PageLoader />}><AdminSettings /></Suspense>} />
+        <Route path="/admin/subscriptions" element={<Suspense fallback={<PageLoader />}><AdminSubscriptions /></Suspense>} />
         
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
