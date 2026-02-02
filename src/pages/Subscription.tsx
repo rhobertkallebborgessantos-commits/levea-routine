@@ -21,7 +21,7 @@ import {
   formatPrice,
   getStatusInfo,
 } from '@/hooks/useSubscription';
-import { UpgradeDialog, DowngradeDialog, PauseDialog, ResumeDialog } from '@/components/subscription';
+import { UpgradeDialog, DowngradeDialog, PauseDialog, ResumeDialog, CancellationSurveyDialog } from '@/components/subscription';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -30,17 +30,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
-import { 
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
@@ -93,6 +82,7 @@ function SubscriptionContent() {
   const [showDowngradeDialog, setShowDowngradeDialog] = useState(false);
   const [showPauseDialog, setShowPauseDialog] = useState(false);
   const [showResumeDialog, setShowResumeDialog] = useState(false);
+  const [showCancellationDialog, setShowCancellationDialog] = useState(false);
 
   const { data: subscription, isLoading: subLoading } = useUserSubscription();
   const { data: plans, isLoading: plansLoading } = useSubscriptionPlans();
@@ -170,10 +160,21 @@ function SubscriptionContent() {
   const isPaused = subscription?.status === 'paused';
   const hasScheduledDowngrade = subscription?.scheduled_change_type === 'downgrade';
 
-  const handleCancelSubscription = async () => {
-    if (!subscription) return;
+  const handleCancelSubscription = async (reason: string, reasonCategory: string, feedback: string) => {
+    if (!subscription || !user) return;
     try {
+      // Log the cancellation reason
+      await supabase.from('cancellation_logs').insert({
+        user_id: user.id,
+        reason: reason,
+        reason_category: reasonCategory,
+        feedback: feedback || null,
+      });
+
+      // Cancel the subscription
       await cancelSubscription.mutateAsync(subscription.id);
+      
+      setShowCancellationDialog(false);
       toast({
         title: 'Assinatura cancelada',
         description: 'Você ainda tem acesso até o fim do período atual.',
@@ -798,33 +799,14 @@ function SubscriptionContent() {
                         Reativar assinatura
                       </Button>
                     ) : !isPaused && (
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button variant="outline" className="w-full text-destructive hover:text-destructive">
-                            <X className="h-4 w-4 mr-2" />
-                            Cancelar assinatura
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>Cancelar assinatura?</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              Você continuará tendo acesso ao LEVEA até o fim do período atual em{' '}
-                              <strong>{format(new Date(subscription.current_period_end), "dd 'de' MMMM, yyyy", { locale: ptBR })}</strong>.
-                              Após essa data, seu acesso será suspenso.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Voltar</AlertDialogCancel>
-                            <AlertDialogAction
-                              onClick={handleCancelSubscription}
-                              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                            >
-                              Confirmar cancelamento
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
+                      <Button 
+                        variant="outline" 
+                        className="w-full text-destructive hover:text-destructive"
+                        onClick={() => setShowCancellationDialog(true)}
+                      >
+                        <X className="h-4 w-4 mr-2" />
+                        Cancelar assinatura
+                      </Button>
                     )}
                   </CardFooter>
                 </Card>
@@ -997,6 +979,16 @@ function SubscriptionContent() {
           subscription={subscription}
           onConfirm={handleResume}
           isPending={resumeSubscription.isPending}
+        />
+      )}
+
+      {subscription && (
+        <CancellationSurveyDialog
+          open={showCancellationDialog}
+          onOpenChange={setShowCancellationDialog}
+          periodEndDate={new Date(subscription.current_period_end)}
+          onConfirm={handleCancelSubscription}
+          isLoading={cancelSubscription.isPending}
         />
       )}
     </div>
