@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { addDays, addMonths, addYears, isBefore, isAfter, format } from 'date-fns';
+import { addDays, addMonths, addYears, isBefore, isAfter, format, differenceInDays } from 'date-fns';
 
 export interface SubscriptionPlan {
   id: string;
@@ -21,7 +21,7 @@ export interface Subscription {
   id: string;
   user_id: string;
   plan_id: string;
-  status: 'active' | 'pending' | 'overdue' | 'cancelled' | 'expired';
+  status: 'active' | 'pending' | 'overdue' | 'cancelled' | 'expired' | 'paused';
   payment_method: 'pix' | 'credit_card' | null;
   current_period_start: string;
   current_period_end: string;
@@ -30,6 +30,13 @@ export interface Subscription {
   grace_period_end: string | null;
   created_at: string;
   plan?: SubscriptionPlan;
+  // Pause fields
+  paused_at?: string | null;
+  pause_until?: string | null;
+  pause_count_this_cycle?: number;
+  // Scheduled change fields
+  scheduled_plan_id?: string | null;
+  scheduled_change_type?: 'upgrade' | 'downgrade' | null;
 }
 
 export interface Payment {
@@ -81,8 +88,9 @@ export function getStatusInfo(status: Subscription['status']) {
     overdue: { label: 'Atrasado', color: 'bg-red-500', textColor: 'text-red-600' },
     cancelled: { label: 'Cancelado', color: 'bg-gray-500', textColor: 'text-gray-600' },
     expired: { label: 'Expirado', color: 'bg-gray-500', textColor: 'text-gray-600' },
+    paused: { label: 'Pausado', color: 'bg-orange-500', textColor: 'text-orange-600' },
   };
-  return statusMap[status];
+  return statusMap[status] || statusMap.pending;
 }
 
 // Hook to fetch subscription plans
@@ -115,7 +123,7 @@ export function useUserSubscription() {
         .from('subscriptions')
         .select(`
           *,
-          plan:subscription_plans(*)
+          plan:subscription_plans!subscriptions_plan_id_fkey(*)
         `)
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
@@ -388,6 +396,350 @@ export function useSimulatePixPayment() {
   });
 }
 
+// Hook to fetch subscription settings (admin controls)
+export function useSubscriptionSettings() {
+  return useQuery({
+    queryKey: ['subscription-settings'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('subscription_settings')
+        .select('*');
+
+      if (error) throw error;
+      
+      // Convert to a more usable format
+      const settings: Record<string, any> = {};
+      data?.forEach((setting: any) => {
+        settings[setting.setting_key] = setting.setting_value;
+      });
+      return settings;
+    },
+  });
+}
+
+// Hook to upgrade subscription (monthly → annual)
+export function useUpgradeSubscription() {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ 
+      subscriptionId,
+      newPlanId,
+      prorationAmount,
+    }: { 
+      subscriptionId: string;
+      newPlanId: string;
+      prorationAmount: number;
+    }) => {
+      if (!user) throw new Error('Usuário não autenticado');
+
+      const now = new Date();
+      const newPeriodEnd = addYears(now, 1);
+
+      // Get old plan info
+      const { data: oldSub } = await supabase
+        .from('subscriptions')
+        .select('plan_id')
+        .eq('id', subscriptionId)
+        .single();
+
+      // Update subscription to new plan
+      const { data: subscription, error: subError } = await supabase
+        .from('subscriptions')
+        .update({
+          plan_id: newPlanId,
+          current_period_start: now.toISOString(),
+          current_period_end: newPeriodEnd.toISOString(),
+          scheduled_plan_id: null,
+          scheduled_change_type: null,
+        })
+        .eq('id', subscriptionId)
+        .eq('user_id', user.id)
+        .select()
+        .single();
+
+      if (subError) throw subError;
+
+      // Create payment for the prorated amount
+      if (prorationAmount > 0) {
+        const { error: payError } = await supabase
+          .from('payments')
+          .insert({
+            user_id: user.id,
+            subscription_id: subscriptionId,
+            amount_cents: prorationAmount,
+            currency: 'BRL',
+            status: 'paid',
+            payment_method: 'credit_card',
+            paid_at: now.toISOString(),
+          });
+
+        if (payError) throw payError;
+      }
+
+      // Log the change
+      const { error: logError } = await supabase
+        .from('subscription_changes')
+        .insert({
+          user_id: user.id,
+          subscription_id: subscriptionId,
+          change_type: 'upgrade',
+          from_plan_id: oldSub?.plan_id,
+          to_plan_id: newPlanId,
+          amount_charged_cents: prorationAmount,
+          effective_at: now.toISOString(),
+        });
+
+      if (logError) throw logError;
+
+      return subscription;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user-subscription'] });
+      queryClient.invalidateQueries({ queryKey: ['payment-history'] });
+      queryClient.invalidateQueries({ queryKey: ['subscription-changes'] });
+    },
+  });
+}
+
+// Hook to schedule downgrade (annual → monthly)
+export function useDowngradeSubscription() {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ 
+      subscriptionId,
+      newPlanId,
+    }: { 
+      subscriptionId: string;
+      newPlanId: string;
+    }) => {
+      if (!user) throw new Error('Usuário não autenticado');
+
+      // Get current subscription
+      const { data: currentSub } = await supabase
+        .from('subscriptions')
+        .select('current_period_end, plan_id')
+        .eq('id', subscriptionId)
+        .single();
+
+      if (!currentSub) throw new Error('Assinatura não encontrada');
+
+      // Schedule the downgrade for end of current period
+      const { data: subscription, error: subError } = await supabase
+        .from('subscriptions')
+        .update({
+          scheduled_plan_id: newPlanId,
+          scheduled_change_type: 'downgrade',
+        })
+        .eq('id', subscriptionId)
+        .eq('user_id', user.id)
+        .select()
+        .single();
+
+      if (subError) throw subError;
+
+      // Log the scheduled change
+      const { error: logError } = await supabase
+        .from('subscription_changes')
+        .insert({
+          user_id: user.id,
+          subscription_id: subscriptionId,
+          change_type: 'downgrade',
+          from_plan_id: currentSub.plan_id,
+          to_plan_id: newPlanId,
+          scheduled_for: currentSub.current_period_end,
+          effective_at: currentSub.current_period_end,
+        });
+
+      if (logError) throw logError;
+
+      return subscription;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user-subscription'] });
+      queryClient.invalidateQueries({ queryKey: ['subscription-changes'] });
+    },
+  });
+}
+
+// Hook to pause subscription
+export function usePauseSubscription() {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ 
+      subscriptionId,
+      pauseDays,
+    }: { 
+      subscriptionId: string;
+      pauseDays: number;
+    }) => {
+      if (!user) throw new Error('Usuário não autenticado');
+
+      const now = new Date();
+      const pauseUntil = addDays(now, pauseDays);
+
+      // Update subscription to paused
+      const { data: subscription, error: subError } = await supabase
+        .from('subscriptions')
+        .update({
+          status: 'paused',
+          paused_at: now.toISOString(),
+          pause_until: pauseUntil.toISOString(),
+          pause_count_this_cycle: 1, // Increment (simplified - should be atomic)
+        })
+        .eq('id', subscriptionId)
+        .eq('user_id', user.id)
+        .select()
+        .single();
+
+      if (subError) throw subError;
+
+      // Log the pause
+      const { error: logError } = await supabase
+        .from('subscription_changes')
+        .insert({
+          user_id: user.id,
+          subscription_id: subscriptionId,
+          change_type: 'pause',
+          effective_at: now.toISOString(),
+          scheduled_for: pauseUntil.toISOString(),
+          notes: `Pausa de ${pauseDays} dias`,
+        });
+
+      if (logError) throw logError;
+
+      return subscription;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user-subscription'] });
+      queryClient.invalidateQueries({ queryKey: ['subscription-changes'] });
+    },
+  });
+}
+
+// Hook to resume subscription
+export function useResumeSubscription() {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (subscriptionId: string) => {
+      if (!user) throw new Error('Usuário não autenticado');
+
+      const now = new Date();
+
+      // Resume subscription
+      const { data: subscription, error: subError } = await supabase
+        .from('subscriptions')
+        .update({
+          status: 'active',
+          paused_at: null,
+          pause_until: null,
+        })
+        .eq('id', subscriptionId)
+        .eq('user_id', user.id)
+        .select()
+        .single();
+
+      if (subError) throw subError;
+
+      // Log the resume
+      const { error: logError } = await supabase
+        .from('subscription_changes')
+        .insert({
+          user_id: user.id,
+          subscription_id: subscriptionId,
+          change_type: 'resume',
+          effective_at: now.toISOString(),
+        });
+
+      if (logError) throw logError;
+
+      return subscription;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user-subscription'] });
+      queryClient.invalidateQueries({ queryKey: ['subscription-changes'] });
+    },
+  });
+}
+
+// Hook to cancel scheduled plan change
+export function useCancelScheduledChange() {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (subscriptionId: string) => {
+      if (!user) throw new Error('Usuário não autenticado');
+
+      const { data: subscription, error: subError } = await supabase
+        .from('subscriptions')
+        .update({
+          scheduled_plan_id: null,
+          scheduled_change_type: null,
+        })
+        .eq('id', subscriptionId)
+        .eq('user_id', user.id)
+        .select()
+        .single();
+
+      if (subError) throw subError;
+
+      return subscription;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user-subscription'] });
+    },
+  });
+}
+
+// Hook to fetch subscription changes history
+export function useSubscriptionChanges() {
+  const { user } = useAuth();
+
+  return useQuery({
+    queryKey: ['subscription-changes', user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+
+      const { data, error } = await supabase
+        .from('subscription_changes')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(20);
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user,
+  });
+}
+
+// Calculate proration for upgrade
+export function calculateUpgradeProration(
+  subscription: Subscription & { plan: SubscriptionPlan },
+  newPlan: SubscriptionPlan
+): { creditCents: number; chargeAmount: number; remainingDays: number } {
+  const now = new Date();
+  const periodEnd = new Date(subscription.current_period_end);
+  const periodStart = new Date(subscription.current_period_start);
+  const totalDays = differenceInDays(periodEnd, periodStart);
+  const remainingDays = Math.max(0, differenceInDays(periodEnd, now));
+  
+  const dailyRate = subscription.plan.price_cents / totalDays;
+  const creditCents = Math.round(dailyRate * remainingDays);
+  const chargeAmount = Math.max(0, newPlan.price_cents - creditCents);
+  
+  return { creditCents, chargeAmount, remainingDays };
+}
+
 // Check if user has active access
 export function useHasActiveAccess() {
   const { data: subscription, isLoading } = useUserSubscription();
@@ -401,6 +753,11 @@ export function useHasActiveAccess() {
   const gracePeriodEnd = subscription.grace_period_end 
     ? new Date(subscription.grace_period_end) 
     : addDays(periodEnd, 7);
+
+  // Paused subscription - limited access
+  if (subscription.status === 'paused') {
+    return { hasAccess: true, isLoading: false, isPaused: true };
+  }
 
   // Active subscription
   if (subscription.status === 'active' && isAfter(periodEnd, now)) {
