@@ -16,6 +16,7 @@ import { ProgressPreviewCard } from '@/components/dashboard/ProgressPreviewCard'
 import { RoutineSection } from '@/components/dashboard/RoutineSection';
 import { WeeklyCheckinPrompt } from '@/components/dashboard/WeeklyCheckinPrompt';
 import { BottomNav } from '@/components/BottomNav';
+import { DashboardSkeleton } from '@/components/skeletons';
 import { Leaf, LogOut, Bell } from 'lucide-react';
 
 function DashboardContent() {
@@ -94,55 +95,61 @@ function DashboardContent() {
       </header>
 
       <main className="max-w-2xl mx-auto px-4 py-6 space-y-5">
-        {/* Welcome Section */}
-        <motion.section
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="space-y-1"
-        >
-          <h1 className="text-2xl font-display font-bold text-foreground">
-            {greeting()}, {profile?.full_name?.split(' ')[0] || 'você'}! 👋
-          </h1>
-          {motivationalMessage && (
-            <p className="text-sm text-muted-foreground">{motivationalMessage}</p>
-          )}
-        </motion.section>
+        {profileLoading ? (
+          <DashboardSkeleton />
+        ) : (
+          <>
+            {/* Welcome Section */}
+            <motion.section
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="space-y-1"
+            >
+              <h1 className="text-2xl font-display font-bold text-foreground">
+                {greeting()}, {profile?.full_name?.split(' ')[0] || 'você'}! 👋
+              </h1>
+              {motivationalMessage && (
+                <p className="text-sm text-muted-foreground">{motivationalMessage}</p>
+              )}
+            </motion.section>
 
-        {/* Quick Stats */}
-        <QuickStatsRow
-          currentStreak={streak?.current_streak || 0}
-          completedCount={completedCount}
-          totalCount={totalCount}
-          progressPercent={progressPercent}
-        />
+            {/* Quick Stats */}
+            <QuickStatsRow
+              currentStreak={streak?.current_streak || 0}
+              completedCount={completedCount}
+              totalCount={totalCount}
+              progressPercent={progressPercent}
+            />
 
-        {/* Daily Focus */}
-        <DailyFocusCard
-          weeklyFocus={preferences?.weekly_focus || null}
-          diagnosisSummary={preferences?.diagnosis_summary || null}
-        />
+            {/* Daily Focus */}
+            <DailyFocusCard
+              weeklyFocus={preferences?.weekly_focus || null}
+              diagnosisSummary={preferences?.diagnosis_summary || null}
+            />
 
-        {/* Nutrition Progress */}
-        <NutritionProgress />
+            {/* Nutrition Progress */}
+            <NutritionProgress />
 
-        {/* Weekly Check-in Prompt */}
-        <WeeklyCheckinPrompt />
+            {/* Weekly Check-in Prompt */}
+            <WeeklyCheckinPrompt />
 
-        {/* Tea Recommendations */}
-        <TeaRecommendations />
+            {/* Tea Recommendations */}
+            <TeaRecommendations />
 
-        {/* Progress Preview */}
-        <ProgressPreviewCard />
+            {/* Progress Preview */}
+            <ProgressPreviewCard />
 
-        {/* Weekly Progress Summary */}
-        <WeeklyProgressSummary />
+            {/* Weekly Progress Summary */}
+            <WeeklyProgressSummary />
 
-        {/* Today's Routine */}
-        <RoutineSection
-          routines={routines}
-          isLoading={routinesLoading}
-          onToggle={handleToggleRoutine}
-        />
+            {/* Today's Routine */}
+            <RoutineSection
+              routines={routines}
+              isLoading={routinesLoading}
+              onToggle={handleToggleRoutine}
+            />
+          </>
+        )}
       </main>
 
       <BottomNav />

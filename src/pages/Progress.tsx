@@ -6,7 +6,7 @@ import { WeightTracker } from '@/components/progress/WeightTracker';
 import { MeasurementsTracker } from '@/components/progress/MeasurementsTracker';
 import { PhotoGallery } from '@/components/progress/PhotoGallery';
 import { useProgress } from '@/hooks/useProgress';
-import { Skeleton } from '@/components/ui/skeleton';
+import { ProgressSkeleton } from '@/components/skeletons';
 import { BottomNav } from '@/components/BottomNav';
 
 export default function Progress() {
@@ -55,11 +55,7 @@ export default function Progress() {
       {/* Content */}
       <main className="px-4 py-6 space-y-6 pb-24">
         {isLoading ? (
-          <div className="space-y-6">
-            <Skeleton className="h-72 w-full rounded-lg" />
-            <Skeleton className="h-64 w-full rounded-lg" />
-            <Skeleton className="h-48 w-full rounded-lg" />
-          </div>
+          <ProgressSkeleton />
         ) : (
           <>
             <WeightTracker

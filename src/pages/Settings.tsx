@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Switch } from '@/components/ui/switch';
-import { Skeleton } from '@/components/ui/skeleton';
+import { SettingsSkeleton } from '@/components/skeletons';
 import { useToast } from '@/hooks/use-toast';
 import { 
   GOALS, 
@@ -177,10 +177,7 @@ function SettingsContent() {
 
       <main className="max-w-2xl mx-auto px-4 py-6 pb-24">
         {isLoading ? (
-          <div className="space-y-4">
-            <Skeleton className="h-12 w-full" />
-            <Skeleton className="h-64 w-full" />
-          </div>
+          <SettingsSkeleton />
         ) : (
           <Tabs defaultValue="profile" className="w-full">
             <TabsList className="grid w-full grid-cols-3 mb-6">
