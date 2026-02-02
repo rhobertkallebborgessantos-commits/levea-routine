@@ -27,10 +27,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Camera, Plus, Trash2, X, ZoomIn } from 'lucide-react';
+import { OptimizedImage } from '@/components/ui/optimized-image';
+import { Camera, Plus, Trash2, X, ZoomIn, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { compressImage, formatFileSize } from '@/lib/image-utils';
+import { toast } from 'sonner';
 
 interface Photo {
   id: string;
@@ -67,14 +70,51 @@ export function PhotoGallery({
   const [notes, setNotes] = useState('');
   const [viewingPhoto, setViewingPhoto] = useState<Photo | null>(null);
   const [deletingPhoto, setDeletingPhoto] = useState<Photo | null>(null);
+  const [isCompressing, setIsCompressing] = useState(false);
+  const [compressionInfo, setCompressionInfo] = useState<{ original: number; compressed: number } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
+    if (!file) return;
+
+    // Check file type
+    if (!file.type.startsWith('image/')) {
+      toast.error('Por favor, selecione uma imagem');
+      return;
+    }
+
+    setIsCompressing(true);
+    const originalSize = file.size;
+
+    try {
+      // Compress the image
+      const compressed = await compressImage(file, {
+        maxWidth: 1200,
+        maxHeight: 1200,
+        quality: 0.85,
+        outputType: 'image/jpeg',
+      });
+
+      setSelectedFile(compressed);
+      setPreviewUrl(URL.createObjectURL(compressed));
+      setCompressionInfo({
+        original: originalSize,
+        compressed: compressed.size,
+      });
+
+      // Show compression result
+      const savedPercent = Math.round((1 - compressed.size / originalSize) * 100);
+      if (savedPercent > 10) {
+        toast.success(`Imagem otimizada! ${savedPercent}% menor`);
+      }
+    } catch (error) {
+      // Fallback to original if compression fails
       setSelectedFile(file);
-      const url = URL.createObjectURL(file);
-      setPreviewUrl(url);
+      setPreviewUrl(URL.createObjectURL(file));
+      setCompressionInfo(null);
+    } finally {
+      setIsCompressing(false);
     }
   };
 
@@ -90,6 +130,7 @@ export function PhotoGallery({
     setPreviewUrl(null);
     setPhotoType('front');
     setNotes('');
+    setCompressionInfo(null);
     setOpen(false);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -162,6 +203,7 @@ export function PhotoGallery({
                           onClick={() => {
                             setSelectedFile(null);
                             setPreviewUrl(null);
+                            setCompressionInfo(null);
                             if (fileInputRef.current) {
                               fileInputRef.current.value = '';
                             }
@@ -169,6 +211,20 @@ export function PhotoGallery({
                         >
                           <X className="h-4 w-4" />
                         </Button>
+                        {compressionInfo && (
+                          <div className="absolute bottom-2 left-2 text-[10px] bg-black/60 text-white px-2 py-1 rounded">
+                            {formatFileSize(compressionInfo.compressed)}
+                          </div>
+                        )}
+                      </div>
+                    ) : isCompressing ? (
+                      <div className="w-full h-32 mt-2 border border-dashed border-border rounded-lg flex items-center justify-center">
+                        <div className="flex flex-col items-center gap-2">
+                          <Loader2 className="h-8 w-8 text-primary animate-spin" />
+                          <span className="text-sm text-muted-foreground">
+                            Otimizando...
+                          </span>
+                        </div>
                       </div>
                     ) : (
                       <Button
@@ -238,10 +294,10 @@ export function PhotoGallery({
                           className="relative aspect-square rounded-lg overflow-hidden group cursor-pointer"
                           onClick={() => setViewingPhoto(photo)}
                         >
-                          <img
+                          <OptimizedImage
                             src={photo.photo_url}
                             alt={photo.photo_type || 'Progress'}
-                            className="w-full h-full object-cover"
+                            className="w-full h-full"
                           />
                           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
                             <ZoomIn className="h-6 w-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
