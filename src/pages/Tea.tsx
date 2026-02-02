@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
+import { TeaListSkeleton, TeaStatsSkeleton, TeaHistorySkeleton } from '@/components/skeletons';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -604,11 +604,7 @@ function TeaPageContent() {
 
             {/* Tea List */}
             {teasLoading ? (
-              <div className="space-y-3">
-                {[1, 2, 3].map((i) => (
-                  <Skeleton key={i} className="h-40 w-full" />
-                ))}
-              </div>
+              <TeaListSkeleton count={3} />
             ) : teas && teas.length > 0 ? (
               <div className="space-y-3">
                 {teas.map((tea) => (
@@ -634,11 +630,7 @@ function TeaPageContent() {
           {/* History Tab */}
           <TabsContent value="history" className="space-y-4 mt-4">
             {historyLoading ? (
-              <div className="space-y-3">
-                {[1, 2, 3].map((i) => (
-                  <Skeleton key={i} className="h-20 w-full" />
-                ))}
-              </div>
+              <TeaHistorySkeleton count={3} />
             ) : history && history.length > 0 ? (
               <div className="space-y-3">
                 {history.map((day) => (

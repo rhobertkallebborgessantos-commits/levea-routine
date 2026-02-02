@@ -32,7 +32,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Progress } from '@/components/ui/progress';
-import { Skeleton } from '@/components/ui/skeleton';
+import { MealsSkeleton, NutritionSummarySkeleton } from '@/components/skeletons';
 import { FoodSearch } from '@/components/meals/FoodSearch';
 import { MealTray, TrayItem } from '@/components/meals/MealTray';
 import { useMealLogs, useAddMeal, useDeleteMeal, Food, calculateNutrition } from '@/hooks/useMeals';
@@ -249,11 +249,7 @@ export default function Meals() {
       {/* Meals List */}
       <main className="px-4 pb-24 space-y-4">
         {isLoading ? (
-          <div className="space-y-4">
-            {[...Array(3)].map((_, i) => (
-              <Skeleton key={i} className="h-32 w-full rounded-lg" />
-            ))}
-          </div>
+          <MealsSkeleton />
         ) : (
           mealsByType.map((mealBlock, index) => (
             <motion.div
