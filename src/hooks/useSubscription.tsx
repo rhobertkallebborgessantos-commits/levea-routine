@@ -287,7 +287,7 @@ export function useCancelSubscription() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (subscriptionId: string) => {
+    mutationFn: async ({ subscriptionId, planName, periodEnd }: { subscriptionId: string; planName?: string; periodEnd?: string }) => {
       if (!user) throw new Error('Usuário não autenticado');
 
       const { data, error } = await supabase
@@ -302,6 +302,17 @@ export function useCancelSubscription() {
         .single();
 
       if (error) throw error;
+
+      // Send cancellation email (non-blocking)
+      supabase.functions.invoke('send-subscription-email', {
+        body: {
+          userId: user.id,
+          emailType: 'cancellation',
+          planName: planName || 'Premium',
+          periodEnd: periodEnd || '',
+        },
+      }).catch(err => console.error('Failed to send cancellation email:', err));
+
       return data;
     },
     onSuccess: () => {
@@ -316,7 +327,7 @@ export function useReactivateSubscription() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (subscriptionId: string) => {
+    mutationFn: async ({ subscriptionId, planName }: { subscriptionId: string; planName?: string }) => {
       if (!user) throw new Error('Usuário não autenticado');
 
       const { data, error } = await supabase
@@ -332,6 +343,16 @@ export function useReactivateSubscription() {
         .single();
 
       if (error) throw error;
+
+      // Send reactivation email (non-blocking)
+      supabase.functions.invoke('send-subscription-email', {
+        body: {
+          userId: user.id,
+          emailType: 'reactivation',
+          planName: planName || 'Premium',
+        },
+      }).catch(err => console.error('Failed to send reactivation email:', err));
+
       return data;
     },
     onSuccess: () => {

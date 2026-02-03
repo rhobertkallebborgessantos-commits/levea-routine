@@ -185,7 +185,11 @@ function SubscriptionContent() {
       });
 
       // Cancel the subscription
-      await cancelSubscription.mutateAsync(subscription.id);
+      await cancelSubscription.mutateAsync({
+        subscriptionId: subscription.id,
+        planName: subscription.plan?.name,
+        periodEnd: format(new Date(subscription.current_period_end), "dd 'de' MMMM 'de' yyyy", { locale: ptBR }),
+      });
       
       setShowCancellationDialog(false);
       toast({
@@ -204,7 +208,10 @@ function SubscriptionContent() {
   const handleReactivateSubscription = async () => {
     if (!subscription) return;
     try {
-      await reactivateSubscription.mutateAsync(subscription.id);
+      await reactivateSubscription.mutateAsync({
+        subscriptionId: subscription.id,
+        planName: subscription.plan?.name,
+      });
       toast({
         title: 'Assinatura reativada! 🎉',
         description: 'Bem-vindo de volta ao LEVEA.',
