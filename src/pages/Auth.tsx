@@ -73,9 +73,11 @@ export default function Auth() {
     } else {
       toast({
         title: 'Bem-vindo de volta! 🌿',
-        description: 'Vamos continuar sua jornada de bem-estar.',
+        description: 'Verificando sua assinatura...',
       });
-      navigate('/dashboard');
+      // Mark that user came from auth for redirect logic
+      sessionStorage.setItem('fromAuth', 'true');
+      navigate('/subscription');
     }
   };
 
@@ -99,10 +101,11 @@ export default function Auth() {
       });
     } else {
       toast({
-        title: 'Bem-vindo à LEVEA! 🌱',
-        description: 'Vamos configurar sua rotina personalizada.',
+        title: 'Conta criada com sucesso! 🌱',
+        description: 'Escolha seu plano para começar sua jornada.',
       });
-      navigate('/onboarding');
+      // Redirect to subscription/billing page (payment gate)
+      navigate('/subscription');
     }
   };
 
