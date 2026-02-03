@@ -155,7 +155,7 @@ const handler = async (req: Request): Promise<Response> => {
     const { subject, html } = getEmailContent(emailType, planName, periodEnd);
 
     const emailResponse = await resend.emails.send({
-      from: "Protocolo Emagreça <noreply@resend.dev>", // Change to your verified domain
+      from: "Protocolo Emagreça <noreply@levea.com>",
       to: [userEmail],
       subject,
       html,
