@@ -53,6 +53,7 @@ import {
   Pause,
   Play,
   RotateCcw,
+  LogOut,
 } from 'lucide-react';
 import { BottomNav } from '@/components/BottomNav';
 
@@ -69,7 +70,7 @@ function SubscriptionSkeleton() {
 function SubscriptionContent() {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const queryClient = useQueryClient();
   const [showPlanSelector, setShowPlanSelector] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
@@ -367,36 +368,62 @@ function SubscriptionContent() {
   // Find pending Pix payment
   const pendingPixPayment = payments?.find(p => p.status === 'pending' && p.payment_method === 'pix');
 
+  // Handle logout
+  const handleLogout = async () => {
+    await signOut();
+    navigate('/');
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50">
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Button variant="ghost" size="icon" onClick={() => navigate('/settings')}>
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
+            {/* Only show back button if user has subscription */}
+            {subscription ? (
+              <Button variant="ghost" size="icon" onClick={() => navigate('/settings')}>
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+            ) : null}
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
                 <Leaf className="h-4 w-4 text-primary-foreground" />
               </div>
-              <span className="font-display font-semibold text-foreground">Minha Assinatura</span>
+              <span className="font-display font-semibold text-foreground">
+                {subscription ? 'Minha Assinatura' : 'Ativar Assinatura'}
+              </span>
             </div>
           </div>
           
-          {/* Dev Reset Button - Only for specific test account */}
-          {user?.id === '4745a1f4-17be-420e-b669-f191f992df64' && (
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={handleResetSubscription}
-              disabled={isResetting}
-              className="text-xs gap-1"
-            >
-              <RotateCcw className={cn("h-3 w-3", isResetting && "animate-spin")} />
-              {isResetting ? 'Resetando...' : 'Reset (Dev)'}
-            </Button>
-          )}
+          <div className="flex items-center gap-2">
+            {/* Logout button when no subscription */}
+            {!subscription && (
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={handleLogout}
+                className="text-muted-foreground hover:text-foreground gap-2"
+              >
+                <LogOut className="h-4 w-4" />
+                Sair
+              </Button>
+            )}
+            
+            {/* Dev Reset Button - Only for specific test account */}
+            {user?.id === '4745a1f4-17be-420e-b669-f191f992df64' && (
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={handleResetSubscription}
+                disabled={isResetting}
+                className="text-xs gap-1"
+              >
+                <RotateCcw className={cn("h-3 w-3", isResetting && "animate-spin")} />
+                {isResetting ? 'Resetando...' : 'Reset (Dev)'}
+              </Button>
+            )}
+          </div>
         </div>
       </header>
 
