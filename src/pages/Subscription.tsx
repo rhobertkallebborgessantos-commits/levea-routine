@@ -148,6 +148,18 @@ function SubscriptionContent() {
 
   const isLoading = subLoading || plansLoading;
 
+  // Redirect to dashboard if user already has active subscription and came from auth flow
+  useEffect(() => {
+    if (!isLoading && subscription && (subscription.status === 'active' || subscription.status === 'paused')) {
+      // Check if user just came from auth (has pending navigation)
+      const fromAuth = sessionStorage.getItem('fromAuth');
+      if (fromAuth) {
+        sessionStorage.removeItem('fromAuth');
+        navigate('/dashboard', { replace: true });
+      }
+    }
+  }, [subscription, isLoading, navigate]);
+
   // Check settings
   const allowDowngrades = settings?.allow_downgrades?.enabled !== false;
   const allowPauses = settings?.allow_pauses?.enabled !== false;
@@ -215,12 +227,20 @@ function SubscriptionContent() {
       setShowPlanSelector(false);
       setSelectedPlan(null);
       setSelectedPaymentMethod(null);
-      toast({
-        title: selectedPaymentMethod === 'credit_card' ? 'Assinatura ativada! 🎉' : 'Aguardando pagamento',
-        description: selectedPaymentMethod === 'credit_card' 
-          ? 'Bem-vindo ao LEVEA!' 
-          : 'Pague o Pix para ativar sua assinatura.',
-      });
+      
+      if (selectedPaymentMethod === 'credit_card') {
+        toast({
+          title: 'Assinatura ativada! 🎉',
+          description: 'Bem-vindo ao LEVEA! Vamos configurar sua rotina.',
+        });
+        // Redirect to onboarding after successful payment
+        navigate('/onboarding');
+      } else {
+        toast({
+          title: 'Aguardando pagamento',
+          description: 'Pague o Pix para ativar sua assinatura.',
+        });
+      }
     } catch {
       toast({
         variant: 'destructive',
@@ -235,8 +255,10 @@ function SubscriptionContent() {
       await simulatePixPayment.mutateAsync(paymentId);
       toast({
         title: 'Pagamento confirmado! 🎉',
-        description: 'Sua assinatura está ativa.',
+        description: 'Bem-vindo ao LEVEA! Vamos configurar sua rotina.',
       });
+      // Redirect to onboarding after successful Pix payment
+      navigate('/onboarding');
     } catch {
       toast({
         variant: 'destructive',
@@ -382,20 +404,25 @@ function SubscriptionContent() {
         {isLoading ? (
           <SubscriptionSkeleton />
         ) : !subscription ? (
-          // No subscription - show plan selector
+          // No subscription - show payment gate with plan selector
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             className="space-y-6"
           >
-            {/* Header */}
-            <div className="text-center space-y-2">
-              <h1 className="text-2xl font-bold text-foreground">
-                Escolha o plano ideal para sua jornada
-              </h1>
-              <p className="text-muted-foreground">
-                Cancele a qualquer momento. Sem taxas escondidas.
-              </p>
+            {/* Payment Gate Message */}
+            <div className="text-center space-y-4 py-4">
+              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
+                <Crown className="h-8 w-8 text-primary" />
+              </div>
+              <div className="space-y-2">
+                <h1 className="text-2xl font-bold text-foreground">
+                  Ative sua assinatura para continuar
+                </h1>
+                <p className="text-muted-foreground max-w-md mx-auto">
+                  Para acessar o método LEVEA e começar sua transformação, escolha um plano abaixo.
+                </p>
+              </div>
             </div>
 
             {/* Plans - Annual first */}
