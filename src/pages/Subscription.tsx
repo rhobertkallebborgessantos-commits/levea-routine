@@ -963,7 +963,8 @@ function SubscriptionContent() {
         )}
       </main>
 
-      <BottomNav />
+      {/* Only show bottom nav for users with active subscription */}
+      {subscription && <BottomNav />}
 
       {/* Dialogs */}
       {subscription && annualPlan && (
