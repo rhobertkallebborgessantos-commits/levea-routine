@@ -34,7 +34,9 @@ export function usePushNotifications() {
     setIsSupported(supported);
     
     if (supported) {
-      setPermission(Notification.permission as PushPermission);
+      const currentPermission = Notification.permission as PushPermission;
+      console.log('[Push] Initial permission state:', currentPermission);
+      setPermission(currentPermission);
     } else {
       setPermission('unsupported');
     }
@@ -46,15 +48,27 @@ export function usePushNotifications() {
 
     const registerSW = async () => {
       try {
-        const reg = await navigator.serviceWorker.register('/sw.js');
-        console.log('Service Worker registered:', reg);
+        // Force update the service worker
+        const reg = await navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' });
+        console.log('[Push] Service Worker registered:', reg);
+        
+        // Wait for the service worker to be ready
+        await navigator.serviceWorker.ready;
+        console.log('[Push] Service Worker ready');
+        
         setRegistration(reg);
 
         // Check if already subscribed
         const subscription = await reg.pushManager.getSubscription();
+        console.log('[Push] Existing subscription:', !!subscription);
         setIsSubscribed(!!subscription);
+        
+        // Re-check permission after SW registration
+        const currentPermission = Notification.permission as PushPermission;
+        console.log('[Push] Permission after SW ready:', currentPermission);
+        setPermission(currentPermission);
       } catch (error) {
-        console.error('Service Worker registration failed:', error);
+        console.error('[Push] Service Worker registration failed:', error);
       }
     };
 
@@ -62,20 +76,21 @@ export function usePushNotifications() {
   }, [isSupported, user]);
 
   const subscribe = useCallback(async () => {
-    console.log('Subscribe called', { 
+    console.log('[Push] Subscribe called', { 
       hasRegistration: !!registration, 
       hasUser: !!user, 
       hasVapidKey: !!VAPID_PUBLIC_KEY,
-      vapidKeyLength: VAPID_PUBLIC_KEY?.length 
+      vapidKeyLength: VAPID_PUBLIC_KEY?.length,
+      currentPermission: Notification.permission
     });
     
     if (!registration || !user) {
-      console.error('Missing registration or user');
+      console.error('[Push] Missing registration or user');
       return false;
     }
     
     if (!VAPID_PUBLIC_KEY) {
-      console.error('VAPID_PUBLIC_KEY is empty! Check src/lib/push-config.ts');
+      console.error('[Push] VAPID_PUBLIC_KEY is empty! Check src/lib/push-config.ts');
       return false;
     }
 
@@ -83,23 +98,26 @@ export function usePushNotifications() {
 
     try {
       // Request permission
+      console.log('[Push] Requesting permission...');
       const permissionResult = await Notification.requestPermission();
+      console.log('[Push] Permission result:', permissionResult);
       setPermission(permissionResult as PushPermission);
 
       if (permissionResult !== 'granted') {
-        console.log('Notification permission denied');
+        console.log('[Push] Notification permission not granted:', permissionResult);
         setIsLoading(false);
         return false;
       }
 
       // Subscribe to push
+      console.log('[Push] Creating push subscription...');
       const applicationServerKey = urlBase64ToUint8Array(VAPID_PUBLIC_KEY);
       const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: applicationServerKey.buffer as ArrayBuffer
       });
 
-      console.log('Push subscription created:', subscription);
+      console.log('[Push] Push subscription created:', subscription.endpoint);
 
       // Extract keys
       const subscriptionJson = subscription.toJSON();
@@ -111,6 +129,7 @@ export function usePushNotifications() {
       }
 
       // Save to database
+      console.log('[Push] Saving subscription to database...');
       const { error } = await supabase
         .from('push_subscriptions')
         .upsert({
@@ -123,16 +142,17 @@ export function usePushNotifications() {
         });
 
       if (error) {
-        console.error('Error saving subscription:', error);
+        console.error('[Push] Error saving subscription:', error);
         throw error;
       }
 
+      console.log('[Push] Subscription saved successfully!');
       setIsSubscribed(true);
       setIsLoading(false);
       return true;
 
     } catch (error) {
-      console.error('Error subscribing to push:', error);
+      console.error('[Push] Error subscribing to push:', error);
       setIsLoading(false);
       return false;
     }
@@ -162,11 +182,20 @@ export function usePushNotifications() {
       return true;
 
     } catch (error) {
-      console.error('Error unsubscribing:', error);
+      console.error('[Push] Error unsubscribing:', error);
       setIsLoading(false);
       return false;
     }
   }, [registration, user]);
+
+  // Force refresh permission state
+  const refreshPermission = useCallback(() => {
+    if ('Notification' in window) {
+      const currentPermission = Notification.permission as PushPermission;
+      console.log('[Push] Refreshing permission state:', currentPermission);
+      setPermission(currentPermission);
+    }
+  }, []);
 
   return {
     isSupported,
@@ -174,6 +203,7 @@ export function usePushNotifications() {
     isSubscribed,
     isLoading,
     subscribe,
-    unsubscribe
+    unsubscribe,
+    refreshPermission
   };
 }
