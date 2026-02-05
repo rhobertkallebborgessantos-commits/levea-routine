@@ -172,6 +172,22 @@ function SettingsContent() {
               <span className="font-display font-semibold text-foreground">Configurações</span>
             </div>
           </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => pushSubscribed ? unsubscribePush() : subscribePush()}
+            disabled={pushLoading || !pushSupported || pushPermission === 'denied'}
+            className="relative"
+          >
+            {pushSubscribed ? (
+              <BellRing className="h-5 w-5 text-primary" />
+            ) : (
+              <BellOff className="h-5 w-5 text-muted-foreground" />
+            )}
+            {pushSubscribed && (
+              <span className="absolute top-1 right-1 w-2 h-2 bg-primary rounded-full" />
+            )}
+          </Button>
         </div>
       </header>
 
