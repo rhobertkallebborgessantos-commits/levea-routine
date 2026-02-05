@@ -8,7 +8,7 @@
 // Se você não tem uma chave VAPID, pode gerar uma em:
 // https://vapidkeys.com/ ou usando a biblioteca web-push
 
-export const VAPID_PUBLIC_KEY = '';
+ export const VAPID_PUBLIC_KEY = 'BIFnJzPmzXJKr-nn0kP83UtWjU1e2ID9sT3Rtj8WxO-m9-YuTOLvVIwLMKzT3T0Qyr2cklpRXbVXFt-ueLCF6rg';
 
 // Instruções:
 // 1. Acesse o backend do Lovable Cloud
