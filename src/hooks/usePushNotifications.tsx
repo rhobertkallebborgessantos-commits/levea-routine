@@ -62,8 +62,20 @@ export function usePushNotifications() {
   }, [isSupported, user]);
 
   const subscribe = useCallback(async () => {
-    if (!registration || !user || !VAPID_PUBLIC_KEY) {
-      console.error('Missing requirements for subscription');
+    console.log('Subscribe called', { 
+      hasRegistration: !!registration, 
+      hasUser: !!user, 
+      hasVapidKey: !!VAPID_PUBLIC_KEY,
+      vapidKeyLength: VAPID_PUBLIC_KEY?.length 
+    });
+    
+    if (!registration || !user) {
+      console.error('Missing registration or user');
+      return false;
+    }
+    
+    if (!VAPID_PUBLIC_KEY) {
+      console.error('VAPID_PUBLIC_KEY is empty! Check src/lib/push-config.ts');
       return false;
     }
 
