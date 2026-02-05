@@ -9,10 +9,10 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { Link } from 'react-router-dom';
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 
 const purposeLabels: Record<string, string> = {
   'metabolism': 'Metabolismo',
@@ -129,13 +129,13 @@ function TeaCard({ tea, isLogged, onLog }: { tea: Tea; isLogged: boolean; onLog:
         
         <div className="flex items-center gap-1">
           {tea.preparation && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0">
                   <Info className="h-4 w-4 text-muted-foreground" />
                 </Button>
-              </TooltipTrigger>
-              <TooltipContent side="left" className="max-w-xs">
+              </PopoverTrigger>
+              <PopoverContent side="left" className="max-w-xs w-72">
                 <p className="font-medium mb-1">Preparo</p>
                 <p className="text-xs">{tea.preparation}</p>
                 {tea.safety_notes && (
@@ -144,8 +144,8 @@ function TeaCard({ tea, isLogged, onLog }: { tea: Tea; isLogged: boolean; onLog:
                     <p className="text-xs">{tea.safety_notes}</p>
                   </>
                 )}
-              </TooltipContent>
-            </Tooltip>
+              </PopoverContent>
+            </Popover>
           )}
           
           {!isLogged && (
