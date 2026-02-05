@@ -175,11 +175,39 @@ function SettingsContent() {
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => pushSubscribed ? unsubscribePush() : subscribePush()}
-            disabled={pushLoading || !pushSupported || pushPermission === 'denied'}
+            onClick={async () => {
+              console.log('Bell clicked', { pushSupported, pushPermission, pushSubscribed, pushLoading });
+              if (!pushSupported) {
+                toast({
+                  title: "Não suportado",
+                  description: "Seu navegador não suporta notificações push",
+                  variant: "destructive"
+                });
+                return;
+              }
+              if (pushPermission === 'denied') {
+                toast({
+                  title: "Permissão negada",
+                  description: "Você negou as notificações. Habilite nas configurações do navegador.",
+                  variant: "destructive"
+                });
+                return;
+              }
+              const result = pushSubscribed ? await unsubscribePush() : await subscribePush();
+              console.log('Push result:', result);
+              if (result && !pushSubscribed) {
+                toast({
+                  title: "Notificações ativadas! 🔔",
+                  description: "Você receberá lembretes no seu dispositivo"
+                });
+              }
+            }}
+            disabled={pushLoading}
             className="relative"
           >
-            {pushSubscribed ? (
+            {pushLoading ? (
+              <div className="h-5 w-5 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+            ) : pushSubscribed ? (
               <BellRing className="h-5 w-5 text-primary" />
             ) : (
               <BellOff className="h-5 w-5 text-muted-foreground" />
