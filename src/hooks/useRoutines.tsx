@@ -92,6 +92,7 @@ export function useInitializeDailyRoutines() {
 export function useToggleRoutineCompletion() {
   const queryClient = useQueryClient();
   const { user } = useAuth();
+  const today = format(new Date(), 'yyyy-MM-dd');
 
   return useMutation({
     mutationFn: async ({ routineId, isCompleted }: { routineId: string; isCompleted: boolean }) => {
@@ -108,8 +109,35 @@ export function useToggleRoutineCompletion() {
       if (error) throw error;
       return data;
     },
-    onSuccess: () => {
-      const today = format(new Date(), 'yyyy-MM-dd');
+    // Optimistic update - update UI immediately before server response
+    onMutate: async ({ routineId, isCompleted }) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ['daily_routines', user?.id, today] });
+      
+      // Snapshot the previous value
+      const previousRoutines = queryClient.getQueryData<DailyRoutine[]>(['daily_routines', user?.id, today]);
+      
+      // Optimistically update the cache
+      queryClient.setQueryData<DailyRoutine[]>(['daily_routines', user?.id, today], (old) => {
+        if (!old) return old;
+        return old.map((routine) =>
+          routine.id === routineId
+            ? { ...routine, is_completed: isCompleted, completed_at: isCompleted ? new Date().toISOString() : null }
+            : routine
+        );
+      });
+      
+      // Return context with the previous value
+      return { previousRoutines };
+    },
+    // Rollback on error
+    onError: (_err, _variables, context) => {
+      if (context?.previousRoutines) {
+        queryClient.setQueryData(['daily_routines', user?.id, today], context.previousRoutines);
+      }
+    },
+    // Always refetch after error or success to ensure data consistency
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['daily_routines', user?.id, today] });
       queryClient.invalidateQueries({ queryKey: ['user_streaks', user?.id] });
     },
