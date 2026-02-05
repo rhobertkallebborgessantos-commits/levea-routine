@@ -45,7 +45,8 @@ function SettingsContent() {
     isSubscribed: pushSubscribed, 
     isLoading: pushLoading, 
     subscribe: subscribePush, 
-    unsubscribe: unsubscribePush 
+    unsubscribe: unsubscribePush,
+    refreshPermission
   } = usePushNotifications();
 
   // Profile form state
@@ -81,6 +82,28 @@ function SettingsContent() {
       setTimeSlots((preferences.available_time_slots as TimeBlock[]) || []);
     }
   }, [preferences]);
+
+  // Refresh push permission when page gains focus (e.g., after user changes browser settings)
+  useEffect(() => {
+    const handleFocus = () => {
+      console.log('[Settings] Page focused, refreshing push permission');
+      refreshPermission();
+    };
+    
+    window.addEventListener('focus', handleFocus);
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        handleFocus();
+      }
+    });
+    
+    // Also refresh on mount
+    refreshPermission();
+    
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, [refreshPermission]);
 
   const toggleRestriction = (value: string) => {
     setDietaryRestrictions(prev => {
