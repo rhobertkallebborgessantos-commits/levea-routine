@@ -20,7 +20,7 @@ import {
   STRUGGLES, 
   TIME_SLOTS 
 } from '@/lib/constants';
-import { Leaf, ArrowLeft, User, Settings2, Bell, Check, Save, BellRing, BellOff, Sun, Moon, Monitor, CreditCard } from 'lucide-react';
+import { Leaf, ArrowLeft, User, Settings2, Bell, Check, Save, BellRing, BellOff, Sun, Moon, Monitor, CreditCard, HelpCircle, MessageCircle, Mail, FileQuestion } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { BottomNav } from '@/components/BottomNav';
 import { Database } from '@/integrations/supabase/types';
@@ -354,6 +354,57 @@ function SettingsContent() {
                     <Button variant="outline" className="w-full">
                       Ver detalhes
                     </Button>
+                  </CardContent>
+                </Card>
+
+                {/* Support */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <HelpCircle className="h-5 w-5 text-primary" />
+                      Suporte
+                    </CardTitle>
+                    <CardDescription>Precisa de ajuda? Estamos aqui para você</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <a
+                      href="mailto:suporte@levea.app"
+                      className="flex items-center gap-3 p-3 rounded-xl border border-border hover:border-primary/50 hover:bg-primary/5 transition-all"
+                    >
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                        <Mail className="h-5 w-5 text-primary" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium text-foreground text-sm">Enviar e-mail</p>
+                        <p className="text-xs text-muted-foreground">suporte@levea.app</p>
+                      </div>
+                    </a>
+                    <a
+                      href="https://wa.me/5511999999999?text=Olá! Preciso de ajuda com o app LEVEA."
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-3 p-3 rounded-xl border border-border hover:border-primary/50 hover:bg-primary/5 transition-all"
+                    >
+                      <div className="w-10 h-10 rounded-lg bg-accent flex items-center justify-center">
+                        <MessageCircle className="h-5 w-5 text-accent-foreground" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium text-foreground text-sm">WhatsApp</p>
+                        <p className="text-xs text-muted-foreground">Atendimento rápido</p>
+                      </div>
+                    </a>
+                    <a
+                      href="/faq"
+                      className="flex items-center gap-3 p-3 rounded-xl border border-border hover:border-primary/50 hover:bg-primary/5 transition-all"
+                    >
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                        <FileQuestion className="h-5 w-5 text-primary" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium text-foreground text-sm">Perguntas Frequentes</p>
+                        <p className="text-xs text-muted-foreground">Encontre respostas rápidas</p>
+                      </div>
+                    </a>
                   </CardContent>
                 </Card>
 
