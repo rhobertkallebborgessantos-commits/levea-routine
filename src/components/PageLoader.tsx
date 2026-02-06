@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Leaf } from 'lucide-react';
+import { LogoIcon } from '@/components/Logo';
 
 export function PageLoader() {
   return (
@@ -16,9 +16,7 @@ export function PageLoader() {
           transition={{ duration: 0.3, ease: 'easeOut' }}
           className="mb-4"
         >
-          <div className="w-14 h-14 rounded-xl bg-primary flex items-center justify-center shadow-md shadow-primary/20">
-            <Leaf className="h-7 w-7 text-primary-foreground" />
-          </div>
+          <LogoIcon size="lg" />
         </motion.div>
 
         {/* Loading indicator */}

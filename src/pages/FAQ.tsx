@@ -1,5 +1,6 @@
-import { ArrowLeft, HelpCircle, Leaf } from 'lucide-react';
+import { ArrowLeft, HelpCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { Logo, LogoIcon } from '@/components/Logo';
 import { Button } from '@/components/ui/button';
 import {
   Accordion,
@@ -250,8 +251,8 @@ export default function FAQ() {
       <main className="container max-w-lg mx-auto px-4 py-6 pb-24 space-y-6">
         {/* Hero */}
         <div className="text-center space-y-2 pb-4">
-          <div className="w-16 h-16 mx-auto rounded-2xl bg-primary/10 flex items-center justify-center">
-            <Leaf className="h-8 w-8 text-primary" />
+          <div className="w-16 h-16 mx-auto flex items-center justify-center">
+            <LogoIcon size="lg" />
           </div>
           <h2 className="text-xl font-bold text-foreground">Como podemos ajudar?</h2>
           <p className="text-sm text-muted-foreground">
