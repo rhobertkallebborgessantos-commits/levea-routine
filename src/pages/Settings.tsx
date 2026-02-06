@@ -379,11 +379,12 @@ function SettingsContent() {
                         <p className="text-xs text-muted-foreground">rk.suportee@gmail.com</p>
                       </div>
                     </a>
-                    <a
-                      href="https://wa.me/5511953315047?text=Olá! Preciso de ajuda com o app LEVEA."
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-3 p-3 rounded-xl border border-border hover:border-primary/50 hover:bg-primary/5 transition-all"
+                    <button
+                      onClick={() => {
+                        const whatsappUrl = `https://wa.me/5511953315047?text=${encodeURIComponent('Olá! Preciso de ajuda com o app LEVEA.')}`;
+                        window.open(whatsappUrl, '_blank');
+                      }}
+                      className="flex items-center gap-3 p-3 rounded-xl border border-border hover:border-primary/50 hover:bg-primary/5 transition-all w-full text-left"
                     >
                       <div className="w-10 h-10 rounded-lg bg-accent flex items-center justify-center">
                         <MessageCircle className="h-5 w-5 text-accent-foreground" />
@@ -392,7 +393,7 @@ function SettingsContent() {
                         <p className="font-medium text-foreground text-sm">WhatsApp</p>
                         <p className="text-xs text-muted-foreground">Atendimento rápido</p>
                       </div>
-                    </a>
+                    </button>
                     <a
                       href="/faq"
                       className="flex items-center gap-3 p-3 rounded-xl border border-border hover:border-primary/50 hover:bg-primary/5 transition-all"
