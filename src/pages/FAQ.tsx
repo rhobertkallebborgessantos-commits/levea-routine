@@ -294,7 +294,7 @@ export default function FAQ() {
             <Button
               variant="default"
               size="sm"
-              onClick={() => window.open('https://wa.me/5511953315047?text=Olá! Tenho uma dúvida sobre o LEVEA.', '_blank')}
+              onClick={() => window.open(`https://wa.me/5511953315047?text=${encodeURIComponent('Olá! Tenho uma dúvida sobre o LEVEA.')}`, '_blank')}
             >
               Falar no WhatsApp
             </Button>
