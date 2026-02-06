@@ -6,6 +6,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { RequireSubscription } from "@/components/RequireSubscription";
+import { CelebrationProvider } from "@/components/achievements/CelebrationProvider";
+import { AchievementCelebrationHandler } from "@/components/achievements/AchievementCelebrationHandler";
 import { AnimatePresence } from "framer-motion";
 import { PageTransition } from "@/components/PageTransition";
 import { PageLoader } from "@/components/PageLoader";
@@ -87,13 +89,16 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
       <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <RequireSubscription>
-            <AnimatedRoutes />
-          </RequireSubscription>
-        </BrowserRouter>
+        <CelebrationProvider>
+          <AchievementCelebrationHandler />
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <RequireSubscription>
+              <AnimatedRoutes />
+            </RequireSubscription>
+          </BrowserRouter>
+        </CelebrationProvider>
       </TooltipProvider>
     </AuthProvider>
   </QueryClientProvider>

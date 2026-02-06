@@ -1,7 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
-import { toast } from 'sonner';
 
 export interface Achievement {
   id: string;
@@ -43,7 +42,9 @@ export function useAchievements() {
   const [userAchievements, setUserAchievements] = useState<UserAchievement[]>([]);
   const [userStats, setUserStats] = useState<UserStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [newUnlocks, setNewUnlocks] = useState<Achievement[]>([]);
+  const [pendingCelebrations, setPendingCelebrations] = useState<Achievement[]>([]);
+  const [pendingLevelUp, setPendingLevelUp] = useState<number | null>(null);
+  const previousLevelRef = useRef<number | null>(null);
 
   // Fetch all achievements
   const fetchAchievements = useCallback(async () => {
@@ -160,7 +161,7 @@ export function useAchievements() {
         });
 
       if (!error) {
-        setNewUnlocks(prev => [...prev, achievement]);
+        setPendingCelebrations(prev => [...prev, achievement]);
       }
     }
 
@@ -170,17 +171,17 @@ export function useAchievements() {
     }
   }, [user, userStats, achievements, userAchievements, fetchUserAchievements, fetchUserStats]);
 
-  // Show toast for new unlocks
+  // Track level changes
   useEffect(() => {
-    if (newUnlocks.length > 0) {
-      const achievement = newUnlocks[0];
-      toast.success(`🏆 Conquista Desbloqueada!`, {
-        description: `${achievement.name} - ${achievement.points} pontos`,
-        duration: 5000
-      });
-      setNewUnlocks(prev => prev.slice(1));
+    if (userStats && previousLevelRef.current !== null) {
+      if (userStats.level > previousLevelRef.current) {
+        setPendingLevelUp(userStats.level);
+      }
     }
-  }, [newUnlocks]);
+    if (userStats) {
+      previousLevelRef.current = userStats.level;
+    }
+  }, [userStats?.level]);
 
   // Initial fetch
   useEffect(() => {
@@ -262,6 +263,10 @@ export function useAchievements() {
     getProgress,
     getByCategory,
     getRecentUnlocks,
+    pendingCelebrations,
+    pendingLevelUp,
+    clearPendingCelebration: () => setPendingCelebrations(prev => prev.slice(1)),
+    clearPendingLevelUp: () => setPendingLevelUp(null),
     refreshAchievements: async () => {
       await fetchUserStats();
       await fetchUserAchievements();
