@@ -368,7 +368,7 @@ function SettingsContent() {
                   </CardHeader>
                   <CardContent className="space-y-3">
                     <a
-                      href="mailto:suporte@levea.app"
+                      href="mailto:rk.suportee@gmail.com"
                       className="flex items-center gap-3 p-3 rounded-xl border border-border hover:border-primary/50 hover:bg-primary/5 transition-all"
                     >
                       <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
@@ -376,7 +376,7 @@ function SettingsContent() {
                       </div>
                       <div className="flex-1">
                         <p className="font-medium text-foreground text-sm">Enviar e-mail</p>
-                        <p className="text-xs text-muted-foreground">suporte@levea.app</p>
+                        <p className="text-xs text-muted-foreground">rk.suportee@gmail.com</p>
                       </div>
                     </a>
                     <a
