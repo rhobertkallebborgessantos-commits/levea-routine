@@ -15,6 +15,7 @@ import { QuickStatsRow } from '@/components/dashboard/QuickStatsRow';
 import { ProgressPreviewCard } from '@/components/dashboard/ProgressPreviewCard';
 import { RoutineSection } from '@/components/dashboard/RoutineSection';
 import { WeeklyCheckinPrompt } from '@/components/dashboard/WeeklyCheckinPrompt';
+import { AchievementsWidget } from '@/components/dashboard/AchievementsWidget';
 import { BottomNav } from '@/components/BottomNav';
 import { DashboardSkeleton } from '@/components/skeletons';
 import { Leaf, LogOut, Bell } from 'lucide-react';
@@ -138,6 +139,9 @@ function DashboardContent() {
 
             {/* Progress Preview */}
             <ProgressPreviewCard />
+
+            {/* Achievements Widget */}
+            <AchievementsWidget />
 
             {/* Weekly Progress Summary */}
             <WeeklyProgressSummary />
