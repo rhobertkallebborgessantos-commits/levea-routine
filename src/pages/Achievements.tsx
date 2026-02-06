@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Trophy, Flame, Utensils, Coffee, Scale, ClipboardCheck, Camera, Filter, Users } from 'lucide-react';
+import { Trophy, Flame, Utensils, Coffee, Scale, ClipboardCheck, Camera, Filter, Users, Sparkles } from 'lucide-react';
 import { PageTransition } from '@/components/PageTransition';
 import { BottomNav } from '@/components/BottomNav';
 import { AchievementCard } from '@/components/achievements/AchievementCard';
 import { LevelProgress } from '@/components/achievements/LevelProgress';
 import { Leaderboard } from '@/components/achievements/Leaderboard';
+import { useCelebration } from '@/components/achievements/CelebrationProvider';
 import { useAchievements } from '@/hooks/useAchievements';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
@@ -24,6 +25,7 @@ const categories = [
 
 export default function Achievements() {
   const { achievements, userAchievements, userStats, isLoading, isUnlocked, getProgress } = useAchievements();
+  const { celebrateAchievement, celebrateLevelUp } = useCelebration();
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [showUnlockedOnly, setShowUnlockedOnly] = useState(false);
 
@@ -35,6 +37,17 @@ export default function Achievements() {
 
   const unlockedCount = userAchievements.length;
   const totalCount = achievements.length;
+
+  // Demo functions for testing animations
+  const handleDemoAchievement = () => {
+    if (achievements.length > 0) {
+      celebrateAchievement(achievements[0]);
+    }
+  };
+
+  const handleDemoLevelUp = () => {
+    celebrateLevelUp((userStats?.level || 1) + 1);
+  };
 
   if (isLoading) {
     return (
@@ -92,6 +105,28 @@ export default function Achievements() {
             level={userStats?.level || 1} 
             totalPoints={userStats?.total_points || 0} 
           />
+
+          {/* Demo buttons for testing animations */}
+          <div className="flex gap-2 mt-4">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handleDemoAchievement}
+              className="flex-1 gap-2"
+            >
+              <Sparkles className="h-4 w-4" />
+              Testar Conquista
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handleDemoLevelUp}
+              className="flex-1 gap-2"
+            >
+              <Trophy className="h-4 w-4" />
+              Testar Level Up
+            </Button>
+          </div>
         </div>
 
         {/* Tabs for Achievements and Leaderboard */}
