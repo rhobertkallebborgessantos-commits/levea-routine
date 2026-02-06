@@ -380,7 +380,7 @@ function SettingsContent() {
                       </div>
                     </a>
                     <a
-                      href="https://wa.me/5511999999999?text=Olá! Preciso de ajuda com o app LEVEA."
+                      href="https://wa.me/5511953315047?text=Olá! Preciso de ajuda com o app LEVEA."
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center gap-3 p-3 rounded-xl border border-border hover:border-primary/50 hover:bg-primary/5 transition-all"
