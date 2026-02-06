@@ -24,18 +24,23 @@ export function ProgressPreviewCard() {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.25 }}
+      whileHover={{ scale: 1.01, y: -2 }}
+      whileTap={{ scale: 0.99 }}
+      transition={{ duration: 0.2 }}
     >
       <Card
-        className="border-border/50 cursor-pointer hover:border-primary/30 transition-colors"
+        className="border-border/50 cursor-pointer hover:border-primary/30 transition-all hover:shadow-md hover:shadow-primary/5"
         onClick={() => navigate('/progress')}
       >
         <CardHeader className="pb-2">
           <CardTitle className="text-base font-medium flex items-center justify-between text-foreground">
             <div className="flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-primary" />
+              <motion.div
+                whileHover={{ rotate: 15 }}
+                transition={{ type: 'spring', stiffness: 300 }}
+              >
+                <TrendingUp className="h-4 w-4 text-primary" />
+              </motion.div>
               Meu Progresso
             </div>
             <ChevronRight className="h-4 w-4 text-muted-foreground" />
@@ -44,7 +49,10 @@ export function ProgressPreviewCard() {
         <CardContent>
           <div className="flex items-center gap-4">
             {/* Weight */}
-            <div className="flex-1 p-3 rounded-lg bg-muted/50">
+            <motion.div 
+              className="flex-1 p-3 rounded-lg bg-muted/50"
+              whileHover={{ backgroundColor: 'hsl(var(--muted) / 0.7)' }}
+            >
               <div className="flex items-center gap-2 mb-1">
                 <Scale className="h-4 w-4 text-muted-foreground" />
                 <span className="text-xs text-muted-foreground">Peso atual</span>
@@ -75,17 +83,20 @@ export function ProgressPreviewCard() {
                   </span>
                 </div>
               )}
-            </div>
+            </motion.div>
 
             {/* Photos */}
-            <div className="flex-1 p-3 rounded-lg bg-muted/50">
+            <motion.div 
+              className="flex-1 p-3 rounded-lg bg-muted/50"
+              whileHover={{ backgroundColor: 'hsl(var(--muted) / 0.7)' }}
+            >
               <div className="flex items-center gap-2 mb-1">
                 <Camera className="h-4 w-4 text-muted-foreground" />
                 <span className="text-xs text-muted-foreground">Fotos</span>
               </div>
               <p className="text-lg font-semibold text-foreground">{photos.length}</p>
               <span className="text-xs text-muted-foreground">registradas</span>
-            </div>
+            </motion.div>
           </div>
         </CardContent>
       </Card>

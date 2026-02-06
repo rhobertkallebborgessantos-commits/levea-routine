@@ -32,14 +32,18 @@ export function WeeklyProgressSummary() {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.3 }}
+      whileHover={{ scale: 1.01 }}
+      transition={{ duration: 0.2 }}
     >
-      <Card className="border-border/50 overflow-hidden">
+      <Card className="border-border/50 overflow-hidden transition-shadow hover:shadow-md hover:shadow-primary/5">
         <CardHeader className="pb-2 bg-gradient-to-r from-levea-mint/50 to-levea-sky/50">
           <CardTitle className="text-base font-medium flex items-center gap-2 text-foreground">
-            <Calendar className="h-4 w-4" />
+            <motion.div
+              whileHover={{ rotate: 15 }}
+              transition={{ type: 'spring', stiffness: 300 }}
+            >
+              <Calendar className="h-4 w-4" />
+            </motion.div>
             Resumo Semanal
           </CardTitle>
         </CardHeader>
@@ -54,7 +58,12 @@ export function WeeklyProgressSummary() {
                 const bgHeight = day.total > 0 ? (day.total / maxCompleted) * 100 : 10;
 
                 return (
-                  <div key={day.date} className="flex-1 flex flex-col items-center gap-1">
+                  <motion.div 
+                    key={day.date} 
+                    className="flex-1 flex flex-col items-center gap-1"
+                    whileHover={{ scale: 1.1 }}
+                    transition={{ duration: 0.2 }}
+                  >
                     <div className="relative w-full h-16 flex items-end justify-center">
                       {/* Background bar (total tasks) */}
                       <div
@@ -86,7 +95,7 @@ export function WeeklyProgressSummary() {
                     >
                       {day.dayName}
                     </span>
-                  </div>
+                  </motion.div>
                 );
               })}
             </div>
@@ -95,25 +104,37 @@ export function WeeklyProgressSummary() {
           {/* Stats Grid */}
           <div className="grid grid-cols-3 gap-2">
             {/* Average Completion */}
-            <div className="bg-muted/30 rounded-lg p-3 text-center">
+            <motion.div 
+              className="bg-muted/30 rounded-lg p-3 text-center"
+              whileHover={{ scale: 1.05, backgroundColor: 'hsl(var(--muted) / 0.5)' }}
+              transition={{ duration: 0.2 }}
+            >
               <TrendingUp className="h-4 w-4 mx-auto mb-1 text-primary" />
               <p className="text-lg font-bold text-foreground">{stats.averageCompletion}%</p>
               <p className="text-xs text-muted-foreground">Média</p>
-            </div>
+            </motion.div>
 
             {/* Streak */}
-            <div className="bg-muted/30 rounded-lg p-3 text-center">
+            <motion.div 
+              className="bg-muted/30 rounded-lg p-3 text-center"
+              whileHover={{ scale: 1.05, backgroundColor: 'hsl(var(--muted) / 0.5)' }}
+              transition={{ duration: 0.2 }}
+            >
               <Flame className="h-4 w-4 mx-auto mb-1 text-destructive" />
               <p className="text-lg font-bold text-foreground">{stats.currentStreak}</p>
               <p className="text-xs text-muted-foreground">Dias seguidos</p>
-            </div>
+            </motion.div>
 
             {/* Longest Streak */}
-            <div className="bg-muted/30 rounded-lg p-3 text-center">
+            <motion.div 
+              className="bg-muted/30 rounded-lg p-3 text-center"
+              whileHover={{ scale: 1.05, backgroundColor: 'hsl(var(--muted) / 0.5)' }}
+              transition={{ duration: 0.2 }}
+            >
               <Trophy className="h-4 w-4 mx-auto mb-1 text-accent-foreground" />
               <p className="text-lg font-bold text-foreground">{stats.longestStreak}</p>
               <p className="text-xs text-muted-foreground">Recorde</p>
-            </div>
+            </motion.div>
           </div>
 
           {/* Total Summary */}

@@ -31,14 +31,18 @@ export function NutritionProgress() {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.2 }}
+      whileHover={{ scale: 1.01 }}
+      transition={{ duration: 0.2 }}
     >
-      <Card className="border-border/50">
+      <Card className="border-border/50 transition-shadow hover:shadow-md hover:shadow-primary/5">
         <CardHeader className="pb-2">
           <CardTitle className="text-base font-medium flex items-center gap-2 text-foreground">
-            <Utensils className="h-4 w-4 text-primary" />
+            <motion.div
+              whileHover={{ rotate: 15 }}
+              transition={{ type: 'spring', stiffness: 300 }}
+            >
+              <Utensils className="h-4 w-4 text-primary" />
+            </motion.div>
             Nutrição de Hoje
           </CardTitle>
         </CardHeader>
@@ -78,16 +82,18 @@ export function NutritionProgress() {
           </div>
 
           {/* Link to meals */}
-          <button
+          <motion.button
             onClick={() => navigate('/meals')}
             className="w-full pt-3 border-t border-border/50 flex items-center justify-between text-sm group"
+            whileHover={{ x: 4 }}
+            whileTap={{ scale: 0.98 }}
           >
             <div className="flex items-center gap-2">
               <span className="text-muted-foreground">Refeições registradas</span>
               <span className="font-medium text-foreground">{summary.mealsCompleted}</span>
             </div>
             <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
-          </button>
+          </motion.button>
         </CardContent>
       </Card>
     </motion.div>
