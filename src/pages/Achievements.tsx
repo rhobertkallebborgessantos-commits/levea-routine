@@ -1,13 +1,15 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Trophy, Flame, Utensils, Coffee, Scale, ClipboardCheck, Camera, Filter } from 'lucide-react';
+import { Trophy, Flame, Utensils, Coffee, Scale, ClipboardCheck, Camera, Filter, Users } from 'lucide-react';
 import { PageTransition } from '@/components/PageTransition';
 import { BottomNav } from '@/components/BottomNav';
 import { AchievementCard } from '@/components/achievements/AchievementCard';
 import { LevelProgress } from '@/components/achievements/LevelProgress';
+import { Leaderboard } from '@/components/achievements/Leaderboard';
 import { useAchievements } from '@/hooks/useAchievements';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 
 const categories = [
@@ -92,48 +94,58 @@ export default function Achievements() {
           />
         </div>
 
-        {/* Category filter */}
-        <div className="p-4 pb-2">
-          <div className="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
-            {categories.map((cat) => {
-              const Icon = cat.icon;
-              return (
-                <Button
-                  key={cat.id}
-                  variant={selectedCategory === cat.id ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setSelectedCategory(cat.id)}
-                  className={cn(
-                    'flex-shrink-0 gap-1.5',
-                    selectedCategory === cat.id && 'shadow-md'
-                  )}
-                >
-                  <Icon className="h-4 w-4" />
-                  {cat.label}
-                </Button>
-              );
-            })}
-          </div>
-        </div>
+        {/* Tabs for Achievements and Leaderboard */}
+        <Tabs defaultValue="achievements" className="px-4 pt-4">
+          <TabsList className="grid w-full grid-cols-2 mb-4">
+            <TabsTrigger value="achievements" className="gap-2">
+              <Trophy className="h-4 w-4" />
+              Conquistas
+            </TabsTrigger>
+            <TabsTrigger value="leaderboard" className="gap-2">
+              <Users className="h-4 w-4" />
+              Ranking
+            </TabsTrigger>
+          </TabsList>
 
-        {/* Filter toggle */}
-        <div className="px-4 pb-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setShowUnlockedOnly(!showUnlockedOnly)}
-            className={cn(
-              'gap-2',
-              showUnlockedOnly && 'bg-primary/10 text-primary'
-            )}
-          >
-            <Filter className="h-4 w-4" />
-            {showUnlockedOnly ? 'Mostrando desbloqueadas' : 'Mostrar apenas desbloqueadas'}
-          </Button>
-        </div>
+          <TabsContent value="achievements" className="mt-0 space-y-4">
+            {/* Category filter */}
+            <div className="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
+              {categories.map((cat) => {
+                const Icon = cat.icon;
+                return (
+                  <Button
+                    key={cat.id}
+                    variant={selectedCategory === cat.id ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setSelectedCategory(cat.id)}
+                    className={cn(
+                      'flex-shrink-0 gap-1.5',
+                      selectedCategory === cat.id && 'shadow-md'
+                    )}
+                  >
+                    <Icon className="h-4 w-4" />
+                    {cat.label}
+                  </Button>
+                );
+              })}
+            </div>
+
+            {/* Filter toggle */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowUnlockedOnly(!showUnlockedOnly)}
+              className={cn(
+                'gap-2',
+                showUnlockedOnly && 'bg-primary/10 text-primary'
+              )}
+            >
+              <Filter className="h-4 w-4" />
+              {showUnlockedOnly ? 'Mostrando desbloqueadas' : 'Mostrar apenas desbloqueadas'}
+            </Button>
 
         {/* Achievements list */}
-        <div className="p-4 space-y-3">
+        <div className="space-y-3">
           <AnimatePresence mode="popLayout">
             {filteredAchievements.map((achievement) => {
               const unlocked = isUnlocked(achievement.id);
@@ -170,6 +182,12 @@ export default function Achievements() {
             </div>
           )}
         </div>
+          </TabsContent>
+
+          <TabsContent value="leaderboard" className="mt-0">
+            <Leaderboard limit={50} showTitle={false} />
+          </TabsContent>
+        </Tabs>
       </div>
       <BottomNav />
     </PageTransition>
