@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      achievements: {
+        Row: {
+          category: string
+          created_at: string
+          description: string
+          icon: string
+          id: string
+          is_active: boolean
+          name: string
+          points: number
+          requirement_type: string
+          requirement_value: number
+          slug: string
+          tier: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          description: string
+          icon?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          points?: number
+          requirement_type: string
+          requirement_value?: number
+          slug: string
+          tier?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string
+          icon?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          points?: number
+          requirement_type?: string
+          requirement_value?: number
+          slug?: string
+          tier?: string
+        }
+        Relationships: []
+      }
       admin_access_logs: {
         Row: {
           action: string
@@ -566,10 +611,12 @@ export type Database = {
           full_name: string | null
           id: string
           last_login_at: string | null
+          level: number | null
           onboarding_completed: boolean | null
           platform: string | null
           subscription_plan: string | null
           subscription_status: string | null
+          total_points: number | null
           updated_at: string
           user_id: string
         }
@@ -580,10 +627,12 @@ export type Database = {
           full_name?: string | null
           id?: string
           last_login_at?: string | null
+          level?: number | null
           onboarding_completed?: boolean | null
           platform?: string | null
           subscription_plan?: string | null
           subscription_status?: string | null
+          total_points?: number | null
           updated_at?: string
           user_id: string
         }
@@ -594,10 +643,12 @@ export type Database = {
           full_name?: string | null
           id?: string
           last_login_at?: string | null
+          level?: number | null
           onboarding_completed?: boolean | null
           platform?: string | null
           subscription_plan?: string | null
           subscription_status?: string | null
+          total_points?: number | null
           updated_at?: string
           user_id?: string
         }
@@ -1065,6 +1116,38 @@ export type Database = {
         }
         Relationships: []
       }
+      user_achievements: {
+        Row: {
+          achievement_id: string
+          id: string
+          notified: boolean
+          unlocked_at: string
+          user_id: string
+        }
+        Insert: {
+          achievement_id: string
+          id?: string
+          notified?: boolean
+          unlocked_at?: string
+          user_id: string
+        }
+        Update: {
+          achievement_id?: string
+          id?: string
+          notified?: boolean
+          unlocked_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_achievements_achievement_id_fkey"
+            columns: ["achievement_id"]
+            isOneToOne: false
+            referencedRelation: "achievements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_analytics: {
         Row: {
           created_at: string
@@ -1371,6 +1454,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      calculate_user_level: { Args: { points: number }; Returns: number }
       get_admin_role: {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["admin_role"]
