@@ -24,6 +24,7 @@ const Progress = lazy(() => import("./pages/Progress"));
 const Meals = lazy(() => import("./pages/Meals"));
 const WeeklyCheckin = lazy(() => import("./pages/WeeklyCheckin"));
 const Subscription = lazy(() => import("./pages/Subscription"));
+const Achievements = lazy(() => import("./pages/Achievements"));
 
 // Admin pages - lazy loaded
 const AdminLogin = lazy(() => import("./pages/admin/AdminLogin"));
@@ -58,6 +59,7 @@ function AnimatedRoutes() {
         <Route path="/meals" element={<PageTransition><Suspense fallback={<PageLoader />}><Meals /></Suspense></PageTransition>} />
         <Route path="/checkin" element={<PageTransition><Suspense fallback={<PageLoader />}><WeeklyCheckin /></Suspense></PageTransition>} />
         <Route path="/subscription" element={<PageTransition><Suspense fallback={<PageLoader />}><Subscription /></Suspense></PageTransition>} />
+        <Route path="/achievements" element={<PageTransition><Suspense fallback={<PageLoader />}><Achievements /></Suspense></PageTransition>} />
         
         {/* Admin Routes */}
         <Route path="/admin" element={<Suspense fallback={<PageLoader />}><AdminLogin /></Suspense>} />
