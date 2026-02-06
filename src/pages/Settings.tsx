@@ -20,8 +20,7 @@ import {
   STRUGGLES, 
   TIME_SLOTS 
 } from '@/lib/constants';
-import { ArrowLeft, User, Settings2, Bell, Check, Save, BellRing, BellOff, Sun, Moon, Monitor, CreditCard, HelpCircle, MessageCircle, Mail, FileQuestion } from 'lucide-react';
-import { LogoIcon } from '@/components/Logo';
+import { Leaf, ArrowLeft, User, Settings2, Bell, Check, Save, BellRing, BellOff, Sun, Moon, Monitor, CreditCard, HelpCircle, MessageCircle, Mail, FileQuestion } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { BottomNav } from '@/components/BottomNav';
 import { Database } from '@/integrations/supabase/types';
@@ -190,7 +189,9 @@ function SettingsContent() {
               <ArrowLeft className="h-5 w-5" />
             </Button>
             <div className="flex items-center gap-2">
-              <LogoIcon size="sm" />
+              <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+                <Leaf className="h-4 w-4 text-primary-foreground" />
+              </div>
               <span className="font-display font-semibold text-foreground">Configurações</span>
             </div>
           </div>

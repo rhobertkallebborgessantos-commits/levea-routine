@@ -8,8 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { Mail, Lock, User, ArrowLeft } from 'lucide-react';
-import { Logo } from '@/components/Logo';
+import { Leaf, Mail, Lock, User, ArrowLeft } from 'lucide-react';
 import { z } from 'zod';
 
 const emailSchema = z.string().email('Por favor, insira um e-mail válido');
@@ -129,7 +128,12 @@ export default function Auth() {
       >
         {/* Logo */}
         <div className="flex flex-col items-center mb-8">
-          <Logo size="md" showText className="mb-2" />
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
+              <Leaf className="h-5 w-5 text-primary-foreground" />
+            </div>
+            <span className="text-2xl font-display font-bold text-foreground">LEVEA</span>
+          </div>
           <p className="text-muted-foreground text-sm">Rotina inteligente para emagrecer sem sofrimento</p>
         </div>
 

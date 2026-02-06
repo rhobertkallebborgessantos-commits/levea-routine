@@ -4,8 +4,7 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { SplashScreen } from '@/components/SplashScreen';
-import { Logo, LogoIcon } from '@/components/Logo';
-import { ArrowRight, Bell, Calendar, Heart, Sparkles } from 'lucide-react';
+import { Leaf, ArrowRight, Bell, Calendar, Heart, Sparkles } from 'lucide-react';
 const SPLASH_SHOWN_KEY = 'levea_splash_shown';
 export default function Index() {
   const {
@@ -41,7 +40,9 @@ export default function Index() {
   }];
   if (!isReady) {
     return <div className="fixed inset-0 flex items-center justify-center bg-background">
-        <LogoIcon size="lg" className="animate-pulse" />
+        <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center animate-pulse">
+          <Leaf className="h-6 w-6 text-primary-foreground" />
+        </div>
       </div>;
   }
   return <>
@@ -50,7 +51,12 @@ export default function Index() {
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50">
         <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
-          <Logo size="sm" showText />
+          <div className="flex items-center gap-2">
+            <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center">
+              <Leaf className="h-5 w-5 text-primary-foreground" />
+            </div>
+            <span className="text-xl font-display font-bold text-foreground">LEVEA</span>
+          </div>
           <div className="flex items-center gap-3">
             {user ? <Button asChild>
                 <Link to="/dashboard">Ir para o Painel</Link>
@@ -253,7 +259,12 @@ export default function Index() {
       {/* Footer */}
       <footer className="py-8 px-4 border-t border-border/50">
         <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <Logo size="xs" showText />
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center">
+              <Leaf className="h-4 w-4 text-primary-foreground" />
+            </div>
+            <span className="font-display font-semibold text-foreground">LEVEA</span>
+          </div>
           <p className="text-sm text-muted-foreground">© 2024 LEVEA. Feito com 💚 para hábitos mais saudáveis.</p>
         </div>
       </footer>

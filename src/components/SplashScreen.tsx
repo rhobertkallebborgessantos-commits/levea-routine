@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LogoIcon } from '@/components/Logo';
+import { Leaf } from 'lucide-react';
 
 interface SplashScreenProps {
   onComplete: () => void;
@@ -50,7 +50,9 @@ export function SplashScreen({ onComplete, duration = 2000 }: SplashScreenProps)
               transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
               className="mb-6"
             >
-              <LogoIcon size="xl" />
+              <div className="w-20 h-20 rounded-2xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
+                <Leaf className="h-10 w-10 text-primary-foreground" />
+              </div>
             </motion.div>
 
             {/* Brand name */}

@@ -20,8 +20,7 @@ import {
   TIME_SLOTS,
   generateDiagnosis,
 } from '@/lib/constants';
-import { ChevronLeft, ChevronRight, Check, Sparkles, AlertCircle } from 'lucide-react';
-import { Logo } from '@/components/Logo';
+import { Leaf, ChevronLeft, ChevronRight, Check, Sparkles, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Database } from '@/integrations/supabase/types';
 import { Card } from '@/components/ui/card';
@@ -608,7 +607,12 @@ function OnboardingContent() {
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
       <header className="p-4 flex items-center justify-between">
-        <Logo size="sm" showText />
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+            <Leaf className="h-4 w-4 text-primary-foreground" />
+          </div>
+          <span className="font-display font-semibold text-foreground">LEVEA</span>
+        </div>
         <span className="text-sm text-muted-foreground">Passo {step} de {TOTAL_STEPS}</span>
       </header>
 
