@@ -6,10 +6,12 @@ const corsHeaders = {
 };
 
 interface WhatsAppMessage {
-  to: string; // Phone number with country code (e.g., +5511999999999)
+  to: string; // Phone number with country code (e.g., 5511999999999)
   message: string;
   type?: 'notification' | 'verification' | 'reminder' | 'support';
 }
+
+const GRAPH_API_VERSION = 'v18.0';
 
 Deno.serve(async (req) => {
   // Handle CORS preflight
@@ -53,57 +55,66 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Get Twilio credentials
-    const accountSid = Deno.env.get('TWILIO_ACCOUNT_SID');
-    const authToken = Deno.env.get('TWILIO_AUTH_TOKEN');
-    const twilioWhatsAppNumber = Deno.env.get('TWILIO_WHATSAPP_NUMBER');
+    // Get Meta WhatsApp credentials
+    const phoneNumberId = Deno.env.get('META_WHATSAPP_PHONE_ID');
+    const accessToken = Deno.env.get('META_WHATSAPP_ACCESS_TOKEN');
 
-    if (!accountSid || !authToken || !twilioWhatsAppNumber) {
-      console.error('Missing Twilio credentials');
+    if (!phoneNumberId || !accessToken) {
+      console.error('Missing Meta WhatsApp credentials');
       return new Response(
         JSON.stringify({ error: 'WhatsApp service not configured' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // Format phone numbers for WhatsApp
-    const fromNumber = `whatsapp:${twilioWhatsAppNumber}`;
-    const toNumber = `whatsapp:${to.startsWith('+') ? to : '+' + to}`;
+    // Format phone number (remove + if present, ensure only digits)
+    const formattedPhone = to.replace(/\D/g, '');
 
-    // Send message via Twilio API
-    const twilioUrl = `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`;
+    // Send message via Meta Graph API
+    const graphApiUrl = `https://graph.facebook.com/${GRAPH_API_VERSION}/${phoneNumberId}/messages`;
     
-    const formData = new URLSearchParams();
-    formData.append('From', fromNumber);
-    formData.append('To', toNumber);
-    formData.append('Body', message);
+    const requestBody = {
+      messaging_product: 'whatsapp',
+      recipient_type: 'individual',
+      to: formattedPhone,
+      type: 'text',
+      text: {
+        preview_url: false,
+        body: message
+      }
+    };
 
-    const twilioResponse = await fetch(twilioUrl, {
+    console.log(`Sending WhatsApp message to ${formattedPhone}, type: ${type}`);
+
+    const metaResponse = await fetch(graphApiUrl, {
       method: 'POST',
       headers: {
-        'Authorization': 'Basic ' + btoa(`${accountSid}:${authToken}`),
-        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
       },
-      body: formData.toString(),
+      body: JSON.stringify(requestBody),
     });
 
-    const twilioData = await twilioResponse.json();
+    const metaData = await metaResponse.json();
 
-    if (!twilioResponse.ok) {
-      console.error('Twilio error:', twilioData);
+    if (!metaResponse.ok) {
+      console.error('Meta API error:', metaData);
       return new Response(
-        JSON.stringify({ error: 'Failed to send WhatsApp message', details: twilioData.message }),
+        JSON.stringify({ 
+          error: 'Failed to send WhatsApp message', 
+          details: metaData.error?.message || 'Unknown error' 
+        }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    console.log(`WhatsApp message sent successfully. SID: ${twilioData.sid}, Type: ${type}`);
+    console.log(`WhatsApp message sent successfully. Message ID: ${metaData.messages?.[0]?.id}, Type: ${type}`);
 
     return new Response(
       JSON.stringify({ 
         success: true, 
-        messageSid: twilioData.sid,
-        status: twilioData.status 
+        messageId: metaData.messages?.[0]?.id,
+        status: 'sent'
       }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
