@@ -5,7 +5,7 @@ import { useProfile, useUserPreferences } from '@/hooks/useProfile';
 import { useTodayRoutines, useInitializeDailyRoutines, useToggleRoutineCompletion } from '@/hooks/useRoutines';
 import { useUserStreak, useUpdateStreak } from '@/hooks/useStreaks';
 import { useMotivationalMessage } from '@/hooks/useMotivationalMessage';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { WeeklyProgressSummary } from '@/components/WeeklyProgressSummary';
 import { DailyFocusCard } from '@/components/dashboard/DailyFocusCard';
@@ -16,9 +16,22 @@ import { ProgressPreviewCard } from '@/components/dashboard/ProgressPreviewCard'
 import { RoutineSection } from '@/components/dashboard/RoutineSection';
 import { WeeklyCheckinPrompt } from '@/components/dashboard/WeeklyCheckinPrompt';
 import { AchievementsWidget } from '@/components/dashboard/AchievementsWidget';
+import { CollapsibleSection } from '@/components/dashboard/CollapsibleSection';
+import { StaggeredItem } from '@/components/dashboard/StaggeredList';
 import { BottomNav } from '@/components/BottomNav';
 import { DashboardSkeleton } from '@/components/skeletons';
-import { Leaf, LogOut, Bell } from 'lucide-react';
+import { 
+  Leaf, 
+  LogOut, 
+  Bell, 
+  Target, 
+  Utensils, 
+  LeafIcon, 
+  TrendingUp, 
+  Trophy, 
+  Calendar,
+  ListChecks
+} from 'lucide-react';
 
 function DashboardContent() {
   const { user, signOut } = useAuth();
@@ -76,82 +89,164 @@ function DashboardContent() {
   return (
     <div className="min-h-screen bg-background pb-24">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50">
+      <motion.header 
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+        className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50"
+      >
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+            <motion.div 
+              className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
               <Leaf className="h-4 w-4 text-primary-foreground" />
-            </div>
+            </motion.div>
             <span className="font-display font-semibold text-foreground">LEVEA</span>
           </div>
           <div className="flex items-center gap-1">
-            <Button variant="ghost" size="icon" className="relative">
-              <Bell className="h-5 w-5" />
-            </Button>
-            <Button variant="ghost" size="icon" onClick={handleSignOut}>
-              <LogOut className="h-5 w-5" />
-            </Button>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Button variant="ghost" size="icon" className="relative">
+                <Bell className="h-5 w-5" />
+              </Button>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Button variant="ghost" size="icon" onClick={handleSignOut}>
+                <LogOut className="h-5 w-5" />
+              </Button>
+            </motion.div>
           </div>
         </div>
-      </header>
+      </motion.header>
 
-      <main className="max-w-2xl mx-auto px-4 py-6 space-y-5">
+      <main className="max-w-2xl mx-auto px-4 py-6 space-y-6">
         {profileLoading ? (
           <DashboardSkeleton />
         ) : (
           <>
-            {/* Welcome Section */}
-            <motion.section
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="space-y-1"
+            {/* Welcome Section - Always visible, staggered entry */}
+            <StaggeredItem index={0} baseDelay={0.1}>
+              <section className="space-y-1">
+                <h1 className="text-2xl font-display font-bold text-foreground">
+                  {greeting()}, {profile?.full_name?.split(' ')[0] || 'você'}! 👋
+                </h1>
+                {motivationalMessage && (
+                  <motion.p 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.3 }}
+                    className="text-sm text-muted-foreground"
+                  >
+                    {motivationalMessage}
+                  </motion.p>
+                )}
+              </section>
+            </StaggeredItem>
+
+            {/* Quick Stats - Always visible */}
+            <StaggeredItem index={1} baseDelay={0.1}>
+              <QuickStatsRow
+                currentStreak={streak?.current_streak || 0}
+                completedCount={completedCount}
+                totalCount={totalCount}
+                progressPercent={progressPercent}
+              />
+            </StaggeredItem>
+
+            {/* Daily Focus - Collapsible */}
+            {(preferences?.weekly_focus || preferences?.diagnosis_summary) && (
+              <CollapsibleSection
+                id="daily-focus"
+                title="Foco do Dia"
+                icon={<Target className="h-4 w-4" />}
+                defaultOpen={true}
+                delay={0.2}
+              >
+                <DailyFocusCard
+                  weeklyFocus={preferences?.weekly_focus || null}
+                  diagnosisSummary={preferences?.diagnosis_summary || null}
+                />
+              </CollapsibleSection>
+            )}
+
+            {/* Weekly Check-in Prompt - Not in collapsible, shows conditionally */}
+            <StaggeredItem index={3} baseDelay={0.1}>
+              <WeeklyCheckinPrompt />
+            </StaggeredItem>
+
+            {/* Nutrition - Collapsible */}
+            <CollapsibleSection
+              id="nutrition"
+              title="Nutrição"
+              icon={<Utensils className="h-4 w-4" />}
+              defaultOpen={true}
+              delay={0.25}
             >
-              <h1 className="text-2xl font-display font-bold text-foreground">
-                {greeting()}, {profile?.full_name?.split(' ')[0] || 'você'}! 👋
-              </h1>
-              {motivationalMessage && (
-                <p className="text-sm text-muted-foreground">{motivationalMessage}</p>
-              )}
-            </motion.section>
+              <NutritionProgress />
+            </CollapsibleSection>
 
-            {/* Quick Stats */}
-            <QuickStatsRow
-              currentStreak={streak?.current_streak || 0}
-              completedCount={completedCount}
-              totalCount={totalCount}
-              progressPercent={progressPercent}
-            />
+            {/* Tea Recommendations - Collapsible */}
+            <CollapsibleSection
+              id="tea-recommendations"
+              title="Chás"
+              icon={<LeafIcon className="h-4 w-4" />}
+              defaultOpen={true}
+              delay={0.3}
+            >
+              <TeaRecommendations />
+            </CollapsibleSection>
 
-            {/* Daily Focus */}
-            <DailyFocusCard
-              weeklyFocus={preferences?.weekly_focus || null}
-              diagnosisSummary={preferences?.diagnosis_summary || null}
-            />
+            {/* Progress Preview - Collapsible */}
+            <CollapsibleSection
+              id="progress-preview"
+              title="Meu Progresso"
+              icon={<TrendingUp className="h-4 w-4" />}
+              defaultOpen={true}
+              delay={0.35}
+            >
+              <ProgressPreviewCard />
+            </CollapsibleSection>
 
-            {/* Nutrition Progress */}
-            <NutritionProgress />
+            {/* Achievements - Collapsible */}
+            <CollapsibleSection
+              id="achievements"
+              title="Conquistas"
+              icon={<Trophy className="h-4 w-4" />}
+              defaultOpen={true}
+              delay={0.4}
+            >
+              <AchievementsWidget />
+            </CollapsibleSection>
 
-            {/* Weekly Check-in Prompt */}
-            <WeeklyCheckinPrompt />
+            {/* Weekly Progress Summary - Collapsible */}
+            <CollapsibleSection
+              id="weekly-summary"
+              title="Resumo Semanal"
+              icon={<Calendar className="h-4 w-4" />}
+              defaultOpen={false}
+              delay={0.45}
+            >
+              <WeeklyProgressSummary />
+            </CollapsibleSection>
 
-            {/* Tea Recommendations */}
-            <TeaRecommendations />
-
-            {/* Progress Preview */}
-            <ProgressPreviewCard />
-
-            {/* Achievements Widget */}
-            <AchievementsWidget />
-
-            {/* Weekly Progress Summary */}
-            <WeeklyProgressSummary />
-
-            {/* Today's Routine */}
-            <RoutineSection
-              routines={routines}
-              isLoading={routinesLoading}
-              onToggle={handleToggleRoutine}
-            />
+            {/* Today's Routine - Always visible (core feature) */}
+            <StaggeredItem index={10} baseDelay={0.1}>
+              <section className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <ListChecks className="h-4 w-4 text-primary" />
+                  <h2 className="text-base font-display font-semibold text-foreground">
+                    Rotina de Hoje
+                  </h2>
+                </div>
+                <RoutineSection
+                  routines={routines}
+                  isLoading={routinesLoading}
+                  onToggle={handleToggleRoutine}
+                />
+              </section>
+            </StaggeredItem>
           </>
         )}
       </main>

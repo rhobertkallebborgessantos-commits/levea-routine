@@ -200,15 +200,19 @@ export function TeaRecommendations() {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.25 }}
+      whileHover={{ scale: 1.01 }}
+      transition={{ duration: 0.2 }}
     >
-      <Card className="border-border/50">
+      <Card className="border-border/50 transition-shadow hover:shadow-md hover:shadow-primary/5">
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
             <CardTitle className="text-base font-medium flex items-center gap-2 text-foreground">
-              <Leaf className="h-4 w-4 text-primary" />
+              <motion.div
+                whileHover={{ rotate: 15 }}
+                transition={{ type: 'spring', stiffness: 300 }}
+              >
+                <Leaf className="h-4 w-4 text-primary" />
+              </motion.div>
               Chás Recomendados
             </CardTitle>
             <div className="flex items-center gap-2">
@@ -226,13 +230,19 @@ export function TeaRecommendations() {
           </div>
         </CardHeader>
         <CardContent className="space-y-2">
-          {teas.slice(0, 3).map((tea) => (
-            <TeaCard
+          {teas.slice(0, 3).map((tea, index) => (
+            <motion.div
               key={tea.id}
-              tea={tea}
-              isLogged={loggedTeaNames.includes(tea.name.toLowerCase())}
-              onLog={() => handleLogTea(tea)}
-            />
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: index * 0.05 }}
+            >
+              <TeaCard
+                tea={tea}
+                isLogged={loggedTeaNames.includes(tea.name.toLowerCase())}
+                onLog={() => handleLogTea(tea)}
+              />
+            </motion.div>
           ))}
         </CardContent>
       </Card>
