@@ -381,10 +381,7 @@ function SettingsContent() {
                     </a>
                     <button
                       onClick={() => {
-                        const phone = '5511953315047';
-                        const message = encodeURIComponent('Olá! Preciso de ajuda com o app LEVEA.');
-                        // Try web.whatsapp.com which works better across devices
-                        window.open(`https://web.whatsapp.com/send?phone=${phone}&text=${message}`, '_blank');
+                        window.open('https://wa.me/message/IE64SQOADNBPL1', '_blank');
                       }}
                       className="flex items-center gap-3 p-3 rounded-xl border border-border hover:border-primary/50 hover:bg-primary/5 transition-all w-full text-left"
                     >
