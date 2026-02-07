@@ -294,11 +294,7 @@ export default function FAQ() {
             <Button
               variant="default"
               size="sm"
-              onClick={() => {
-                const phone = '5511953315047';
-                const message = encodeURIComponent('Olá! Tenho uma dúvida sobre o LEVEA.');
-                window.open(`https://web.whatsapp.com/send?phone=${phone}&text=${message}`, '_blank');
-              }}
+              onClick={() => window.open('https://wa.me/message/IE64SQOADNBPL1', '_blank')}
             >
               Falar no WhatsApp
             </Button>
