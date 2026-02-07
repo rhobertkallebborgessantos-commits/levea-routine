@@ -381,7 +381,7 @@ function SettingsContent() {
                     </a>
                     <button
                       onClick={() => {
-                        window.open('https://wa.me/message/IE64SQOADNBPL1', '_blank');
+                        window.open('https://wa.me/5511953315047?text=Olá,%20sou%20cliente%20do%20Levea%20e%20preciso%20de%20ajuda', '_blank');
                       }}
                       className="flex items-center gap-3 p-3 rounded-xl border border-border hover:border-primary/50 hover:bg-primary/5 transition-all w-full text-left"
                     >
