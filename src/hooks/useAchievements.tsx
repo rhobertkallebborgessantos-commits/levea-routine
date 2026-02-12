@@ -36,6 +36,88 @@ export interface UserStats {
   current_streak: number;
 }
 
+// Dynamic tier names that cycle infinitely
+const TIER_CYCLE = ['bronze', 'silver', 'gold', 'diamond', 'legendary'] as const;
+const TIER_LABELS: Record<string, string> = {
+  bronze: 'Bronze',
+  silver: 'Prata',
+  gold: 'Ouro',
+  diamond: 'Diamante',
+  legendary: 'Lendário',
+};
+
+// Generate the next milestone value using exponential scaling
+function getNextMilestone(lastValue: number): number {
+  if (lastValue < 50) return lastValue * 2;
+  if (lastValue < 200) return Math.round(lastValue * 1.5);
+  return Math.round(lastValue * 1.3);
+}
+
+// Generate dynamic achievements beyond the fixed DB ones
+function generateDynamicAchievements(
+  fixedAchievements: Achievement[],
+  userStats: UserStats
+): Achievement[] {
+  const byType = new Map<string, Achievement[]>();
+  for (const a of fixedAchievements) {
+    const list = byType.get(a.requirement_type) || [];
+    list.push(a);
+    byType.set(a.requirement_type, list);
+  }
+
+  const dynamicAchievements: Achievement[] = [];
+
+  for (const [reqType, achievements] of byType) {
+    const sorted = [...achievements].sort((a, b) => a.requirement_value - b.requirement_value);
+    const highest = sorted[sorted.length - 1];
+    
+    // Get current user value for this type
+    let currentValue = 0;
+    switch (reqType) {
+      case 'streak_days': currentValue = userStats.current_streak; break;
+      case 'meals_logged': currentValue = userStats.meals_count; break;
+      case 'teas_logged': currentValue = userStats.teas_count; break;
+      case 'weight_logged': currentValue = userStats.weights_count; break;
+      case 'checkins_completed': currentValue = userStats.checkins_count; break;
+      case 'photos_uploaded': currentValue = userStats.photos_count; break;
+    }
+
+    // Generate up to 3 milestones beyond the highest fixed one
+    let lastValue = highest.requirement_value;
+    const tierIndex = TIER_CYCLE.indexOf(highest.tier as any);
+    
+    for (let i = 0; i < 3; i++) {
+      const nextValue = getNextMilestone(lastValue);
+      // Only generate if user is within reasonable range or already past
+      if (nextValue > currentValue * 3 && nextValue > lastValue * 2) break;
+      
+      const cycleIdx = (tierIndex + 1 + i) % TIER_CYCLE.length;
+      const tier = TIER_CYCLE[cycleIdx];
+      const tierNum = Math.floor((tierIndex + 1 + i) / TIER_CYCLE.length) + 1;
+      const tierLabel = tierNum > 1 ? `${TIER_LABELS[tier]} ${tierNum}` : TIER_LABELS[tier];
+      
+      const dynamicId = `dynamic_${reqType}_${nextValue}`;
+      dynamicAchievements.push({
+        id: dynamicId,
+        slug: dynamicId,
+        name: `${highest.name.replace(/\d+/, String(nextValue))}`,
+        description: highest.description.replace(/\d+/, String(nextValue)),
+        icon: highest.icon,
+        category: highest.category,
+        tier: tier,
+        points: Math.round(highest.points * (1.5 + i * 0.5)),
+        requirement_type: reqType,
+        requirement_value: nextValue,
+        is_active: true,
+      });
+      
+      lastValue = nextValue;
+    }
+  }
+
+  return dynamicAchievements;
+}
+
 export function useAchievements() {
   const { user } = useAuth();
   const [achievements, setAchievements] = useState<Achievement[]>([]);
@@ -113,14 +195,15 @@ export function useAchievements() {
     }
   }, [user]);
 
-  // Check and unlock achievements
+  // Check and unlock achievements (only fixed DB achievements)
   const checkAndUnlockAchievements = useCallback(async () => {
     if (!user || !userStats || achievements.length === 0) return;
 
     const unlockedIds = new Set(userAchievements.map(ua => ua.achievement_id));
     const toUnlock: Achievement[] = [];
 
-    for (const achievement of achievements) {
+    // Only check fixed (non-dynamic) achievements for DB unlock
+    for (const achievement of achievements.filter(a => !a.id.startsWith('dynamic_'))) {
       if (unlockedIds.has(achievement.id)) continue;
 
       let shouldUnlock = false;
@@ -198,6 +281,14 @@ export function useAchievements() {
     }
   }, [user, fetchAchievements, fetchUserAchievements, fetchUserStats]);
 
+  // Generate dynamic achievements when stats change
+  const dynamicAchievements = userStats && achievements.length > 0
+    ? generateDynamicAchievements(achievements, userStats)
+    : [];
+
+  // Combined list: fixed + dynamic
+  const allAchievements = [...achievements, ...dynamicAchievements];
+
   // Check achievements when stats change
   useEffect(() => {
     if (userStats && achievements.length > 0) {
@@ -237,15 +328,32 @@ export function useAchievements() {
     return { current, max, percentage };
   }, [userStats]);
 
-  // Check if achievement is unlocked
+  // Check if achievement is unlocked (supports dynamic achievements)
   const isUnlocked = useCallback((achievementId: string): boolean => {
+    if (achievementId.startsWith('dynamic_')) {
+      // Dynamic achievements are "unlocked" if user stats meet the requirement
+      if (!userStats) return false;
+      const allAchievements = [...achievements, ...dynamicAchievements];
+      const achievement = allAchievements.find(a => a.id === achievementId);
+      if (!achievement) return false;
+      let current = 0;
+      switch (achievement.requirement_type) {
+        case 'streak_days': current = userStats.current_streak; break;
+        case 'meals_logged': current = userStats.meals_count; break;
+        case 'teas_logged': current = userStats.teas_count; break;
+        case 'weight_logged': current = userStats.weights_count; break;
+        case 'checkins_completed': current = userStats.checkins_count; break;
+        case 'photos_uploaded': current = userStats.photos_count; break;
+      }
+      return current >= achievement.requirement_value;
+    }
     return userAchievements.some(ua => ua.achievement_id === achievementId);
-  }, [userAchievements]);
+  }, [userAchievements, userStats, achievements]);
 
-  // Get achievements by category
+  // Get achievements by category (includes dynamic)
   const getByCategory = useCallback((category: string): Achievement[] => {
-    return achievements.filter(a => a.category === category);
-  }, [achievements]);
+    return allAchievements.filter(a => a.category === category);
+  }, [allAchievements]);
 
   // Get recent unlocks
   const getRecentUnlocks = useCallback((limit: number = 5): UserAchievement[] => {
@@ -255,7 +363,7 @@ export function useAchievements() {
   }, [userAchievements]);
 
   return {
-    achievements,
+    achievements: allAchievements,
     userAchievements,
     userStats,
     isLoading,

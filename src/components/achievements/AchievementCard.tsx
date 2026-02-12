@@ -55,6 +55,18 @@ const tierColors: Record<string, {
     border: 'border-amber-500 dark:border-amber-500',
     icon: 'text-amber-500 dark:text-amber-400',
     glow: 'shadow-amber-300/50 dark:shadow-amber-600/30'
+  },
+  diamond: {
+    bg: 'bg-cyan-50 dark:bg-cyan-900/20',
+    border: 'border-cyan-400 dark:border-cyan-500',
+    icon: 'text-cyan-500 dark:text-cyan-400',
+    glow: 'shadow-cyan-300/50 dark:shadow-cyan-600/30'
+  },
+  legendary: {
+    bg: 'bg-purple-50 dark:bg-purple-900/20',
+    border: 'border-purple-500 dark:border-purple-400',
+    icon: 'text-purple-500 dark:text-purple-400',
+    glow: 'shadow-purple-300/50 dark:shadow-purple-500/30'
   }
 };
 

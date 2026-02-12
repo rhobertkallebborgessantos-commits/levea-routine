@@ -9,6 +9,36 @@ interface LevelProgressProps {
   className?: string;
 }
 
+function getLevelTitle(level: number): string {
+  if (level < 5) return 'Iniciante';
+  if (level < 10) return 'Dedicado';
+  if (level < 20) return 'Experiente';
+  if (level < 35) return 'Mestre';
+  if (level < 50) return 'Grão-Mestre';
+  if (level < 75) return 'Lenda';
+  if (level < 100) return 'Imortal';
+  return `Transcendente ${Math.floor(level / 100)}`;
+}
+
+function getDynamicMilestones(level: number): number[] {
+  const base = [5, 10, 20, 50];
+  const milestones: number[] = [];
+  // Show 4 milestones around the user's level
+  for (const m of base) {
+    if (m > level + 20) break;
+    milestones.push(m);
+  }
+  // Add higher milestones dynamically
+  let next = 50;
+  while (milestones.length < 4 || milestones[milestones.length - 1] <= level) {
+    next = next < 100 ? next + 25 : next + 50;
+    if (!milestones.includes(next)) milestones.push(next);
+    if (milestones.length >= 6) break;
+  }
+  // Return last 4
+  return milestones.slice(-4);
+}
+
 export function LevelProgress({ level, totalPoints, className }: LevelProgressProps) {
   // Calculate points needed for next level
   // Level formula: level = floor(sqrt(points / 50)) + 1
@@ -39,8 +69,8 @@ export function LevelProgress({ level, totalPoints, className }: LevelProgressPr
           </motion.div>
           <div>
             <p className="text-sm text-muted-foreground">Nível</p>
-            <p className="font-semibold text-foreground">
-              {level < 5 ? 'Iniciante' : level < 10 ? 'Dedicado' : level < 20 ? 'Experiente' : 'Mestre'}
+          <p className="font-semibold text-foreground">
+              {getLevelTitle(level)}
             </p>
           </div>
         </div>
@@ -64,7 +94,7 @@ export function LevelProgress({ level, totalPoints, className }: LevelProgressPr
 
       {/* Level milestones */}
       <div className="flex justify-between mt-3 pt-3 border-t border-primary/10">
-        {[5, 10, 20, 50].map((milestone) => (
+        {getDynamicMilestones(level).map((milestone) => (
           <div key={milestone} className="flex flex-col items-center">
             <Star 
               className={cn(
