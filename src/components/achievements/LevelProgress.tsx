@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { Star, Zap } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
+import { xpForNextLevel, totalXpForLevel, getLevelTitle, getLevelColor, XP_REWARDS, DAILY_XP_CAP } from '@/lib/xp-config';
 
 interface LevelProgressProps {
   level: number;
@@ -9,45 +10,31 @@ interface LevelProgressProps {
   className?: string;
 }
 
-function getLevelTitle(level: number): string {
-  if (level < 5) return 'Iniciante';
-  if (level < 10) return 'Dedicado';
-  if (level < 20) return 'Experiente';
-  if (level < 35) return 'Mestre';
-  if (level < 50) return 'Grão-Mestre';
-  if (level < 75) return 'Lenda';
-  if (level < 100) return 'Imortal';
-  return `Transcendente ${Math.floor(level / 100)}`;
-}
-
 function getDynamicMilestones(level: number): number[] {
   const base = [5, 10, 20, 50];
   const milestones: number[] = [];
-  // Show 4 milestones around the user's level
   for (const m of base) {
     if (m > level + 20) break;
     milestones.push(m);
   }
-  // Add higher milestones dynamically
   let next = 50;
   while (milestones.length < 4 || milestones[milestones.length - 1] <= level) {
     next = next < 100 ? next + 25 : next + 50;
     if (!milestones.includes(next)) milestones.push(next);
     if (milestones.length >= 6) break;
   }
-  // Return last 4
   return milestones.slice(-4);
 }
 
 export function LevelProgress({ level, totalPoints, className }: LevelProgressProps) {
-  // Calculate points needed for next level
-  // Level formula: level = floor(sqrt(points / 50)) + 1
-  // Inverse: points = (level - 1)^2 * 50
-  const pointsForCurrentLevel = Math.pow(level - 1, 2) * 50;
-  const pointsForNextLevel = Math.pow(level, 2) * 50;
-  const pointsInCurrentLevel = totalPoints - pointsForCurrentLevel;
-  const pointsNeededForNext = pointsForNextLevel - pointsForCurrentLevel;
-  const progressPercent = (pointsInCurrentLevel / pointsNeededForNext) * 100;
+  // New formula: XP_next = 120 × (level ^ 1.35)
+  const xpForCurrent = totalXpForLevel(level);
+  const xpNeeded = xpForNextLevel(level);
+  const xpInCurrentLevel = totalPoints - xpForCurrent;
+  const progressPercent = Math.min(100, (xpInCurrentLevel / xpNeeded) * 100);
+
+  const title = getLevelTitle(level);
+  const titleColor = getLevelColor(level);
 
   return (
     <div className={cn('p-4 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20', className)}>
@@ -69,8 +56,8 @@ export function LevelProgress({ level, totalPoints, className }: LevelProgressPr
           </motion.div>
           <div>
             <p className="text-sm text-muted-foreground">Nível</p>
-          <p className="font-semibold text-foreground">
-              {getLevelTitle(level)}
+            <p className={cn('font-semibold', titleColor)}>
+              {title}
             </p>
           </div>
         </div>
@@ -80,16 +67,32 @@ export function LevelProgress({ level, totalPoints, className }: LevelProgressPr
             <Zap className="h-4 w-4" />
             <span className="font-bold">{totalPoints}</span>
           </div>
-          <p className="text-xs text-muted-foreground">pontos totais</p>
+          <p className="text-xs text-muted-foreground">XP total</p>
         </div>
       </div>
 
       <div className="space-y-1">
         <div className="flex justify-between text-xs text-muted-foreground">
           <span>Progresso para nível {level + 1}</span>
-          <span>{pointsInCurrentLevel}/{pointsNeededForNext}</span>
+          <span>{xpInCurrentLevel}/{xpNeeded} XP</span>
         </div>
         <Progress value={progressPercent} className="h-2" />
+      </div>
+
+      {/* XP info */}
+      <div className="flex gap-2 mt-3 pt-3 border-t border-primary/10">
+        <div className="flex-1 text-center">
+          <p className="text-xs text-muted-foreground">Limite diário</p>
+          <p className="text-sm font-medium">{DAILY_XP_CAP} XP</p>
+        </div>
+        <div className="flex-1 text-center">
+          <p className="text-xs text-muted-foreground">Por hábito</p>
+          <p className="text-sm font-medium">{XP_REWARDS.HABIT_COMPLETED} XP</p>
+        </div>
+        <div className="flex-1 text-center">
+          <p className="text-xs text-muted-foreground">Login diário</p>
+          <p className="text-sm font-medium">{XP_REWARDS.DAILY_LOGIN} XP</p>
+        </div>
       </div>
 
       {/* Level milestones */}
