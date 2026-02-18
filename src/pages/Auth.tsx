@@ -93,6 +93,8 @@ export default function Auth() {
       let message = error.message;
       if (error.message.includes('already registered')) {
         message = 'Este e-mail já está cadastrado. Por favor, faça login.';
+      } else if (error.message.includes('weak') || error.message.includes('leaked') || error.message.includes('known')) {
+        message = 'Esta senha foi encontrada em vazamentos de dados. Por favor, escolha outra.';
       }
       toast({
         variant: 'destructive',
