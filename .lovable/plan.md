@@ -1,36 +1,15 @@
 
 
-## Correção dos Links do WhatsApp
+## Remover o sininho do Dashboard
 
-### Problema Identificado
-Os links do WhatsApp estão com caracteres especiais (acentos) não codificados na URL, o que pode causar erros em certos navegadores e dispositivos. O texto "Olá!" precisa ser codificado como `Ol%C3%A1!`.
+O sininho (icone de notificacao) no canto superior direito do Dashboard nao tem funcionalidade conectada. Vou remove-lo para evitar confusao.
 
-### Solução
-Corrigir os links em duas páginas usando `encodeURIComponent()` para garantir que os caracteres especiais sejam codificados corretamente:
+### Alteracao
 
-### Arquivos a Modificar
+**Arquivo:** `src/pages/Dashboard.tsx`
 
-**1. src/pages/Settings.tsx**
-- Alterar o link do WhatsApp (linha 382-395)
-- Substituir o `<a href>` por um `<a>` com `onClick` usando `window.open()` com URL codificada
+- Remover o botao com o icone `Bell` do header
+- Remover a importacao do `Bell` do lucide-react (se nao for usado em outro lugar do arquivo)
 
-**2. src/pages/FAQ.tsx**
-- Corrigir o `window.open()` (linha 297) para usar URL codificada
-
-### Código da Correção
-
-Criar uma URL codificada corretamente:
-```javascript
-const whatsappUrl = `https://wa.me/5511953315047?text=${encodeURIComponent('Olá! Preciso de ajuda com o app LEVEA.')}`;
-window.open(whatsappUrl, '_blank');
-```
-
-Isso transforma:
-- `Olá!` → `Ol%C3%A1!`
-- Espaços → `%20`
-
-### Detalhes Técnicos
-- O `encodeURIComponent()` garante que todos os caracteres especiais sejam convertidos para formato URL-safe
-- Usar `window.open()` em vez de `href` direto dá mais controle e funciona melhor em dispositivos móveis
-- Manter consistência entre FAQ.tsx e Settings.tsx
+Isso e uma mudanca simples de UI -- apenas remover o botao que nao faz nada.
 
