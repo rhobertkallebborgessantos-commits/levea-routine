@@ -100,20 +100,20 @@ export default function Index() {
             
             <div className="flex justify-center pt-4">
               <motion.div
-                animate={{ 
+                animate={{
                   boxShadow: [
-                    "0 0 0 0 hsl(var(--primary) / 0)",
-                    "0 0 0 8px hsl(var(--primary) / 0.15)",
-                    "0 0 0 0 hsl(var(--primary) / 0)"
-                  ]
+                  "0 0 0 0 hsl(var(--primary) / 0)",
+                  "0 0 0 8px hsl(var(--primary) / 0.15)",
+                  "0 0 0 0 hsl(var(--primary) / 0)"]
+
                 }}
-                transition={{ 
+                transition={{
                   duration: 2,
                   repeat: Infinity,
                   ease: "easeInOut"
                 }}
-                className="rounded-md"
-              >
+                className="rounded-md">
+
                 <Button size="lg" className="gap-2 text-base px-8" asChild>
                   <Link to="/auth">
                     Acessar Levea
@@ -265,7 +265,7 @@ export default function Index() {
             </div>
             <span className="font-display font-semibold text-foreground">LEVEA</span>
           </div>
-          <p className="text-sm text-muted-foreground">© 2024 LEVEA. Feito com 💚 para hábitos mais saudáveis.</p>
+          <p className="text-sm text-muted-foreground">© 2026 LEVEA. Feito com 💚 para hábitos mais saudáveis.</p>
         </div>
       </footer>
       </div>
