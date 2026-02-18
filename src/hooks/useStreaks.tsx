@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { format, differenceInDays, parseISO } from 'date-fns';
+import { useXPReward } from './useXPReward';
 
 export interface UserStreak {
   id: string;
@@ -37,6 +38,7 @@ export function useUserStreak() {
 export function useUpdateStreak() {
   const queryClient = useQueryClient();
   const { user } = useAuth();
+  const xpReward = useXPReward();
 
   return useMutation({
     mutationFn: async () => {
@@ -104,8 +106,21 @@ export function useUpdateStreak() {
       if (error) throw error;
       return data;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['user_streaks', user?.id] });
+      
+      // Award daily login XP
+      xpReward.mutate('DAILY_LOGIN');
+      
+      // Check streak milestones
+      if (data && typeof data === 'object' && 'current_streak' in data) {
+        const streak = (data as { current_streak: number }).current_streak;
+        if (streak === 7) {
+          xpReward.mutate('STREAK_7_DAYS');
+        } else if (streak === 30) {
+          xpReward.mutate('STREAK_30_DAYS');
+        }
+      }
     },
   });
 }

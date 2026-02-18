@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { format } from 'date-fns';
 import { DEFAULT_ROUTINE_ACTIONS } from '@/lib/constants';
+import { useXPReward } from './useXPReward';
 
 export interface DailyRoutine {
   id: string;
@@ -93,6 +94,7 @@ export function useToggleRoutineCompletion() {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const today = format(new Date(), 'yyyy-MM-dd');
+  const xpReward = useXPReward();
 
   return useMutation({
     mutationFn: async ({ routineId, isCompleted }: { routineId: string; isCompleted: boolean }) => {
@@ -137,9 +139,25 @@ export function useToggleRoutineCompletion() {
       }
     },
     // Always refetch after error or success to ensure data consistency
-    onSettled: () => {
+    onSettled: async (_data, _error, variables) => {
       queryClient.invalidateQueries({ queryKey: ['daily_routines', user?.id, today] });
       queryClient.invalidateQueries({ queryKey: ['user_streaks', user?.id] });
+      
+      // Award XP when completing a habit
+      if (variables?.isCompleted) {
+        xpReward.mutate('HABIT_COMPLETED');
+        
+        // Check if all habits are completed for bonus
+        const routines = queryClient.getQueryData<DailyRoutine[]>(['daily_routines', user?.id, today]);
+        if (routines) {
+          const allCompleted = routines.every(r => 
+            r.id === variables.routineId ? true : r.is_completed
+          );
+          if (allCompleted) {
+            xpReward.mutate('ALL_HABITS_DAILY');
+          }
+        }
+      }
     },
   });
 }
