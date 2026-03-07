@@ -28,6 +28,7 @@ const WeeklyCheckin = lazy(() => import("./pages/WeeklyCheckin"));
 const Subscription = lazy(() => import("./pages/Subscription"));
 const Achievements = lazy(() => import("./pages/Achievements"));
 const FAQ = lazy(() => import("./pages/FAQ"));
+const Demo = lazy(() => import("./pages/Demo"));
 
 // Admin pages - lazy loaded
 const AdminLogin = lazy(() => import("./pages/admin/AdminLogin"));
@@ -64,6 +65,7 @@ function AnimatedRoutes() {
         <Route path="/subscription" element={<PageTransition><Suspense fallback={<PageLoader />}><Subscription /></Suspense></PageTransition>} />
         <Route path="/achievements" element={<PageTransition><Suspense fallback={<PageLoader />}><Achievements /></Suspense></PageTransition>} />
         <Route path="/faq" element={<PageTransition><Suspense fallback={<PageLoader />}><FAQ /></Suspense></PageTransition>} />
+        <Route path="/demo" element={<Suspense fallback={<PageLoader />}><Demo /></Suspense>} />
         
         {/* Admin Routes */}
         <Route path="/admin" element={<Suspense fallback={<PageLoader />}><AdminLogin /></Suspense>} />
