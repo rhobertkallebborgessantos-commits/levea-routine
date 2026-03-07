@@ -20,6 +20,24 @@ const testimonials = [
     avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=face",
     text: "Eu já tentei várias dietas antes, mas o Levea me mostrou que o segredo é consistência.",
   },
+  {
+    name: "Rafael Mendes",
+    handle: "@rafaelmendes",
+    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=face",
+    text: "Perdi 8kg em 3 meses sem passar fome. O acompanhamento diário faz toda a diferença.",
+  },
+  {
+    name: "Juliana Santos",
+    handle: "@jusantos.fit",
+    avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face",
+    text: "Finalmente entendi que emagrecer é sobre rotina, não sobre restrição. O Levea mudou minha relação com a comida.",
+  },
+  {
+    name: "Pedro Oliveira",
+    handle: "@pedrooliveira",
+    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face",
+    text: "As sugestões de chás e refeições são incríveis. Sinto que tenho um nutricionista no bolso.",
+  },
 ];
 
 function TestimonialCard({ name, handle, avatar, text }: (typeof testimonials)[0]) {
