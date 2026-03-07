@@ -232,3 +232,27 @@
     padding-bottom: env(safe-area-inset-bottom, 0);
   }
 }
+
+/* Login Theme */
+.login-theme {
+  --color-bg: #ffffff;
+  --color-surface: #f6f6f6;
+  --color-muted-surface: #f0f0f0;
+  --color-border: #22c55e;
+  --color-text-secondary: #4b5563;
+  --color-text-primary: #16a34a;
+  --color-heading: #064e3b;
+  --color-bg-2: #dcfce7;
+  --color-text-primary-rgb: 34, 197, 94;
+}
+
+.dark .login-theme {
+  --color-bg: #0f172a;
+  --color-surface: #1e293b;
+  --color-muted-surface: #334155;
+  --color-border: #22c55e;
+  --color-text-secondary: #94a3b8;
+  --color-text-primary: #22c55e;
+  --color-heading: #f1f5f9;
+  --color-bg-2: #16a34a;
+}
