@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import TestimonialsWithMarquee from '@/components/ui/testimonials-with-marquee';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
@@ -174,6 +175,9 @@ export default function Index() {
           </div>
         </div>
       </section>
+
+      {/* Testimonials */}
+      <TestimonialsWithMarquee />
 
       {/* How It Works */}
       <section className="py-20 px-4">
