@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { SplashScreen } from '@/components/SplashScreen';
 import { Leaf, ArrowRight, Bell, Calendar, Heart, Sparkles } from 'lucide-react';
+import { ProductShowcase } from '@/components/landing/ProductShowcase';
 const SPLASH_SHOWN_KEY = 'levea_splash_shown';
 export default function Index() {
   const {
