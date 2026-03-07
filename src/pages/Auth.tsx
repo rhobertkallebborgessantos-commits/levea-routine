@@ -50,11 +50,18 @@ export default function Auth() {
     return null;
   }
 
-
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (!containerRef.current) return;
     const rect = containerRef.current.getBoundingClientRect();
     setMousePos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
   }, []);
+
+  // Redirect if already logged in
+  if (user) {
+    navigate('/dashboard');
+    return null;
+  }
+
 
   const validateForm = () => {
     const newErrors: { email?: string; password?: string } = {};
