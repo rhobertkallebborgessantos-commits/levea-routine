@@ -180,6 +180,9 @@ export default function Index() {
       {/* Testimonials */}
       <TestimonialsWithMarquee />
 
+      {/* Product Showcase */}
+      <ProductShowcase />
+
       {/* How It Works */}
       <section className="py-20 px-4">
         <div className="max-w-4xl mx-auto">
