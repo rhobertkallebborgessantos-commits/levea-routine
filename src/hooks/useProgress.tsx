@@ -118,6 +118,7 @@ export function useProgress() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['weight-logs'] });
+      xpReward.mutate('WEIGHT_LOGGED');
       toast.success('Peso registrado!');
     },
     onError: () => {
