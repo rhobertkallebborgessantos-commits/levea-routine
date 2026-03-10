@@ -1,83 +1,70 @@
+# Segunda Revisao do LEVEA -- O que ainda falta
+
+## Status dos itens da revisao anterior
 
 
-# Analise Final do LEVEA -- O que esta pronto e o que falta
+| Item                                   | Status               |
+| -------------------------------------- | -------------------- |
+| Auth redirect em useEffect             | Corrigido            |
+| Event listener leak no Settings        | Corrigido            |
+| FAQ link com `<Link>` no Settings      | Corrigido            |
+| XP unificado (single update)           | Corrigido            |
+| Coluna `daily_xp_earned` dedicada      | Corrigido            |
+| UUID hardcoded removido (Subscription) | Corrigido            |
+| Streak milestones com `>=`             | Corrigido            |
+| Esqueci minha senha                    | Corrigido            |
+| Footer com links                       | Corrigido            |
+| `will-change: transform` no marquee    | Corrigido            |
+| Tabela `daily_tips` populada           | Corrigido (30 dicas) |
 
-## O que ja esta funcionando
-
-| Modulo | Status |
-|--------|--------|
-| Landing Page | Pronto |
-| Autenticacao (login/cadastro) | Pronto |
-| Onboarding personalizado (10 passos) | Pronto |
-| Dashboard com widgets | Pronto |
-| Sistema de Rotinas Diarias | Pronto |
-| Registro de Refeicoes + busca de alimentos | Pronto (278 alimentos cadastrados) |
-| Sistema de Chas (26 chas) | Pronto |
-| Progresso (peso, medidas, fotos) | Pronto |
-| Check-in Semanal | Pronto |
-| Conquistas e XP (17 conquistas, formula infinita) | Pronto |
-| Leaderboard/Ranking | Pronto |
-| Lembretes e Push Notifications | Pronto |
-| Sistema de Assinatura (Mensal R$49,90 / Anual R$499) | Pronto |
-| Painel Admin completo | Pronto |
-| PWA (instalavel no celular) | Pronto |
-| Mensagens motivacionais (34 cadastradas) | Pronto |
-| FAQ | Pronto |
-| Skeletons de carregamento | Pronto |
 
 ---
 
-## Ajustes finais necessarios
+## O que ainda falta
 
-### 1. Remover botoes de teste da pagina de Conquistas
-Na pagina `/achievements`, existem dois botoes de demonstracao ("Testar Conquista" e "Testar Level Up") que nao devem aparecer para usuarios reais. Precisam ser removidos.
+### 1. Bug ativo: `AchievementCard` sem `forwardRef`
 
-### 2. Tabela `daily_tips` esta vazia
-Ha 0 dicas diarias cadastradas no banco. Se o app usa dicas educacionais, e preciso popular essa tabela com conteudo relevante -- ou remover referencias a ela se nao for usada.
+O console ainda mostra o warning "Function components cannot be given refs" no componente `AchievementCard`. O `AnimatePresence` com `mode="popLayout"` na pagina Achievements tenta passar ref para `AchievementCard`, que nao aceita.
 
-### 3. XP nao esta conectado as acoes do usuario
-O sistema de XP (formula, recompensas, cap diario) esta configurado, mas o **ganho real de XP** ainda nao esta implementado nas acoes do usuario. Ou seja, completar habitos, fazer login, e atingir streaks nao concedem XP automaticamente. Isso precisa ser conectado.
+**Correcao:** Envolver `AchievementCard` com `React.forwardRef`.
 
-### 4. Integracao de pagamento real
-O sistema de assinatura funciona com pagamento simulado (mock). Para producao, seria necessario integrar um gateway de pagamento real (como Stripe ou outra solucao). Sem isso, os usuarios nao conseguem pagar de verdade.
+### 3. XP nao e concedido ao registrar refeicoes, chas, peso ou fotos
 
-### 5. Seguranca: Habilitar protecao contra senhas vazadas
-O linter de seguranca detectou que a protecao contra senhas vazadas (leaked password protection) esta desabilitada. Recomenda-se habilitar para maior seguranca.
+O XP so e concedido ao completar habitos (rotinas) e login diario. Registrar refeicoes, consumir chas, registrar peso e enviar fotos de progresso nao concedem XP, apesar de serem acoes core do app.
 
-### 6. Confirmacao de email
-Verificar se a confirmacao de email esta ativa no fluxo de cadastro. Usuarios devem confirmar o email antes de acessar o app.
+**Correcao:**
 
----
+- Adicionar rewards em `xp-config.ts`: `MEAL_LOGGED: 10`, `TEA_LOGGED: 10`, `WEIGHT_LOGGED: 15`, `PHOTO_UPLOADED: 20`, `CHECKIN_COMPLETED: 25`
+- Chamar `xpReward.mutate()` nos hooks `useMeals`, `useTodayMeals`, `useProgress` e `useWeeklyCheckin` apos acoes relevantes
 
-## Plano de implementacao dos ajustes
+### 4. Conquistas nao acessiveis pelo BottomNav
 
-### Passo 1: Remover botoes de teste
-**Arquivo:** `src/pages/Achievements.tsx`
-- Remover o bloco de botoes "Testar Conquista" e "Testar Level Up" (linhas 109-129)
-- Remover a importacao de `Sparkles` se nao for usada em outro lugar
+A pagina de Conquistas so e acessivel pelo widget do Dashboard. Nao ha link na navegacao inferior.
 
-### Passo 2: Popular tabela `daily_tips`
-- Inserir via migracao SQL um conjunto inicial de dicas diarias educativas sobre saude, nutricao e habitos
+**Correcao:** Adicionar item "Conquistas" (icone Trophy) ao `BottomNav`, substituindo ou adicionando ao lado de outro item. Com 6 itens ficaria apertado -- a melhor opcao e substituir "Ajustes" por "Conquistas" e mover Ajustes para um icone no header do Dashboard, ou manter 5 itens trocando a posicao.
 
-### Passo 3: Conectar ganho de XP as acoes
-- Criar uma funcao/hook `useXPReward` que registra XP ao completar habitos, login diario e streaks
-- Integrar no `useToggleRoutineCompletion` (habito completado = +20 XP)
-- Integrar no `useUpdateStreak` (login diario = +5 XP, streaks de 7/30 dias = bonus)
-- Verificar o cap diario de 150 XP antes de conceder pontos
-- Atualizar a tabela `user_achievements` com os pontos ganhos
+### 5. Termos de Servico e Politica de Privacidade nao existem
 
-### Passo 4: Seguranca
-- Habilitar leaked password protection nas configuracoes de autenticacao
+Na pagina de Auth, o texto "Ao continuar, voce concorda com nossos Termos de Servico e Politica de Privacidade" nao tem links clicaveis. Para producao, isso precisa ser corrigido com paginas reais ou pelo menos modais com conteudo basico.
+
+### 6. `useMeals` -- hook `useAddMealLog` nao concede XP
+
+O hook que adiciona refeicoes ao banco nao chama o sistema de XP. O usuario registra refeicoes mas nao ganha pontos.
 
 ---
 
-## Resumo
+## Plano de implementacao
 
-O app esta **95% completo** em termos de funcionalidade. Os 3 itens criticos para lancar sao:
+### Prioridade Alta
 
-1. **Remover botoes de teste** (rapido, 5 min)
-2. **Conectar XP as acoes** (medio, necessario para o sistema de gamificacao funcionar)
-3. **Pagamento real** (se quiser cobrar de verdade -- pode ser feito depois com Stripe)
+1. **Corrigir `forwardRef` no `AchievementCard**` -- adicionar `React.forwardRef` para eliminar o warning do console
+2. **Conectar XP a refeicoes, chas, peso, fotos e check-ins** -- adicionar novos tipos de reward e integrar nos hooks correspondentes
 
-O restante (dicas diarias, seguranca de senhas) sao melhorias que podem ser feitas gradualmente.
+### Prioridade Media
 
+3. **Adicionar Conquistas ao BottomNav** -- trocar "Ajustes" por "Conquistas" e mover ajustes para o header
+4. **Substituir imagens placeholder do Showcase** -- criar cards visuais com gradientes e icones em vez de fotos genericas
+
+### Prioridade Baixa
+
+5. **Criar paginas de Termos e Privacidade** -- mesmo que com conteudo placeholder, ter os links funcionais
