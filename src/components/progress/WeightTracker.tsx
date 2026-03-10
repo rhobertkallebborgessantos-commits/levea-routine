@@ -160,7 +160,7 @@ export function WeightTracker({
           {displayData.length > 1 ? (
             <div className="h-48">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={chartData}>
+                <LineChart data={displayData}>
                   <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                   <XAxis
                     dataKey="date"
