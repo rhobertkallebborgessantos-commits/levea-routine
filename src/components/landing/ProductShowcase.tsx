@@ -53,7 +53,7 @@ export function ProductShowcase() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="hidden md:flex h-[420px] gap-2"
+          className="hidden md:flex h-[420px] gap-2 overflow-hidden"
         >
           {showcaseItems.map((item, index) => {
             const isActive = activeIndex === index;
