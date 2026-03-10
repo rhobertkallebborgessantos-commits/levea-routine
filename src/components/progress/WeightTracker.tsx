@@ -34,25 +34,6 @@ export function WeightTracker({
   const [weight, setWeight] = useState('');
   const [notes, setNotes] = useState('');
 
-  // TEMP: Mock data for screenshot
-  const mockChartData = [
-    { date: '10/02', peso: 78.0 },
-    { date: '13/02', peso: 77.6 },
-    { date: '16/02', peso: 77.8 },
-    { date: '19/02', peso: 77.2 },
-    { date: '22/02', peso: 76.8 },
-    { date: '25/02', peso: 76.5 },
-    { date: '28/02', peso: 76.0 },
-    { date: '03/03', peso: 75.7 },
-    { date: '06/03', peso: 75.3 },
-    { date: '09/03', peso: 74.8 },
-    { date: '10/03', peso: 74.5 },
-  ];
-
-  const displayData = chartData.length > 1 ? chartData : mockChartData;
-  const displayWeight = latestWeight ?? 74.5;
-  const displayChange = weightChange ?? -3.5;
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!weight) return;
