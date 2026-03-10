@@ -145,24 +145,22 @@ export function ProductShowcase() {
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
               className={cn(
-                'relative rounded-2xl overflow-hidden border border-border/50',
+                'relative rounded-2xl overflow-hidden border border-border/50 h-48',
                 index === showcaseItems.length - 1 && 'col-span-2'
               )}
             >
+              <OptimizedImage
+                src={item.image}
+                alt={item.title}
+                className="absolute inset-0 w-full h-full opacity-70"
+              />
               <div className={cn('absolute inset-0 bg-gradient-to-br', item.gradient)} />
-              <div className="absolute inset-0 bg-background/60" />
-              <div className="relative flex flex-col items-center text-center p-4 gap-3">
-                <div className="w-full max-w-[160px] aspect-[2/3] rounded-xl overflow-hidden shadow-lg border border-border/30">
-                  <OptimizedImage
-                    src={item.image}
-                    alt={item.title}
-                    className="w-full h-full opacity-80"
-                  />
-                </div>
+              <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
+              <div className="relative flex flex-col justify-end h-full p-4">
                 <span className="text-sm font-display font-semibold text-foreground">
                   {item.title}
                 </span>
-                <p className="text-xs text-muted-foreground">{item.description}</p>
+                <p className="text-xs text-muted-foreground mt-1">{item.description}</p>
               </div>
             </motion.div>
           ))}
