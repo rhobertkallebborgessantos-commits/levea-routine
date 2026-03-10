@@ -36,6 +36,7 @@ interface ProgressPhoto {
 export function useProgress() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const xpReward = useXPReward();
 
   // Fetch weight logs (last 30 days)
   const { data: weightLogs = [], isLoading: loadingWeight } = useQuery({

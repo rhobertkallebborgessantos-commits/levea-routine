@@ -23,6 +23,7 @@ import { DashboardSkeleton } from '@/components/skeletons';
 import { 
   Leaf, 
   LogOut, 
+  Settings,
   Target, 
   Utensils, 
   LeafIcon, 

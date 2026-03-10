@@ -172,6 +172,7 @@ export function useSubmitCheckin() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const weekStart = format(startOfWeek(new Date(), { weekStartsOn: 1 }), 'yyyy-MM-dd');
+  const xpReward = useXPReward();
 
   return useMutation({
     mutationFn: async (input: CheckinInput) => {

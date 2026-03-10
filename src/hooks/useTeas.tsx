@@ -249,6 +249,7 @@ export function useLogTea() {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const today = format(new Date(), 'yyyy-MM-dd');
+  const xpReward = useXPReward();
 
   return useMutation({
     mutationFn: async ({ teaId, teaName, notes }: { teaId?: string; teaName: string; notes?: string }) => {
