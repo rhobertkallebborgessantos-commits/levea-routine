@@ -1,83 +1,90 @@
 
 
-# Analise Final do LEVEA -- O que esta pronto e o que falta
-
-## O que ja esta funcionando
-
-| Modulo | Status |
-|--------|--------|
-| Landing Page | Pronto |
-| Autenticacao (login/cadastro) | Pronto |
-| Onboarding personalizado (10 passos) | Pronto |
-| Dashboard com widgets | Pronto |
-| Sistema de Rotinas Diarias | Pronto |
-| Registro de Refeicoes + busca de alimentos | Pronto (278 alimentos cadastrados) |
-| Sistema de Chas (26 chas) | Pronto |
-| Progresso (peso, medidas, fotos) | Pronto |
-| Check-in Semanal | Pronto |
-| Conquistas e XP (17 conquistas, formula infinita) | Pronto |
-| Leaderboard/Ranking | Pronto |
-| Lembretes e Push Notifications | Pronto |
-| Sistema de Assinatura (Mensal R$49,90 / Anual R$499) | Pronto |
-| Painel Admin completo | Pronto |
-| PWA (instalavel no celular) | Pronto |
-| Mensagens motivacionais (34 cadastradas) | Pronto |
-| FAQ | Pronto |
-| Skeletons de carregamento | Pronto |
+# Revisao Completa do LEVEA -- Problemas, Melhorias e Oportunidades
 
 ---
 
-## Ajustes finais necessarios
+## 1. BUGS E FALHAS
 
-### 1. Remover botoes de teste da pagina de Conquistas
-Na pagina `/achievements`, existem dois botoes de demonstracao ("Testar Conquista" e "Testar Level Up") que nao devem aparecer para usuarios reais. Precisam ser removidos.
+### 1.1 Warning no Console: `TestimonialCard` sem `forwardRef`
+O componente `TestimonialCard` recebe refs mas nao usa `React.forwardRef()`, gerando warning no console. Precisa ser envolvido com `forwardRef`.
 
-### 2. Tabela `daily_tips` esta vazia
-Ha 0 dicas diarias cadastradas no banco. Se o app usa dicas educacionais, e preciso popular essa tabela com conteudo relevante -- ou remover referencias a ela se nao for usada.
+### 1.2 Redirect no Auth.tsx fora de useEffect
+Na pagina de Auth (linha 29-32), o redirect `navigate('/dashboard')` e chamado diretamente no corpo do componente, fora de um `useEffect`. Isso pode causar warnings de "Cannot update during render".
 
-### 3. XP nao esta conectado as acoes do usuario
-O sistema de XP (formula, recompensas, cap diario) esta configurado, mas o **ganho real de XP** ainda nao esta implementado nas acoes do usuario. Ou seja, completar habitos, fazer login, e atingir streaks nao concedem XP automaticamente. Isso precisa ser conectado.
+### 1.3 XP tracker reutiliza coluna errada
+O `useXPReward` reutiliza `total_session_duration_seconds` da tabela `user_analytics` para rastrear XP diario (linhas 42-54). Isso e um hack fragil -- se analytics de sessao forem implementados de verdade, o XP diario sera sobrescrito.
 
-### 4. Integracao de pagamento real
-O sistema de assinatura funciona com pagamento simulado (mock). Para producao, seria necessario integrar um gateway de pagamento real (como Stripe ou outra solucao). Sem isso, os usuarios nao conseguem pagar de verdade.
+### 1.4 Botao de Reset Dev expoe user ID hardcoded
+Na pagina Subscription (linha 421), um UUID de usuario esta hardcoded no codigo-fonte. Qualquer pessoa pode ver esse ID inspecionando o bundle.
 
-### 5. Seguranca: Habilitar protecao contra senhas vazadas
-O linter de seguranca detectou que a protecao contra senhas vazadas (leaked password protection) esta desabilitada. Recomenda-se habilitar para maior seguranca.
-
-### 6. Confirmacao de email
-Verificar se a confirmacao de email esta ativa no fluxo de cadastro. Usuarios devem confirmar o email antes de acessar o app.
+### 1.5 Event listener leak no Settings
+No `Settings.tsx` (linhas 93-106), o listener de `visibilitychange` nao e removido no cleanup do useEffect, causando memory leak.
 
 ---
 
-## Plano de implementacao dos ajustes
+## 2. SEGURANCA
 
-### Passo 1: Remover botoes de teste
-**Arquivo:** `src/pages/Achievements.tsx`
-- Remover o bloco de botoes "Testar Conquista" e "Testar Level Up" (linhas 109-129)
-- Remover a importacao de `Sparkles` se nao for usada em outro lugar
+### 2.1 Streak milestones apenas em 7 e 30 dias
+O `useUpdateStreak` so premia XP em streaks de exatamente 7 e 30 dias (linhas 118-121). Se o usuario ja passou do dia 7, nao recebe. Deveria usar `>=` ou um sistema de milestones ja conquistados.
 
-### Passo 2: Popular tabela `daily_tips`
-- Inserir via migracao SQL um conjunto inicial de dicas diarias educativas sobre saude, nutricao e habitos
+### 2.2 FAQ link usa `<a href="/faq">` em vez de `<Link>`
+No Settings.tsx (linha 396), o link para FAQ usa tag `<a>` em vez do componente `Link` do React Router, causando full page reload.
 
-### Passo 3: Conectar ganho de XP as acoes
-- Criar uma funcao/hook `useXPReward` que registra XP ao completar habitos, login diario e streaks
-- Integrar no `useToggleRoutineCompletion` (habito completado = +20 XP)
-- Integrar no `useUpdateStreak` (login diario = +5 XP, streaks de 7/30 dias = bonus)
-- Verificar o cap diario de 150 XP antes de conceder pontos
-- Atualizar a tabela `user_achievements` com os pontos ganhos
+---
 
-### Passo 4: Seguranca
-- Habilitar leaked password protection nas configuracoes de autenticacao
+## 3. PERFORMANCE
+
+### 3.1 Dupla chamada de update no XP
+O `useXPReward` faz 2 updates separados no `profiles` (primeiro `total_points`, depois `level`). Deveria ser um unico update apos calcular o level.
+
+### 3.2 `useUpdateStreak` dispara em todo page load
+No Dashboard, `updateStreak.mutate()` roda em todo mount (linha 61-64), mesmo que o streak ja tenha sido atualizado hoje. O backend trata isso, mas gera requests desnecessarias.
+
+### 3.3 Marquee animation nao usa `will-change`
+O marquee de depoimentos usa CSS animation sem `will-change: transform`, perdendo oportunidade de GPU acceleration.
+
+---
+
+## 4. UX E MELHORIAS VISUAIS
+
+### 4.1 Landing page -- Imagens do Showcase sao placeholders
+O `ProductShowcase` usa imagens genericas do Unsplash em vez de screenshots reais do app.
+
+### 4.2 Footer minimalista demais
+O footer so tem logo e copyright. Faltam links para FAQ, Termos de Servico, Politica de Privacidade e contato.
+
+### 4.3 Pagina de Auth nao tem "Esqueci minha senha"
+Nao ha funcionalidade de recuperacao de senha. Usuarios que esquecerem a senha ficam sem acesso.
+
+### 4.4 Conquistas sem link no BottomNav
+A pagina de Conquistas existe mas nao tem atalho na navegacao inferior. So e acessivel pelo widget do Dashboard.
+
+---
+
+## 5. PLANO DE IMPLEMENTACAO (por prioridade)
+
+### Prioridade Alta (bugs)
+1. **Corrigir ref warning** no `TestimonialCard` -- adicionar `forwardRef`
+2. **Mover redirect do Auth.tsx** para dentro de `useEffect`
+3. **Corrigir event listener leak** no Settings.tsx -- adicionar cleanup do `visibilitychange`
+4. **Corrigir link FAQ** no Settings -- trocar `<a>` por `<Link>`
+
+### Prioridade Media (melhorias tecnicas)
+5. **Unificar updates de XP** -- fazer um unico update no profiles (points + level)
+6. **Criar coluna dedicada** para daily XP tracking em vez de reutilizar `total_session_duration_seconds`
+7. **Remover UUID hardcoded** do botao Reset Dev -- usar flag de environment ou role check
+8. **Streak milestones** -- marcar milestones ja concedidos para evitar duplicatas e garantir que nao sejam perdidos
+
+### Prioridade Baixa (UX)
+9. **Adicionar "Esqueci minha senha"** na tela de Auth
+10. **Melhorar footer** com links uteis (FAQ, Termos, Privacidade)
+11. **Substituir imagens placeholder** no Showcase por screenshots reais
+12. **Adicionar `will-change: transform`** ao marquee para melhor performance de animacao
 
 ---
 
 ## Resumo
 
-O app esta **95% completo** em termos de funcionalidade. Os 3 itens criticos para lancar sao:
-
-1. **Remover botoes de teste** (rapido, 5 min)
-2. **Conectar XP as acoes** (medio, necessario para o sistema de gamificacao funcionar)
-3. **Pagamento real** (se quiser cobrar de verdade -- pode ser feito depois com Stripe)
-
-O restante (dicas diarias, seguranca de senhas) sao melhorias que podem ser feitas gradualmente.
+O app esta solido e funcional. Os problemas encontrados sao majoritariamente pequenos bugs (warnings, leaks) e oportunidades de melhoria. Os 4 itens de prioridade alta podem ser resolvidos rapidamente. Os itens de UX (senha esquecida, footer, imagens) sao melhorias que agregam profissionalismo ao produto.
 
