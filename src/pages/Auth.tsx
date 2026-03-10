@@ -287,7 +287,10 @@ export default function Auth() {
         </Card>
 
         <p className="text-center text-sm text-muted-foreground mt-6">
-          Ao continuar, você concorda com nossos Termos de Serviço e Política de Privacidade.
+          Ao continuar, você concorda com nossos{' '}
+          <Link to="/terms" className="underline hover:text-foreground transition-colors">Termos de Serviço</Link>
+          {' '}e{' '}
+          <Link to="/privacy" className="underline hover:text-foreground transition-colors">Política de Privacidade</Link>.
         </p>
       </motion.div>
     </div>
