@@ -1,27 +1,43 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { CalendarCheck, Bell, ListChecks, TrendingUp, Trophy } from 'lucide-react';
 
 const showcaseItems = [
   {
     title: 'Rotina diária',
-    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop&q=80',
+    description: 'Tarefas organizadas por período do dia para manter consistência',
+    icon: CalendarCheck,
+    gradient: 'from-emerald-500/20 via-emerald-600/10 to-teal-500/20',
+    iconColor: 'text-emerald-500',
   },
   {
     title: 'Lembretes inteligentes',
-    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop&q=80',
+    description: 'Notificações personalizadas no momento certo',
+    icon: Bell,
+    gradient: 'from-amber-500/20 via-orange-500/10 to-yellow-500/20',
+    iconColor: 'text-amber-500',
   },
   {
     title: 'Controle de hábitos',
-    image: 'https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=800&h=600&fit=crop&q=80',
+    description: 'Registro de refeições e chás com tracking de macros',
+    icon: ListChecks,
+    gradient: 'from-blue-500/20 via-indigo-500/10 to-violet-500/20',
+    iconColor: 'text-blue-500',
   },
   {
     title: 'Acompanhamento de progresso',
-    image: 'https://images.unsplash.com/photo-1551434678-e076c223a692?w=800&h=600&fit=crop&q=80',
+    description: 'Gráficos de peso, medidas e fotos comparativas',
+    icon: TrendingUp,
+    gradient: 'from-rose-500/20 via-pink-500/10 to-fuchsia-500/20',
+    iconColor: 'text-rose-500',
   },
   {
-    title: 'Resultados e progresso',
-    image: 'https://images.unsplash.com/photo-1559028012-481c04fa702d?w=800&h=600&fit=crop&q=80',
+    title: 'Conquistas e gamificação',
+    description: 'Ganhe XP, suba de nível e desbloqueie conquistas',
+    icon: Trophy,
+    gradient: 'from-purple-500/20 via-violet-500/10 to-indigo-500/20',
+    iconColor: 'text-purple-500',
   },
 ];
 
@@ -57,45 +73,45 @@ export function ProductShowcase() {
         >
           {showcaseItems.map((item, index) => {
             const isActive = activeIndex === index;
+            const Icon = item.icon;
 
             return (
               <div
                 key={index}
                 onMouseEnter={() => setActiveIndex(index)}
                 className={cn(
-                  'relative rounded-2xl overflow-hidden cursor-pointer transition-all duration-700 ease-in-out',
+                  'relative rounded-2xl overflow-hidden cursor-pointer transition-all duration-700 ease-in-out border border-border/50',
                   isActive ? 'flex-[5]' : 'flex-[0.6]'
                 )}
                 style={{ minWidth: isActive ? undefined : '60px' }}
               >
-                <img
-                  src={item.image}
-                  alt={item.title}
-                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-700"
-                  loading="lazy"
-                />
+                {/* Gradient background */}
+                <div className={cn(
+                  'absolute inset-0 bg-gradient-to-br',
+                  item.gradient
+                )} />
+                <div className="absolute inset-0 bg-background/60" />
 
-                {/* Dark overlay */}
+                {/* Active content */}
                 <div
                   className={cn(
-                    'absolute inset-0 transition-all duration-700',
-                    isActive
-                      ? 'bg-gradient-to-t from-black/60 via-black/10 to-transparent'
-                      : 'bg-black/50'
-                  )}
-                />
-
-                {/* Active title — bottom center */}
-                <div
-                  className={cn(
-                    'absolute bottom-0 left-0 right-0 p-6 transition-all duration-500',
-                    isActive ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'
+                    'absolute inset-0 flex flex-col items-center justify-center p-8 transition-all duration-500',
+                    isActive ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'
                   )}
                 >
-                  <span className="text-lg font-display font-bold text-white">
+                  <div className={cn(
+                    'w-20 h-20 rounded-2xl flex items-center justify-center mb-6',
+                    'bg-background/80 border border-border/50 shadow-lg'
+                  )}>
+                    <Icon className={cn('h-10 w-10', item.iconColor)} />
+                  </div>
+                  <span className="text-xl font-display font-bold text-foreground text-center">
                     {item.title}
                   </span>
-                  <div className="mt-2 h-0.5 w-10 rounded-full bg-primary" />
+                  <p className="text-sm text-muted-foreground text-center mt-2 max-w-[280px]">
+                    {item.description}
+                  </p>
+                  <div className="mt-4 h-0.5 w-10 rounded-full bg-primary" />
                 </div>
 
                 {/* Inactive title — rotated vertically */}
@@ -106,7 +122,7 @@ export function ProductShowcase() {
                   )}
                 >
                   <span
-                    className="text-sm font-display font-semibold text-white whitespace-nowrap"
+                    className="text-sm font-display font-semibold text-muted-foreground whitespace-nowrap"
                     style={{
                       writingMode: 'vertical-rl',
                       textOrientation: 'mixed',
@@ -123,32 +139,35 @@ export function ProductShowcase() {
 
         {/* Mobile stacked */}
         <div className="md:hidden grid grid-cols-2 gap-3">
-          {showcaseItems.map((item, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 15 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
-              className={cn(
-                'relative rounded-2xl overflow-hidden aspect-[4/3]',
-                index === showcaseItems.length - 1 && 'col-span-2'
-              )}
-            >
-              <img
-                src={item.image}
-                alt={item.title}
-                className="absolute inset-0 w-full h-full object-cover"
-                loading="lazy"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 p-3">
-                <span className="text-sm font-display font-semibold text-white">
-                  {item.title}
-                </span>
-              </div>
-            </motion.div>
-          ))}
+          {showcaseItems.map((item, index) => {
+            const Icon = item.icon;
+            return (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 15 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                className={cn(
+                  'relative rounded-2xl overflow-hidden p-5 border border-border/50',
+                  index === showcaseItems.length - 1 && 'col-span-2'
+                )}
+              >
+                <div className={cn(
+                  'absolute inset-0 bg-gradient-to-br',
+                  item.gradient
+                )} />
+                <div className="absolute inset-0 bg-background/70" />
+                <div className="relative flex flex-col items-center text-center gap-2">
+                  <Icon className={cn('h-8 w-8', item.iconColor)} />
+                  <span className="text-sm font-display font-semibold text-foreground">
+                    {item.title}
+                  </span>
+                  <p className="text-xs text-muted-foreground">{item.description}</p>
+                </div>
+              </motion.div>
+            );
+          })}
         </div>
       </div>
     </section>
