@@ -88,27 +88,28 @@ export function ProductShowcase() {
                 <div className={cn('absolute inset-0 bg-gradient-to-br', item.gradient)} />
                 <div className="absolute inset-0 bg-background/40" />
 
-                {/* Active: show image */}
+                {/* Active: full background image */}
                 <div
                   className={cn(
-                    'absolute inset-0 flex flex-col items-center justify-center p-6 transition-all duration-500',
+                    'absolute inset-0 transition-all duration-500',
                     isActive ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'
                   )}
                 >
-                  <div className="relative w-[220px] h-[380px] rounded-2xl overflow-hidden shadow-2xl border border-border/30 mb-4">
-                    <OptimizedImage
-                      src={item.image}
-                      alt={item.title}
-                      className="w-full h-full opacity-80"
-                      priority={index === 0}
-                    />
+                  <OptimizedImage
+                    src={item.image}
+                    alt={item.title}
+                    className="absolute inset-0 w-full h-full opacity-70"
+                    priority={index === 0}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
+                  <div className="absolute bottom-0 left-0 right-0 p-6">
+                    <span className="text-lg font-display font-bold text-foreground">
+                      {item.title}
+                    </span>
+                    <p className="text-sm text-muted-foreground mt-1 max-w-[280px]">
+                      {item.description}
+                    </p>
                   </div>
-                  <span className="text-lg font-display font-bold text-foreground text-center">
-                    {item.title}
-                  </span>
-                  <p className="text-sm text-muted-foreground text-center mt-1 max-w-[280px]">
-                    {item.description}
-                  </p>
                 </div>
 
                 {/* Inactive: vertical title */}
