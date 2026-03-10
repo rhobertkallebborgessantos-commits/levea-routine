@@ -407,7 +407,7 @@ function SettingsContent() {
                         <p className="font-medium text-foreground text-sm">Perguntas Frequentes</p>
                         <p className="text-xs text-muted-foreground">Encontre respostas rápidas</p>
                       </div>
-                    </a>
+                    </Link>
                   </CardContent>
                 </Card>
 
