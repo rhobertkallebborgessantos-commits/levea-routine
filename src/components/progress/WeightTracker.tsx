@@ -120,7 +120,7 @@ export function WeightTracker({
             <div className="flex-1 p-3 rounded-lg bg-muted/50">
               <p className="text-xs text-muted-foreground">Atual</p>
               <p className="text-2xl font-bold text-foreground">
-                {latestWeight ? `${latestWeight} kg` : '--'}
+                {displayWeight ? `${displayWeight} kg` : '--'}
               </p>
             </div>
             <div className="flex-1 p-3 rounded-lg bg-muted/50">
