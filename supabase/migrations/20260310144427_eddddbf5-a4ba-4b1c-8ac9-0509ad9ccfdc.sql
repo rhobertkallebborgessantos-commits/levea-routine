@@ -1,0 +1,1 @@
+ALTER TABLE public.user_analytics ADD COLUMN IF NOT EXISTS daily_xp_earned integer NOT NULL DEFAULT 0;
