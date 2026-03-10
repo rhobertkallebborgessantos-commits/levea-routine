@@ -28,7 +28,7 @@ const WeeklyCheckin = lazy(() => import("./pages/WeeklyCheckin"));
 const Subscription = lazy(() => import("./pages/Subscription"));
 const Achievements = lazy(() => import("./pages/Achievements"));
 const FAQ = lazy(() => import("./pages/FAQ"));
-const Demo = lazy(() => import("./pages/Demo"));
+
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Privacy = lazy(() => import("./pages/Privacy"));
