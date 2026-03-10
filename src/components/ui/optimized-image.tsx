@@ -21,6 +21,7 @@ export function OptimizedImage({
   placeholderClassName,
   width,
   height,
+  objectFit = 'cover',
   priority = false,
   onLoad,
   onError,
