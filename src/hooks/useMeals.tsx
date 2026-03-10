@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
+import { useXPReward } from './useXPReward';
 
 export interface Food {
   id: string;
@@ -91,6 +92,7 @@ export function useAddMeal() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const today = format(new Date(), 'yyyy-MM-dd');
+  const xpReward = useXPReward();
 
   return useMutation({
     mutationFn: async (input: MealLogInput) => {
@@ -114,6 +116,7 @@ export function useAddMeal() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['meal_logs'] });
       queryClient.invalidateQueries({ queryKey: ['meal_summary'] });
+      xpReward.mutate('MEAL_LOGGED');
       toast.success('Refeição registrada!');
     },
     onError: () => {

@@ -1,3 +1,4 @@
+import React from 'react';
 import { motion } from 'framer-motion';
 import { 
   Flame, 
@@ -70,105 +71,108 @@ const tierColors: Record<string, {
   }
 };
 
-export function AchievementCard({ achievement, isUnlocked, progress, unlockedAt }: AchievementCardProps) {
-  const Icon = iconMap[achievement.icon] || Trophy;
-  const tier = achievement.tier as keyof typeof tierColors;
-  const tierStyle = tierColors[tier] || tierColors.bronze;
+export const AchievementCard = React.forwardRef<HTMLDivElement, AchievementCardProps>(
+  function AchievementCard({ achievement, isUnlocked, progress, unlockedAt }, ref) {
+    const Icon = iconMap[achievement.icon] || Trophy;
+    const tier = achievement.tier as keyof typeof tierColors;
+    const tierStyle = tierColors[tier] || tierColors.bronze;
 
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      whileHover={isUnlocked ? { scale: 1.02 } : undefined}
-      className={cn(
-        'relative p-4 rounded-xl border-2 transition-all duration-300',
-        isUnlocked 
-          ? cn(tierStyle.bg, tierStyle.border, 'shadow-lg', tierStyle.glow)
-          : 'bg-muted/30 border-muted-foreground/20 opacity-60'
-      )}
-    >
-      {/* Lock overlay for locked achievements */}
-      {!isUnlocked && (
-        <div className="absolute top-2 right-2">
-          <Lock className="h-4 w-4 text-muted-foreground" />
-        </div>
-      )}
-
-      <div className="flex items-start gap-4">
-        {/* Icon */}
-        <div className={cn(
-          'flex-shrink-0 p-3 rounded-full',
+    return (
+      <motion.div
+        ref={ref}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        whileHover={isUnlocked ? { scale: 1.02 } : undefined}
+        className={cn(
+          'relative p-4 rounded-xl border-2 transition-all duration-300',
           isUnlocked 
-            ? cn(tierStyle.bg, tierStyle.icon) 
-            : 'bg-muted text-muted-foreground'
-        )}>
-          <Icon className="h-6 w-6" />
-        </div>
-
-        {/* Content */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
-            <h3 className={cn(
-              'font-semibold truncate',
-              isUnlocked ? 'text-foreground' : 'text-muted-foreground'
-            )}>
-              {achievement.name}
-            </h3>
-            <span className={cn(
-              'text-xs px-2 py-0.5 rounded-full font-medium capitalize',
-              isUnlocked ? tierStyle.bg : 'bg-muted',
-              isUnlocked ? tierStyle.icon : 'text-muted-foreground'
-            )}>
-              {achievement.tier}
-            </span>
+            ? cn(tierStyle.bg, tierStyle.border, 'shadow-lg', tierStyle.glow)
+            : 'bg-muted/30 border-muted-foreground/20 opacity-60'
+        )}
+      >
+        {/* Lock overlay for locked achievements */}
+        {!isUnlocked && (
+          <div className="absolute top-2 right-2">
+            <Lock className="h-4 w-4 text-muted-foreground" />
           </div>
-          
-          <p className="text-sm text-muted-foreground mt-1">
-            {achievement.description}
-          </p>
+        )}
 
-          {/* Progress bar for locked achievements */}
-          {!isUnlocked && (
-            <div className="mt-3">
-              <div className="flex justify-between text-xs text-muted-foreground mb-1">
-                <span>Progresso</span>
-                <span>{progress.current}/{progress.max}</span>
-              </div>
-              <Progress value={progress.percentage} className="h-2" />
-            </div>
-          )}
-
-          {/* Points and unlock date */}
-          <div className="flex items-center justify-between mt-3">
-            <span className={cn(
-              'text-sm font-medium',
-              isUnlocked ? 'text-primary' : 'text-muted-foreground'
-            )}>
-              +{achievement.points} pontos
-            </span>
-            
-            {isUnlocked && unlockedAt && (
-              <span className="text-xs text-muted-foreground">
-                Desbloqueado em {new Date(unlockedAt).toLocaleDateString('pt-BR')}
-              </span>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Shimmer effect for unlocked achievements */}
-      {isUnlocked && (
-        <motion.div
-          className="absolute inset-0 rounded-xl overflow-hidden pointer-events-none"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-        >
+        <div className="flex items-start gap-4">
+          {/* Icon */}
           <div className={cn(
-            'absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent',
-            'animate-shimmer'
-          )} />
-        </motion.div>
-      )}
-    </motion.div>
-  );
-}
+            'flex-shrink-0 p-3 rounded-full',
+            isUnlocked 
+              ? cn(tierStyle.bg, tierStyle.icon) 
+              : 'bg-muted text-muted-foreground'
+          )}>
+            <Icon className="h-6 w-6" />
+          </div>
+
+          {/* Content */}
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <h3 className={cn(
+                'font-semibold truncate',
+                isUnlocked ? 'text-foreground' : 'text-muted-foreground'
+              )}>
+                {achievement.name}
+              </h3>
+              <span className={cn(
+                'text-xs px-2 py-0.5 rounded-full font-medium capitalize',
+                isUnlocked ? tierStyle.bg : 'bg-muted',
+                isUnlocked ? tierStyle.icon : 'text-muted-foreground'
+              )}>
+                {achievement.tier}
+              </span>
+            </div>
+            
+            <p className="text-sm text-muted-foreground mt-1">
+              {achievement.description}
+            </p>
+
+            {/* Progress bar for locked achievements */}
+            {!isUnlocked && (
+              <div className="mt-3">
+                <div className="flex justify-between text-xs text-muted-foreground mb-1">
+                  <span>Progresso</span>
+                  <span>{progress.current}/{progress.max}</span>
+                </div>
+                <Progress value={progress.percentage} className="h-2" />
+              </div>
+            )}
+
+            {/* Points and unlock date */}
+            <div className="flex items-center justify-between mt-3">
+              <span className={cn(
+                'text-sm font-medium',
+                isUnlocked ? 'text-primary' : 'text-muted-foreground'
+              )}>
+                +{achievement.points} pontos
+              </span>
+              
+              {isUnlocked && unlockedAt && (
+                <span className="text-xs text-muted-foreground">
+                  Desbloqueado em {new Date(unlockedAt).toLocaleDateString('pt-BR')}
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Shimmer effect for unlocked achievements */}
+        {isUnlocked && (
+          <motion.div
+            className="absolute inset-0 rounded-xl overflow-hidden pointer-events-none"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+          >
+            <div className={cn(
+              'absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent',
+              'animate-shimmer'
+            )} />
+          </motion.div>
+        )}
+      </motion.div>
+    );
+  }
+);

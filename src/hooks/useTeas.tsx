@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { format, subDays, startOfDay, eachDayOfInterval } from 'date-fns';
+import { useXPReward } from './useXPReward';
 
 export interface Tea {
   id: string;
@@ -248,6 +249,7 @@ export function useLogTea() {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const today = format(new Date(), 'yyyy-MM-dd');
+  const xpReward = useXPReward();
 
   return useMutation({
     mutationFn: async ({ teaId, teaName, notes }: { teaId?: string; teaName: string; notes?: string }) => {
@@ -273,6 +275,7 @@ export function useLogTea() {
       queryClient.invalidateQueries({ queryKey: ['tea_logs', user?.id, today] });
       queryClient.invalidateQueries({ queryKey: ['tea_history', user?.id] });
       queryClient.invalidateQueries({ queryKey: ['tea_stats', user?.id] });
+      xpReward.mutate('TEA_LOGGED');
     },
   });
 }

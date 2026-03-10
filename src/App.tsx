@@ -30,6 +30,8 @@ const Achievements = lazy(() => import("./pages/Achievements"));
 const FAQ = lazy(() => import("./pages/FAQ"));
 const Demo = lazy(() => import("./pages/Demo"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
+const Terms = lazy(() => import("./pages/Terms"));
+const Privacy = lazy(() => import("./pages/Privacy"));
 
 // Admin pages - lazy loaded
 const AdminLogin = lazy(() => import("./pages/admin/AdminLogin"));
@@ -68,6 +70,8 @@ function AnimatedRoutes() {
         <Route path="/faq" element={<PageTransition><Suspense fallback={<PageLoader />}><FAQ /></Suspense></PageTransition>} />
         <Route path="/demo" element={<Suspense fallback={<PageLoader />}><Demo /></Suspense>} />
         <Route path="/reset-password" element={<PageTransition><Suspense fallback={<PageLoader />}><ResetPassword /></Suspense></PageTransition>} />
+        <Route path="/terms" element={<PageTransition><Suspense fallback={<PageLoader />}><Terms /></Suspense></PageTransition>} />
+        <Route path="/privacy" element={<PageTransition><Suspense fallback={<PageLoader />}><Privacy /></Suspense></PageTransition>} />
         
         {/* Admin Routes */}
         <Route path="/admin" element={<Suspense fallback={<PageLoader />}><AdminLogin /></Suspense>} />

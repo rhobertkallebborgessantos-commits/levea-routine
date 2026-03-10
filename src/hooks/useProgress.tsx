@@ -4,6 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { format, subDays, startOfWeek, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { toast } from 'sonner';
+import { useXPReward } from '@/hooks/useXPReward';
 
 interface WeightLog {
   id: string;
@@ -35,6 +36,7 @@ interface ProgressPhoto {
 export function useProgress() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const xpReward = useXPReward();
 
   // Fetch weight logs (last 30 days)
   const { data: weightLogs = [], isLoading: loadingWeight } = useQuery({
@@ -118,6 +120,7 @@ export function useProgress() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['weight-logs'] });
+      xpReward.mutate('WEIGHT_LOGGED');
       toast.success('Peso registrado!');
     },
     onError: () => {
@@ -175,6 +178,7 @@ export function useProgress() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['progress-photos'] });
+      xpReward.mutate('PHOTO_UPLOADED');
       toast.success('Foto adicionada!');
     },
     onError: () => {

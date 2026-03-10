@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { format, startOfWeek, subDays } from 'date-fns';
 import { toast } from 'sonner';
+import { useXPReward } from './useXPReward';
 
 interface WeeklyCheckin {
   id: string;
@@ -171,6 +172,7 @@ export function useSubmitCheckin() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const weekStart = format(startOfWeek(new Date(), { weekStartsOn: 1 }), 'yyyy-MM-dd');
+  const xpReward = useXPReward();
 
   return useMutation({
     mutationFn: async (input: CheckinInput) => {
@@ -240,6 +242,7 @@ export function useSubmitCheckin() {
       queryClient.invalidateQueries({ queryKey: ['weight-logs'] });
       queryClient.invalidateQueries({ queryKey: ['latest-weight'] });
       queryClient.invalidateQueries({ queryKey: ['user-preferences'] });
+      xpReward.mutate('CHECKIN_COMPLETED');
       toast.success('Check-in semanal salvo!');
     },
     onError: () => {

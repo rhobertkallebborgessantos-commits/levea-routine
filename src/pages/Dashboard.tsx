@@ -23,6 +23,7 @@ import { DashboardSkeleton } from '@/components/skeletons';
 import { 
   Leaf, 
   LogOut, 
+  Settings,
   Target, 
   Utensils, 
   LeafIcon, 
@@ -105,11 +106,18 @@ function DashboardContent() {
             </motion.div>
             <span className="font-display font-semibold text-foreground">LEVEA</span>
           </div>
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <Button variant="ghost" size="icon" onClick={handleSignOut}>
-              <LogOut className="h-5 w-5" />
-            </Button>
-          </motion.div>
+          <div className="flex items-center gap-1">
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Button variant="ghost" size="icon" onClick={() => navigate('/settings')}>
+                <Settings className="h-5 w-5" />
+              </Button>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Button variant="ghost" size="icon" onClick={handleSignOut}>
+                <LogOut className="h-5 w-5" />
+              </Button>
+            </motion.div>
+          </div>
         </div>
       </motion.header>
 

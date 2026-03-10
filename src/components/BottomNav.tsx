@@ -1,4 +1,4 @@
-import { Home, Utensils, Leaf, TrendingUp, Settings } from "lucide-react";
+import { Home, Utensils, Leaf, TrendingUp, Trophy } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { cn } from "@/lib/utils";
 
@@ -7,7 +7,7 @@ const navItems = [
   { to: "/meals", icon: Utensils, label: "Refeições" },
   { to: "/tea", icon: Leaf, label: "Chás" },
   { to: "/progress", icon: TrendingUp, label: "Progresso" },
-  { to: "/settings", icon: Settings, label: "Ajustes" },
+  { to: "/achievements", icon: Trophy, label: "Conquistas" },
 ];
 
 export function BottomNav() {
