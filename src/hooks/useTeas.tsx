@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { format, subDays, startOfDay, eachDayOfInterval } from 'date-fns';
+import { useXPReward } from './useXPReward';
 
 export interface Tea {
   id: string;
