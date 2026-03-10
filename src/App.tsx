@@ -67,6 +67,7 @@ function AnimatedRoutes() {
         <Route path="/achievements" element={<PageTransition><Suspense fallback={<PageLoader />}><Achievements /></Suspense></PageTransition>} />
         <Route path="/faq" element={<PageTransition><Suspense fallback={<PageLoader />}><FAQ /></Suspense></PageTransition>} />
         <Route path="/demo" element={<Suspense fallback={<PageLoader />}><Demo /></Suspense>} />
+        <Route path="/reset-password" element={<PageTransition><Suspense fallback={<PageLoader />}><ResetPassword /></Suspense></PageTransition>} />
         
         {/* Admin Routes */}
         <Route path="/admin" element={<Suspense fallback={<PageLoader />}><AdminLogin /></Suspense>} />

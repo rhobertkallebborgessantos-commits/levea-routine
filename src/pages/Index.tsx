@@ -265,15 +265,22 @@ export default function Index() {
       </section>
 
       {/* Footer */}
-      <footer className="py-8 px-4 border-t border-border/50">
-        <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center">
-              <Leaf className="h-4 w-4 text-primary-foreground" />
+      <footer className="py-12 px-4 border-t border-border/50">
+        <div className="max-w-5xl mx-auto">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center">
+                <Leaf className="h-4 w-4 text-primary-foreground" />
+              </div>
+              <span className="font-display font-semibold text-foreground">LEVEA</span>
             </div>
-            <span className="font-display font-semibold text-foreground">LEVEA</span>
+            <nav className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
+              <Link to="/faq" className="hover:text-foreground transition-colors">Perguntas Frequentes</Link>
+              <Link to="/demo" className="hover:text-foreground transition-colors">Demo</Link>
+              <a href="mailto:contato@levea.app" className="hover:text-foreground transition-colors">Contato</a>
+            </nav>
           </div>
-          <p className="text-sm text-muted-foreground">© 2026 LEVEA. Feito com 💚 para hábitos mais saudáveis.</p>
+          <p className="text-sm text-muted-foreground mt-6">© 2026 LEVEA. Feito com 💚 para hábitos mais saudáveis.</p>
         </div>
       </footer>
       </div>
