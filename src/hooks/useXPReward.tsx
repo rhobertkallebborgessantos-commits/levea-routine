@@ -27,7 +27,7 @@ export function useXPReward() {
 
       if (!profile) return null;
 
-      let effectiveXp = xpAmount;
+      let effectiveXp: number = xpAmount;
 
       // Check daily cap for non-exempt actions
       if (!isExempt) {
