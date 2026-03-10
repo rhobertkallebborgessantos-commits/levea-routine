@@ -75,10 +75,10 @@ export default function TestimonialsWithMarquee() {
         </p>
       </div>
 
-      <div className="relative">
+      <div className="relative overflow-hidden">
         {/* Fade edges */}
-        <div className="pointer-events-none absolute inset-y-0 left-0 w-48 z-10 bg-gradient-to-r from-background to-transparent" />
-        <div className="pointer-events-none absolute inset-y-0 right-0 w-48 z-10 bg-gradient-to-l from-background to-transparent" />
+        <div className="pointer-events-none absolute inset-y-0 -left-4 w-64 z-10 bg-gradient-to-r from-background to-transparent" />
+        <div className="pointer-events-none absolute inset-y-0 -right-4 w-64 z-10 bg-gradient-to-l from-background to-transparent" />
 
         <div className="flex gap-6 animate-marquee hover:[animation-play-state:paused]" style={{ width: 'max-content' }}>
           {items.map((t, i) => (
