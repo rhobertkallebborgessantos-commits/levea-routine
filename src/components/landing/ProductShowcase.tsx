@@ -99,7 +99,7 @@ export function ProductShowcase() {
                     <OptimizedImage
                       src={item.image}
                       alt={item.title}
-                      className="w-full h-full"
+                      className="w-full h-full opacity-80"
                       priority={index === 0}
                     />
                   </div>
@@ -155,7 +155,7 @@ export function ProductShowcase() {
                   <OptimizedImage
                     src={item.image}
                     alt={item.title}
-                    className="w-full h-full"
+                    className="w-full h-full opacity-80"
                   />
                 </div>
                 <span className="text-sm font-display font-semibold text-foreground">
