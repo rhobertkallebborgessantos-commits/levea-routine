@@ -256,7 +256,7 @@ export default function Index() {
             </p>
             <Button size="lg" className="gap-2 text-base px-8" asChild>
               <Link to="/auth">
-                Entrar na Levea
+                Começar minha rotina saudável
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
