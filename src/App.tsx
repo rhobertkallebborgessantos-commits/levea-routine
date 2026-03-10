@@ -29,6 +29,7 @@ const Subscription = lazy(() => import("./pages/Subscription"));
 const Achievements = lazy(() => import("./pages/Achievements"));
 const FAQ = lazy(() => import("./pages/FAQ"));
 const Demo = lazy(() => import("./pages/Demo"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 
 // Admin pages - lazy loaded
 const AdminLogin = lazy(() => import("./pages/admin/AdminLogin"));
