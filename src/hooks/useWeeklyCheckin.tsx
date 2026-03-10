@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { format, startOfWeek, subDays } from 'date-fns';
 import { toast } from 'sonner';
+import { useXPReward } from './useXPReward';
 
 interface WeeklyCheckin {
   id: string;
