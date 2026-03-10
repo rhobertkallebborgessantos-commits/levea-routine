@@ -91,6 +91,7 @@ export function useAddMeal() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const today = format(new Date(), 'yyyy-MM-dd');
+  const xpReward = useXPReward();
 
   return useMutation({
     mutationFn: async (input: MealLogInput) => {
