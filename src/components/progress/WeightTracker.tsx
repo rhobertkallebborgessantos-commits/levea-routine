@@ -34,25 +34,6 @@ export function WeightTracker({
   const [weight, setWeight] = useState('');
   const [notes, setNotes] = useState('');
 
-  // TEMP: Mock data for screenshot
-  const mockChartData = [
-    { date: '10/02', peso: 78.0 },
-    { date: '13/02', peso: 77.6 },
-    { date: '16/02', peso: 77.8 },
-    { date: '19/02', peso: 77.2 },
-    { date: '22/02', peso: 76.8 },
-    { date: '25/02', peso: 76.5 },
-    { date: '28/02', peso: 76.0 },
-    { date: '03/03', peso: 75.7 },
-    { date: '06/03', peso: 75.3 },
-    { date: '09/03', peso: 74.8 },
-    { date: '10/03', peso: 74.5 },
-  ];
-
-  const displayData = chartData.length > 1 ? chartData : mockChartData;
-  const displayWeight = latestWeight ?? 74.5;
-  const displayChange = weightChange ?? -3.5;
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!weight) return;
@@ -120,36 +101,36 @@ export function WeightTracker({
             <div className="flex-1 p-3 rounded-lg bg-muted/50">
               <p className="text-xs text-muted-foreground">Atual</p>
               <p className="text-2xl font-bold text-foreground">
-                {displayWeight ? `${displayWeight} kg` : '--'}
+                {latestWeight ? `${latestWeight} kg` : '--'}
               </p>
             </div>
             <div className="flex-1 p-3 rounded-lg bg-muted/50">
               <p className="text-xs text-muted-foreground">Variação (30 dias)</p>
               <div className="flex items-center gap-1">
-                {displayChange !== null && (
+                {weightChange !== null && (
                   <>
-                    {displayChange < 0 ? (
+                    {weightChange < 0 ? (
                       <TrendingDown className="h-4 w-4 text-green-500" />
-                    ) : displayChange > 0 ? (
+                    ) : weightChange > 0 ? (
                       <TrendingUp className="h-4 w-4 text-amber-500" />
                     ) : (
                       <Minus className="h-4 w-4 text-muted-foreground" />
                     )}
                     <span
                       className={`text-lg font-semibold ${
-                        displayChange < 0
+                        weightChange < 0
                           ? 'text-green-500'
-                          : displayChange > 0
+                          : weightChange > 0
                           ? 'text-amber-500'
                           : 'text-muted-foreground'
                       }`}
                     >
-                      {displayChange > 0 ? '+' : ''}
-                      {displayChange.toFixed(1)} kg
+                      {weightChange > 0 ? '+' : ''}
+                      {weightChange.toFixed(1)} kg
                     </span>
                   </>
                 )}
-                {displayChange === null && (
+                {weightChange === null && (
                   <span className="text-lg font-semibold text-muted-foreground">--</span>
                 )}
               </div>
@@ -157,10 +138,10 @@ export function WeightTracker({
           </div>
 
           {/* Chart */}
-          {displayData.length > 1 ? (
+          {chartData.length > 1 ? (
             <div className="h-48">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={displayData}>
+                <LineChart data={chartData}>
                   <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                   <XAxis
                     dataKey="date"
