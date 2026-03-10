@@ -9,6 +9,7 @@ interface OptimizedImageProps {
   width?: number;
   height?: number;
   priority?: boolean;
+  objectFit?: 'cover' | 'contain';
   onLoad?: () => void;
   onError?: () => void;
 }
