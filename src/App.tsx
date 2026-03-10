@@ -28,7 +28,7 @@ const WeeklyCheckin = lazy(() => import("./pages/WeeklyCheckin"));
 const Subscription = lazy(() => import("./pages/Subscription"));
 const Achievements = lazy(() => import("./pages/Achievements"));
 const FAQ = lazy(() => import("./pages/FAQ"));
-const Demo = lazy(() => import("./pages/Demo"));
+
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Privacy = lazy(() => import("./pages/Privacy"));
@@ -68,7 +68,7 @@ function AnimatedRoutes() {
         <Route path="/subscription" element={<PageTransition><Suspense fallback={<PageLoader />}><Subscription /></Suspense></PageTransition>} />
         <Route path="/achievements" element={<PageTransition><Suspense fallback={<PageLoader />}><Achievements /></Suspense></PageTransition>} />
         <Route path="/faq" element={<PageTransition><Suspense fallback={<PageLoader />}><FAQ /></Suspense></PageTransition>} />
-        <Route path="/demo" element={<Suspense fallback={<PageLoader />}><Demo /></Suspense>} />
+        
         <Route path="/reset-password" element={<PageTransition><Suspense fallback={<PageLoader />}><ResetPassword /></Suspense></PageTransition>} />
         <Route path="/terms" element={<PageTransition><Suspense fallback={<PageLoader />}><Terms /></Suspense></PageTransition>} />
         <Route path="/privacy" element={<PageTransition><Suspense fallback={<PageLoader />}><Privacy /></Suspense></PageTransition>} />
