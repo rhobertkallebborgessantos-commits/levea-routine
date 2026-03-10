@@ -9,6 +9,7 @@ interface OptimizedImageProps {
   width?: number;
   height?: number;
   priority?: boolean;
+  objectFit?: 'cover' | 'contain';
   onLoad?: () => void;
   onError?: () => void;
 }
@@ -20,6 +21,7 @@ export function OptimizedImage({
   placeholderClassName,
   width,
   height,
+  objectFit = 'cover',
   priority = false,
   onLoad,
   onError,
@@ -96,7 +98,8 @@ export function OptimizedImage({
           onLoad={handleLoad}
           onError={handleError}
           className={cn(
-            'w-full h-full object-cover transition-opacity duration-300',
+            'w-full h-full transition-opacity duration-300',
+            objectFit === 'contain' ? 'object-contain' : 'object-cover',
             isLoaded ? 'opacity-100' : 'opacity-0'
           )}
         />
