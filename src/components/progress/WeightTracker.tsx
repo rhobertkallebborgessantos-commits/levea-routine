@@ -107,30 +107,30 @@ export function WeightTracker({
             <div className="flex-1 p-3 rounded-lg bg-muted/50">
               <p className="text-xs text-muted-foreground">Variação (30 dias)</p>
               <div className="flex items-center gap-1">
-                {displayChange !== null && (
+                {weightChange !== null && (
                   <>
-                    {displayChange < 0 ? (
+                    {weightChange < 0 ? (
                       <TrendingDown className="h-4 w-4 text-green-500" />
-                    ) : displayChange > 0 ? (
+                    ) : weightChange > 0 ? (
                       <TrendingUp className="h-4 w-4 text-amber-500" />
                     ) : (
                       <Minus className="h-4 w-4 text-muted-foreground" />
                     )}
                     <span
                       className={`text-lg font-semibold ${
-                        displayChange < 0
+                        weightChange < 0
                           ? 'text-green-500'
-                          : displayChange > 0
+                          : weightChange > 0
                           ? 'text-amber-500'
                           : 'text-muted-foreground'
                       }`}
                     >
-                      {displayChange > 0 ? '+' : ''}
-                      {displayChange.toFixed(1)} kg
+                      {weightChange > 0 ? '+' : ''}
+                      {weightChange.toFixed(1)} kg
                     </span>
                   </>
                 )}
-                {displayChange === null && (
+                {weightChange === null && (
                   <span className="text-lg font-semibold text-muted-foreground">--</span>
                 )}
               </div>
