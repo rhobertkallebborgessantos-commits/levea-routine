@@ -418,7 +418,7 @@ function SubscriptionContent() {
             )}
             
             {/* Dev Reset Button - Only for specific test account */}
-            {user?.id === '4745a1f4-17be-420e-b669-f191f992df64' && (
+            {import.meta.env.DEV && (
               <Button 
                 variant="outline" 
                 size="sm" 

@@ -396,8 +396,8 @@ function SettingsContent() {
                         <p className="text-xs text-muted-foreground">Atendimento rápido</p>
                       </div>
                     </button>
-                    <a
-                      href="/faq"
+                    <Link
+                      to="/faq"
                       className="flex items-center gap-3 p-3 rounded-xl border border-border hover:border-primary/50 hover:bg-primary/5 transition-all"
                     >
                       <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">

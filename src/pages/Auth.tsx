@@ -26,10 +26,13 @@ export default function Auth() {
   const { toast } = useToast();
 
   // Redirect if already logged in
-  if (user) {
-    navigate('/dashboard');
-    return null;
-  }
+  useEffect(() => {
+    if (user) {
+      navigate('/dashboard');
+    }
+  }, [user, navigate]);
+
+  if (user) return null;
 
   const validateForm = () => {
     const newErrors: { email?: string; password?: string } = {};
