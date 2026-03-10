@@ -138,7 +138,7 @@ export function WeightTracker({
           </div>
 
           {/* Chart */}
-          {displayData.length > 1 ? (
+          {chartData.length > 1 ? (
             <div className="h-48">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={displayData}>
