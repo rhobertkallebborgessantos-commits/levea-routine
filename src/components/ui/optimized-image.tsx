@@ -98,7 +98,8 @@ export function OptimizedImage({
           onLoad={handleLoad}
           onError={handleError}
           className={cn(
-            'w-full h-full object-cover transition-opacity duration-300',
+            'w-full h-full transition-opacity duration-300',
+            objectFit === 'contain' ? 'object-contain' : 'object-cover',
             isLoaded ? 'opacity-100' : 'opacity-0'
           )}
         />
