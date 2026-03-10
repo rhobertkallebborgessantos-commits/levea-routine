@@ -1,32 +1,27 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import showcaseRotina from '@/assets/showcase-rotina.jpg';
-import showcaseLembretes from '@/assets/showcase-lembretes.jpg';
-import showcaseHabitos from '@/assets/showcase-habitos.jpg';
-import showcaseProgresso from '@/assets/showcase-progresso.jpg';
-import showcaseResultados from '@/assets/showcase-resultados.jpg';
 
 const showcaseItems = [
   {
     title: 'Rotina diária',
-    image: showcaseRotina,
+    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop&q=80',
   },
   {
     title: 'Lembretes inteligentes',
-    image: showcaseLembretes,
+    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop&q=80',
   },
   {
     title: 'Controle de hábitos',
-    image: showcaseHabitos,
+    image: 'https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=800&h=600&fit=crop&q=80',
   },
   {
     title: 'Acompanhamento de progresso',
-    image: showcaseProgresso,
+    image: 'https://images.unsplash.com/photo-1551434678-e076c223a692?w=800&h=600&fit=crop&q=80',
   },
   {
     title: 'Resultados e progresso',
-    image: showcaseResultados,
+    image: 'https://images.unsplash.com/photo-1559028012-481c04fa702d?w=800&h=600&fit=crop&q=80',
   },
 ];
 
