@@ -99,6 +99,7 @@ export function ProductShowcase() {
                     src={item.image}
                     alt={item.title}
                     className="absolute inset-0 w-full h-full opacity-70"
+                    objectFit="contain"
                     priority={index === 0}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
