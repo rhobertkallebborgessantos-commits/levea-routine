@@ -276,7 +276,7 @@ export default function Index() {
             </div>
             <nav className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
               <Link to="/faq" className="hover:text-foreground transition-colors">Perguntas Frequentes</Link>
-              <Link to="/demo" className="hover:text-foreground transition-colors">Demo</Link>
+              
               <a href="mailto:contato@levea.app" className="hover:text-foreground transition-colors">Contato</a>
             </nav>
           </div>
