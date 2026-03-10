@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -26,10 +27,13 @@ export default function Auth() {
   const { toast } = useToast();
 
   // Redirect if already logged in
-  if (user) {
-    navigate('/dashboard');
-    return null;
-  }
+  useEffect(() => {
+    if (user) {
+      navigate('/dashboard');
+    }
+  }, [user, navigate]);
+
+  if (user) return null;
 
   const validateForm = () => {
     const newErrors: { email?: string; password?: string } = {};
@@ -194,6 +198,27 @@ export default function Auth() {
                   <Button type="submit" className="w-full" disabled={isLoading}>
                     {isLoading ? 'Entrando...' : 'Entrar'}
                   </Button>
+                  
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      if (!email) {
+                        toast({ variant: 'destructive', title: 'Informe seu e-mail', description: 'Digite seu e-mail acima para redefinir a senha.' });
+                        return;
+                      }
+                      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                        redirectTo: `${window.location.origin}/reset-password`,
+                      });
+                      if (error) {
+                        toast({ variant: 'destructive', title: 'Erro', description: error.message });
+                      } else {
+                        toast({ title: 'E-mail enviado! 📧', description: 'Verifique sua caixa de entrada para redefinir a senha.' });
+                      }
+                    }}
+                    className="w-full text-sm text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    Esqueceu sua senha?
+                  </button>
                 </form>
               </TabsContent>
               

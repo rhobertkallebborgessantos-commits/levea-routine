@@ -1151,6 +1151,7 @@ export type Database = {
       user_analytics: {
         Row: {
           created_at: string
+          daily_xp_earned: number
           date: string
           id: string
           is_online: boolean | null
@@ -1162,6 +1163,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          daily_xp_earned?: number
           date?: string
           id?: string
           is_online?: boolean | null
@@ -1173,6 +1175,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          daily_xp_earned?: number
           date?: string
           id?: string
           is_online?: boolean | null

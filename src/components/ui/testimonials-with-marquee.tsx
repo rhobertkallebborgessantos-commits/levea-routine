@@ -80,7 +80,7 @@ export default function TestimonialsWithMarquee() {
         <div className="pointer-events-none absolute inset-y-0 -left-4 w-64 z-10 bg-gradient-to-r from-background to-transparent" />
         <div className="pointer-events-none absolute inset-y-0 -right-4 w-64 z-10 bg-gradient-to-l from-background to-transparent" />
 
-        <div className="flex gap-6 animate-marquee hover:[animation-play-state:paused]" style={{ width: 'max-content' }}>
+        <div className="flex gap-6 animate-marquee hover:[animation-play-state:paused]" style={{ width: 'max-content', willChange: 'transform' }}>
           {items.map((t, i) => (
             <TestimonialCard key={i} {...t} />
           ))}

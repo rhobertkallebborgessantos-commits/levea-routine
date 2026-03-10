@@ -14,6 +14,8 @@ export interface UserStreak {
   updated_at: string;
 }
 
+const STREAK_MILESTONES = [7, 30] as const;
+
 export function useUserStreak() {
   const { user } = useAuth();
 
@@ -70,6 +72,11 @@ export function useUpdateStreak() {
         return data;
       }
       
+      // Already updated today - skip
+      if (streakData.last_active_date === today) {
+        return streakData;
+      }
+
       // Calculate streak
       let newStreak = 1;
       let longestStreak = streakData.longest_streak;
@@ -78,10 +85,7 @@ export function useUpdateStreak() {
         const lastDate = parseISO(streakData.last_active_date);
         const daysDiff = differenceInDays(new Date(), lastDate);
         
-        if (daysDiff === 0) {
-          // Already updated today
-          return streakData;
-        } else if (daysDiff === 1) {
+        if (daysDiff === 1) {
           // Consecutive day
           newStreak = streakData.current_streak + 1;
         }
@@ -112,13 +116,20 @@ export function useUpdateStreak() {
       // Award daily login XP
       xpReward.mutate('DAILY_LOGIN');
       
-      // Check streak milestones
+      // Check streak milestones - use >= to not miss milestones
       if (data && typeof data === 'object' && 'current_streak' in data) {
         const streak = (data as { current_streak: number }).current_streak;
-        if (streak === 7) {
-          xpReward.mutate('STREAK_7_DAYS');
-        } else if (streak === 30) {
-          xpReward.mutate('STREAK_30_DAYS');
+        const previousStreak = streak - 1;
+        
+        for (const milestone of STREAK_MILESTONES) {
+          // Award if we just crossed or hit this milestone (previous was below, now at or above)
+          if (previousStreak < milestone && streak >= milestone) {
+            if (milestone === 7) {
+              xpReward.mutate('STREAK_7_DAYS');
+            } else if (milestone === 30) {
+              xpReward.mutate('STREAK_30_DAYS');
+            }
+          }
         }
       }
     },

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useTheme } from 'next-themes';
 import { RequireAuth, useAuth } from '@/hooks/useAuth';
@@ -90,18 +90,21 @@ function SettingsContent() {
       refreshPermission();
     };
     
-    window.addEventListener('focus', handleFocus);
-    document.addEventListener('visibilitychange', () => {
+    const handleVisibility = () => {
       if (document.visibilityState === 'visible') {
         handleFocus();
       }
-    });
+    };
+
+    window.addEventListener('focus', handleFocus);
+    document.addEventListener('visibilitychange', handleVisibility);
     
     // Also refresh on mount
     refreshPermission();
     
     return () => {
       window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleVisibility);
     };
   }, [refreshPermission]);
 
@@ -393,8 +396,8 @@ function SettingsContent() {
                         <p className="text-xs text-muted-foreground">Atendimento rápido</p>
                       </div>
                     </button>
-                    <a
-                      href="/faq"
+                    <Link
+                      to="/faq"
                       className="flex items-center gap-3 p-3 rounded-xl border border-border hover:border-primary/50 hover:bg-primary/5 transition-all"
                     >
                       <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
@@ -404,7 +407,7 @@ function SettingsContent() {
                         <p className="font-medium text-foreground text-sm">Perguntas Frequentes</p>
                         <p className="text-xs text-muted-foreground">Encontre respostas rápidas</p>
                       </div>
-                    </a>
+                    </Link>
                   </CardContent>
                 </Card>
 
