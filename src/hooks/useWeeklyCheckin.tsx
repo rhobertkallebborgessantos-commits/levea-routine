@@ -240,6 +240,7 @@ export function useSubmitCheckin() {
       queryClient.invalidateQueries({ queryKey: ['weight-logs'] });
       queryClient.invalidateQueries({ queryKey: ['latest-weight'] });
       queryClient.invalidateQueries({ queryKey: ['user-preferences'] });
+      xpReward.mutate('CHECKIN_COMPLETED');
       toast.success('Check-in semanal salvo!');
     },
     onError: () => {

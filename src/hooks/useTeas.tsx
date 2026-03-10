@@ -273,6 +273,7 @@ export function useLogTea() {
       queryClient.invalidateQueries({ queryKey: ['tea_logs', user?.id, today] });
       queryClient.invalidateQueries({ queryKey: ['tea_history', user?.id] });
       queryClient.invalidateQueries({ queryKey: ['tea_stats', user?.id] });
+      xpReward.mutate('TEA_LOGGED');
     },
   });
 }

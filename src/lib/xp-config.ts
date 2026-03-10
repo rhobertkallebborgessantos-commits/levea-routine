@@ -9,6 +9,11 @@ export const XP_REWARDS = {
   STREAK_7_DAYS: 100,        // 7-day streak milestone
   STREAK_30_DAYS: 400,       // 30-day streak milestone
   DAILY_LOGIN: 5,            // Once per day
+  MEAL_LOGGED: 10,           // Meal registered
+  TEA_LOGGED: 10,            // Tea consumed
+  WEIGHT_LOGGED: 15,         // Weight registered
+  PHOTO_UPLOADED: 20,        // Progress photo uploaded
+  CHECKIN_COMPLETED: 25,     // Weekly check-in completed
 } as const;
 
 // ── Daily XP Cap ────────────────────────────────────────
@@ -16,7 +21,7 @@ export const XP_REWARDS = {
 export const DAILY_XP_CAP = 150;
 
 // Actions that are exempt from the daily cap
-export const CAP_EXEMPT_ACTIONS = ['STREAK_7_DAYS', 'STREAK_30_DAYS'] as const;
+export const CAP_EXEMPT_ACTIONS = ['STREAK_7_DAYS', 'STREAK_30_DAYS', 'CHECKIN_COMPLETED'] as const;
 
 // ── Level Formula ───────────────────────────────────────
 // XP needed to go FROM level N TO level N+1

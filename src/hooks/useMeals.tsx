@@ -116,6 +116,7 @@ export function useAddMeal() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['meal_logs'] });
       queryClient.invalidateQueries({ queryKey: ['meal_summary'] });
+      xpReward.mutate('MEAL_LOGGED');
       toast.success('Refeição registrada!');
     },
     onError: () => {

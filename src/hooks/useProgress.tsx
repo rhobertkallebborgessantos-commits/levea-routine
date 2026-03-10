@@ -176,6 +176,7 @@ export function useProgress() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['progress-photos'] });
+      xpReward.mutate('PHOTO_UPLOADED');
       toast.success('Foto adicionada!');
     },
     onError: () => {
